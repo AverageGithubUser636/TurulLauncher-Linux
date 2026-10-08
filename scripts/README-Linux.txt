@@ -1,7 +1,13 @@
 TurulLauncher for Linux
 =======================
 
-Telepítés (2 perc):
+A) AppImage (ajánlott — egyetlen fájl, nem kell telepíteni):
+  1. Futtathatóvá:  chmod +x TurulLauncher-Linux-*.AppImage
+  2. Indítsd:       ./TurulLauncher-Linux-*.AppImage
+  3. Menübe:        ./install-appimage.sh TurulLauncher-Linux-*.AppImage
+     (Super-gomb → TurulLauncher; minden disztrón: GNOME, KDE, XFCE…)
+
+B) Tarball (klasszikus telepítés):
   1. Csomagold ki:  tar xzf TurulLauncher-Linux-*.tar.gz
   2. Telepítsd:     cd TurulLauncher-Linux-*/ && sudo ./install.sh
      (sudo nélkül:  ./install.sh --user)

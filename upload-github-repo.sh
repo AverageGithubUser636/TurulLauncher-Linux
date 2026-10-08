@@ -135,14 +135,20 @@ release_notes() {
   {
     echo "TurulLauncher for Linux $VERSION"
     echo
-    echo "Telepítés:"
+    echo "AppImage (ajánlott):"
+    echo '```'
+    echo "chmod +x TurulLauncher-Linux-$VERSION-x86_64.AppImage"
+    echo "./TurulLauncher-Linux-$VERSION-x86_64.AppImage"
+    echo '```'
+    echo
+    echo "Tarball:"
     echo '```'
     echo "tar xzf TurulLauncher-Linux-$VERSION-linux-x64.tar.gz"
     echo "cd TurulLauncher-Linux-$VERSION-linux-x64 && sudo ./install.sh"
     echo '```'
     echo
     echo "Fájlok:"
-    (cd dist && sha256sum ./*.tar.gz)
+    (cd dist && sha256sum ./*.tar.gz ./*.AppImage 2>/dev/null)
   }
 }
 
@@ -151,6 +157,8 @@ shopt -s nullglob
 for appimage in dist/*.AppImage; do ASSETS+=("$appimage"); done
 shopt -u nullglob
 [[ -f dist/stable.json ]] && ASSETS+=(dist/stable.json)
+# Menü-integráló az AppImage-hez (a release-ről letölthető önmagában is).
+[[ -f scripts/install-appimage.sh ]] && ASSETS+=(scripts/install-appimage.sh)
 
 if [[ "$HAVE_GH" -eq 1 ]]; then
   if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
