@@ -26,6 +26,15 @@ public partial class ShellWindow : Window
         RefreshLogo();
         Services.ThemeService.Current.Changed += RefreshLogo;
 
+        // Nézetek közti navigáció (pl. Home-banner → Frissítés-lap).
+        // Lapindex → nav-index (fejlécek miatt eltolva).
+        Services.LauncherServices.Current.NavigateRequested += page =>
+        {
+            var nav = page switch { 0=>0, 1=>2, 2=>3, 3=>4, 4=>5, 5=>7, 6=>8, 7=>9, 8=>10, _=>-1 };
+            if (nav >= 0)
+                global::Avalonia.Threading.Dispatcher.UIThread.Post(() => vm.SelectedNavIndex = nav);
+        };
+
         // A lapváltás: a nézetek állandóak, itt csak a láthatoságot állítjuk.
         // A sorrendnek egyeznie kell a NavItems sorrendjével.
         vm.SelectionChanged += index =>
@@ -37,7 +46,8 @@ public partial class ShellWindow : Window
             ServersPage.IsVisible = index == 4;
             JavaPage.IsVisible = index == 5;
             SettingsPage.IsVisible = index == 6;
-            DoctorPage.IsVisible = index == 7;
+            UpdatePage.IsVisible = index == 7;
+            DoctorPage.IsVisible = index == 8;
         };
 
         Opened += (_, _) => vm.OnOpened();
@@ -58,12 +68,20 @@ public partial class ShellWindow : Window
     }
 }
 
-public sealed class NavItem
+public sealed class NavItem : PropertyChangedBase
 {
     public required string Icon { get; init; }
     public required string Label { get; init; }
     public bool IsHeader { get; init; }
     public bool IsItem => !IsHeader;
+
+    private bool _hasBadge;
+    /// <summary>Arany pötty a címke mellett (pl. elérhető frissítés).</summary>
+    public bool HasBadge
+    {
+        get => _hasBadge;
+        set => Raise(ref _hasBadge, value);
+    }
 }
 
 public sealed class ShellViewModel : PropertyChangedBase
@@ -96,6 +114,7 @@ public sealed class ShellViewModel : PropertyChangedBase
         new() { Icon = "", Label = "Rendszer", IsHeader = true },
         new() { Icon = "☕", Label = "Java" },
         new() { Icon = "⚙", Label = "Beállítások" },
+        new() { Icon = "🔄", Label = "Frissítés" },
         new() { Icon = "⚕", Label = "Doctor" },
     ];
 
@@ -129,7 +148,8 @@ public sealed class ShellViewModel : PropertyChangedBase
         5 => 4, // Szerverek
         7 => 5, // Java
         8 => 6, // Beállítások
-        9 => 7, // Doctor
+        9 => 7, // Frissítés
+        10 => 8, // Doctor
         _ => -1
     };
 
@@ -145,7 +165,13 @@ public sealed class ShellViewModel : PropertyChangedBase
         if (item.IsHeader) return;
         Title = item.Label + " — TurulLauncher";
         var page = PageIndexOf(_selectedNavIndex);
-        if (page >= 0) SelectionChanged?.Invoke(page);
+        if (page < 0) return;
+        // A Frissítés-lap megnyitásakor a jelvény okafogyottá válik.
+        if (page == 7)
+        {
+            foreach (var n in NavItems) n.HasBadge = false;
+        }
+        SelectionChanged?.Invoke(page);
     }
 
     public void OnOpened()
@@ -153,6 +179,36 @@ public sealed class ShellViewModel : PropertyChangedBase
         StartupLog.Trace("ShellWindow megnyitva; DataRoot=" + Core.Storage.LauncherPaths.DataRoot);
         ApplySelection();
         _ = RefreshProfileAsync();
+        _ = CheckForUpdatesAsync();
+    }
+
+    /// <summary>
+    /// Induláskori néma frissítés-ellenőrzés (ha a beállítás engedi).
+    /// Találatnál arany pötty a Frissítés-menüre — a részletek a lapon.
+    /// </summary>
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var services = Services.LauncherServices.Current;
+            await services.LoadSettingsAsync();
+            if (!services.Settings.UpdateChecksEnabled) return;
+
+            var result = await services.Updates.CheckAsync(
+                AppInfo.Version, services.Settings.UpdateChannel);
+            services.LastUpdateCheck = result;
+            services.NotifyUpdateCheckCompleted();
+            if (result.Available && result.Manifest is not null)
+            {
+                StartupLog.Trace($"Frissítés elérhető: v{result.Manifest.Version}");
+                var item = NavItems.FirstOrDefault(n => n.Label == "Frissítés");
+                if (item is not null) item.HasBadge = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            StartupLog.Trace("Induláskori frissítés-ellenőrzés hiba: " + ex.Message);
+        }
     }
 
     private async Task RefreshProfileAsync()

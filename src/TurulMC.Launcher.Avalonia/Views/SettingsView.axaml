@@ -107,49 +107,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Frissítés -->
-            <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="Frissítés" FontSize="14" FontWeight="SemiBold"
-                               Foreground="{StaticResource TurulTextBrush}"/>
-                    <TextBlock FontSize="12" Foreground="{StaticResource TurulTextDimBrush}">
-                        <Run Text="Jelenlegi: "/><Run Text="{Binding CurrentVersionText}"/>
-                        <Run Text=" · csatorna: "/><Run Text="{Binding UpdateChannelText}"/>
-                    </TextBlock>
-                    <TextBlock Text="{Binding UpdateStatus}" FontSize="12" TextWrapping="Wrap"
-                               Foreground="{StaticResource TurulTextDimBrush}"/>
-                    <ListBox Background="Transparent" BorderThickness="0" MaxHeight="120"
-                             IsVisible="{Binding HasChangelog}"
-                             ItemsSource="{Binding Changelog}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="12" TextWrapping="Wrap"
-                                           Foreground="{StaticResource TurulTextDimBrush}"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <ProgressBar Value="{Binding UpdateProgress}" Minimum="0" Maximum="100"
-                                 Height="4" IsVisible="{Binding UpdateProgressVisible}"
-                                 Foreground="{StaticResource TurulGoldBrush}"
-                                 Background="{StaticResource TurulBorderBrush}"/>
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Ellenőrzés" Click="OnCheckUpdate"
-                                Background="{StaticResource TurulSurface2Brush}"
-                                Foreground="{StaticResource TurulTextBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                CornerRadius="6" Padding="12,7" FontSize="12"
-                                IsEnabled="{Binding CanCheckUpdate}"/>
-                        <Button Content="{Binding UpdateActionText}" Click="OnUpdateAction"
-                                IsVisible="{Binding UpdateAvailable}"
-                                Background="{StaticResource TurulGoldBrush}"
-                                Foreground="{StaticResource TurulBgBrush}"
-                                BorderThickness="0" CornerRadius="6" Padding="12,7" FontSize="12"
-                                FontWeight="SemiBold"
-                                IsEnabled="{Binding CanCheckUpdate}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
             <!-- Adatkönyvtár -->
             <Border Classes="card">
                 <StackPanel Spacing="8">

@@ -236,6 +236,21 @@ public sealed class LauncherServices
 
     public void NotifyInstancesChanged() => InstancesChanged?.Invoke();
 
+    /// <summary>Az utolsó frissítés-ellenőrzés eredménye (induláskori
+    /// auto-check tölti; a jelvény, a banner és a Frissítés-lap ebből dolgozik).</summary>
+    public Core.Update.UpdateCheckResult? LastUpdateCheck { get; set; }
+
+    /// <summary>Lapváltási kérés nézetek között (pl. Home-banner → Frissítés-lap).</summary>
+    public event Action<int>? NavigateRequested;
+
+    public void RequestNavigate(int page) => NavigateRequested?.Invoke(page);
+
+    /// <summary>Az induláskori frissítés-ellenőrzés lefutott (eredmény a
+    /// <see cref="LastUpdateCheck"/>-ben) — a banner és a jelvény frissíthet.</summary>
+    public event Action? UpdateCheckCompleted;
+
+    internal void NotifyUpdateCheckCompleted() => UpdateCheckCompleted?.Invoke();
+
     public DoctorOptions BuildDoctorOptions(string? configuredJavaPath, string? instanceDirectory, string? serverHost, int serverPort)
         => new()
         {

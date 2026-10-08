@@ -82,6 +82,9 @@ public partial class HomeView : UserControl
 
     private async void OnDeleteInstance(object? sender, RoutedEventArgs e)
         => await _vm.DeleteSelectedAsync();
+
+    private void OnGotoUpdate(object? sender, RoutedEventArgs e)
+        => _vm.GoToUpdate();
 }
 
 public sealed class HomeViewModel : PropertyChangedBase
@@ -135,10 +138,20 @@ public sealed class HomeViewModel : PropertyChangedBase
 
     private string _heroMods = "";
     private int _heroModsCount;
+    private bool _updateBannerVisible;
+    private string _updateBannerTitle = "";
+    private string _updateBannerText = "";
     public double Progress { get => _progress; private set => Raise(ref _progress, value); }
     public bool ProgressVisible { get => _progressVisible; private set => Raise(ref _progressVisible, value); }
     public bool IsEmpty => Instances.Count == 0;
     public bool CanPlay => !_busy && SelectedInstance is not null;
+
+    public bool UpdateBannerVisible { get => _updateBannerVisible; private set => Raise(ref _updateBannerVisible, value); }
+    public string UpdateBannerTitle { get => _updateBannerTitle; private set => Raise(ref _updateBannerTitle, value); }
+    public string UpdateBannerText { get => _updateBannerText; private set => Raise(ref _updateBannerText, value); }
+
+    /// <summary>Ugrás a Frissítés-lapra (a shell végzi a váltást).</summary>
+    public void GoToUpdate() => _services.RequestNavigate(7);
 
     /// <summary>Az új-Instance dialógus sablon-értékei a globális beállításokból.</summary>
     public string SettingsMinecraftVersion => _services.Settings.MinecraftVersion;
@@ -150,6 +163,11 @@ public sealed class HomeViewModel : PropertyChangedBase
         await _services.LoadSettingsAsync();
         ReloadInstances();
         await RefreshProfileAsync();
+        RefreshUpdateBanner(_services.LastUpdateCheck);
+
+        // Induláskori auto-check később futhat le — akkor frissítünk.
+        _services.UpdateCheckCompleted -= OnUpdateCheckCompleted;
+        _services.UpdateCheckCompleted += OnUpdateCheckCompleted;
 
         // Másik nézet (pl. modpack-telepítés) miatti változásra újratöltünk.
         _services.InstancesChanged -= OnInstancesChanged;
@@ -163,6 +181,25 @@ public sealed class HomeViewModel : PropertyChangedBase
             ReloadInstances();
             _ = RefreshProfileAsync();
         });
+    }
+
+    private void OnUpdateCheckCompleted()
+    {
+        Dispatcher.UIThread.Post(() => RefreshUpdateBanner(_services.LastUpdateCheck));
+    }
+
+    private void RefreshUpdateBanner(Core.Update.UpdateCheckResult? check)
+    {
+        if (check?.Available == true && check.Manifest is not null)
+        {
+            UpdateBannerTitle = $"Új verzió elérhető: v{check.Manifest.Version}";
+            UpdateBannerText = "Kattints a részletekért és a telepítésért.";
+            UpdateBannerVisible = true;
+        }
+        else
+        {
+            UpdateBannerVisible = false;
+        }
     }
 
     /// <summary>Lista újratöltése a lemezről (külső változás után is).</summary>

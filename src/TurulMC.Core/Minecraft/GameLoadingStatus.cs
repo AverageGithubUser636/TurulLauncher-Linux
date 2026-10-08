@@ -47,9 +47,12 @@ public static class GameLoadingStatus
     }
 
     /// <summary>Nyers sor rövidítve a log-nézetbe (max ~160 karakter).</summary>
+    /// <summary>Nyers sor rövidítve a log-nézetbe (max ~160 karakter).
+    /// A § színkódokat is vágja, hogy ne „furán" jelenjen meg.</summary>
     public static string TrimForLog(string line, int max = 160)
     {
-        line = (line ?? "").Trim();
+        line = Text.DisplayText.StripSectionCodes(line ?? "");
+        line = line.Trim();
         if (line.Length <= max) return line;
         return "…" + line[^max..];
     }

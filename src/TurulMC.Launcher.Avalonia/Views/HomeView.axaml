@@ -2,10 +2,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TurulMC.Launcher.Avalonia.Views.HomeView">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="28,24,28,20">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="28,24,28,20">
+
+        <!-- Frissítés-banner -->
+        <Border Grid.Row="0" Margin="0,0,0,12"
+                Background="{StaticResource TurulSelectBrush}"
+                BorderBrush="{StaticResource TurulGoldBrush}" BorderThickness="1"
+                CornerRadius="12" Padding="16,12"
+                IsVisible="{Binding UpdateBannerVisible}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding UpdateBannerTitle}" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource TurulGoldBrush}"/>
+                    <TextBlock Text="{Binding UpdateBannerText}" FontSize="11"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Megnézem" Click="OnGotoUpdate"
+                        VerticalAlignment="Center"
+                        Background="{StaticResource TurulGoldBrush}"
+                        Foreground="{StaticResource TurulBgBrush}"
+                        BorderThickness="0" Padding="14,8" CornerRadius="8"
+                        FontSize="12" FontWeight="SemiBold"/>
+            </Grid>
+        </Border>
 
         <!-- Cím -->
-        <StackPanel Grid.Row="0" Spacing="3" Margin="0,0,0,14">
+        <StackPanel Grid.Row="1" Spacing="3" Margin="0,0,0,14">
             <TextBlock Text="Játék" FontSize="26" FontWeight="SemiBold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="{Binding ProfileLine}" FontSize="12"
@@ -13,7 +35,7 @@
         </StackPanel>
 
         <!-- HERO: aktív Instance + JÁTÉK -->
-        <Border Grid.Row="1" Margin="0,0,0,14"
+        <Border Grid.Row="2" Margin="0,0,0,14"
                 Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
                 CornerRadius="14" Padding="0">
@@ -68,7 +90,7 @@
         </Border>
 
         <!-- Instance lista -->
-        <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
+        <Border Grid.Row="3" Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
                 CornerRadius="14" Padding="8">
             <DockPanel>
@@ -146,7 +168,7 @@
         </Border>
 
         <!-- Állapot -->
-        <TextBlock Grid.Row="3" Text="{Binding StatusText}" FontSize="12" Margin="4,12,0,0"
+        <TextBlock Grid.Row="4" Text="{Binding StatusText}" FontSize="12" Margin="4,12,0,0"
                    Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
 
     </Grid>

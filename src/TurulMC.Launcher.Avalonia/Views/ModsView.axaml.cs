@@ -519,8 +519,9 @@ public sealed class ModsViewModel : PropertyChangedBase
                 {
                     ProjectId = hit.ProjectId,
                     Title = hit.Title,
-                    Description = string.IsNullOrWhiteSpace(hit.Description)
-                        ? "Nincs leírás." : hit.Description,
+                    // HTML-entitás/markdown mentesítve (DisplayText) —
+                    // különben "furán" jelenne meg a kártyán.
+                    Description = Core.Text.DisplayText.CleanModrinth(hit.Description),
                     Author = hit.Author,
                     DownloadsText = FormatDownloads(hit.Downloads),
                     IconUrl = hit.IconUrl,

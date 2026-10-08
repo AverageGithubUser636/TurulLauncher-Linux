@@ -338,9 +338,11 @@ public sealed class ModManager
             if (root.TryGetProperty("pack", out var pack))
             {
                 if (pack.TryGetProperty("description", out var desc))
-                    description = desc.ValueKind == System.Text.Json.JsonValueKind.String
-                        ? desc.GetString() ?? ""
-                        : desc.ToString();
+                    // A leírás lehet string, de akár chat-komponens objektum is
+                    // ({"text":"..."} / {"translate":"..."} + extra). Az utóbbi
+                    // esetben a ToString() nyers JSON-t adna a felületre —
+                    // ezért lapítjuk (lásd DisplayText).
+                    description = Text.DisplayText.FlattenChatComponent(desc);
             }
 
             int? format = null;

@@ -77,6 +77,11 @@
                                                Foreground="{StaticResource TurulGoldBrush}"/>
                                     <TextBlock Text="{Binding Label}" FontSize="13"
                                                Foreground="{StaticResource TurulTextBrush}"/>
+                                    <!-- Jelvény: arany pötty (pl. elérhető frissítés). -->
+                                    <Border Width="8" Height="8" CornerRadius="4"
+                                            VerticalAlignment="Center"
+                                            Background="{StaticResource TurulGoldBrush}"
+                                            IsVisible="{Binding HasBadge}"/>
                                 </StackPanel>
                             </Panel>
                         </DataTemplate>
@@ -94,6 +99,7 @@
             <views:ServersView x:Name="ServersPage" IsVisible="False" />
             <views:JavaView x:Name="JavaPage" IsVisible="False" />
             <views:SettingsView x:Name="SettingsPage" IsVisible="False" />
+            <views:UpdateView x:Name="UpdatePage" IsVisible="False" />
             <views:DoctorView x:Name="DoctorPage" IsVisible="False" />
         </Panel>
 

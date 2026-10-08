@@ -1,0 +1,120 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TurulMC.Launcher.Avalonia.Views.UpdateView">
+
+    <ScrollViewer Margin="28,24,28,20">
+        <StackPanel Spacing="16" MaxWidth="820" HorizontalAlignment="Center">
+
+            <StackPanel Spacing="3">
+                <TextBlock Text="Frissítés" FontSize="26" FontWeight="SemiBold"
+                           Foreground="{StaticResource TurulTextBrush}"/>
+                <TextBlock Text="{Binding Subtitle}" FontSize="12"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+            </StackPanel>
+
+            <!-- HERO: verzió-összevetés -->
+            <Border Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    CornerRadius="14" Padding="0">
+                <DockPanel>
+                    <Border DockPanel.Dock="Top" Height="3" CornerRadius="3,3,0,0"
+                            Background="{DynamicResource TurulGoldBrush}"
+                            IsVisible="{Binding UpdateAvailable}"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="20" Margin="24,20">
+                        <Image Grid.Column="0" x:Name="LogoImage" Width="64" Height="64"
+                               VerticalAlignment="Center" Stretch="Uniform"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+                            <TextBlock Text="AKTUÁLIS ÁLLAPOT" Classes="overline"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="{Binding CurrentVersionText}" FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TurulTextDimBrush}"/>
+                                <TextBlock Text="→" FontSize="20" FontWeight="Bold"
+                                           Foreground="{StaticResource TurulGoldBrush}"
+                                           IsVisible="{Binding UpdateAvailable}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding NewVersionText}" FontSize="20" FontWeight="Bold"
+                                           Foreground="{StaticResource TurulGoldBrush}"
+                                           IsVisible="{Binding UpdateAvailable}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border CornerRadius="9" Padding="10,4"
+                                        Background="{StaticResource TurulSurface2Brush}"
+                                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                                    <TextBlock Text="{Binding ChannelText}" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                </Border>
+                                <Border CornerRadius="9" Padding="10,4"
+                                        Background="#3A1E22"
+                                        IsVisible="{Binding IsRequired}">
+                                    <TextBlock Text="KÖTELEZŐ" FontSize="11" FontWeight="Bold"
+                                               Foreground="{StaticResource TurulDangerBrush}"/>
+                                </Border>
+                                <Border CornerRadius="9" Padding="10,4"
+                                        Background="#16281D"
+                                        IsVisible="{Binding IsUpToDate}">
+                                    <TextBlock Text="NAPRAKÉSZ ✓" FontSize="11" FontWeight="Bold"
+                                               Foreground="{StaticResource TurulOkBrush}"/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="{Binding StatusText}" FontSize="12" TextWrapping="Wrap"
+                                       Foreground="{StaticResource TurulTextDimBrush}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="8">
+                            <Button Content="Ellenőrzés" Click="OnCheck"
+                                    MinWidth="150" Padding="14,10" CornerRadius="8"
+                                    Background="{StaticResource TurulSurface2Brush}"
+                                    Foreground="{StaticResource TurulTextBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    FontSize="13"
+                                    IsEnabled="{Binding CanCheck}"/>
+                            <Button Content="{Binding ActionText}" Click="OnAction"
+                                    IsVisible="{Binding UpdateAvailable}"
+                                    MinWidth="150" Padding="14,10" CornerRadius="8"
+                                    Background="{StaticResource TurulGoldBrush}"
+                                    Foreground="{StaticResource TurulBgBrush}"
+                                    BorderThickness="0" FontSize="13" FontWeight="Bold"
+                                    IsEnabled="{Binding CanCheck}"/>
+                        </StackPanel>
+                    </Grid>
+                </DockPanel>
+            </Border>
+
+            <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
+                         Height="5" IsVisible="{Binding ProgressVisible}"
+                         Foreground="{StaticResource TurulGoldBrush}"
+                         Background="{StaticResource TurulBorderBrush}"/>
+
+            <!-- Változásnapló -->
+            <Border Classes="card" IsVisible="{Binding HasChangelog}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="VÁLTOZÁSOK" Classes="overline"/>
+                    <ListBox Background="Transparent" BorderThickness="0"
+                             ItemsSource="{Binding Changelog}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="2,4">
+                                    <Border Width="8" Height="8" CornerRadius="4"
+                                            VerticalAlignment="Center"
+                                            Background="{StaticResource TurulGoldBrush}"/>
+                                    <TextBlock Text="{Binding}" FontSize="13" TextWrapping="Wrap"
+                                               Foreground="{StaticResource TurulTextBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Tudnivalók -->
+            <Border Classes="card">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="TUDNIVALÓK" Classes="overline"/>
+                    <TextBlock Text="{Binding ModeText}" FontSize="12" TextWrapping="Wrap"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

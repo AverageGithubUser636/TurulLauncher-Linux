@@ -44,6 +44,7 @@ internal static class Program
             ModrinthTests();
             ModpackTests();
             UpdateTests();
+            DisplayTextTests();
             await LinuxPortTestsAsync();
             await DoctorTestsAsync();
             await SupportBundleTestsAsync();
@@ -1975,6 +1976,78 @@ internal static class Program
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "TurulMC.sln")))
             dir = dir.Parent;
         return dir?.FullName ?? AppContext.BaseDirectory;
+    }
+
+    // ---------------------------------------------------------------- Szövegtisztítás
+
+    /// <summary>
+    /// A DisplayText (HTML/markdown/chat-komponens/§-kód mentesítés) lefedése.
+    /// Ezek a hibák okozták a „furán írja ki a szöveget + JSON-t is kiír" jelenséget.
+    /// </summary>
+    private static void DisplayTextTests()
+    {
+        var clean = TurulMC.Core.Text.DisplayText.CleanModrinth;
+
+        Check("Szöveg: Modrinth HTML-entitás és markdown tisztítás", () =>
+        {
+            AssertEqual("Sodium's renderer", clean("Sodium&#39;s renderer"), "entitás");
+            AssertEqual("Fast renderer", clean("**Fast** renderer"), "félkövér");
+            AssertEqual("see wiki", clean("see [wiki](https://example.com/x)"), "link");
+            AssertEqual("logo", clean("![logo](https://example.com/i.png)"), "kép");
+            AssertEqual("code here", clean("`code` here"), "inline kód");
+            AssertEqual("• item", clean("- item"), "lista");
+            AssertEqual("Nincs leírás.", clean(""), "üres");
+            AssertEqual("Nincs leírás.", clean(null), "null");
+            Assert(!clean("a  b\n\n\nc").Contains("  "), "térköz-összevonás");
+        });
+
+        Check("Szöveg: chat-komponens lapítás (sose nyers JSON)", () =>
+        {
+            var flat = TurulMC.Core.Text.DisplayText.FlattenChatComponent;
+            AssertEqual("Szép pack", flat(Json("{\"text\":\"Szép pack\"}")), "sima szöveg");
+            AssertEqual("Hello világ",
+                flat(Json("{\"text\":\"Hello \",\"extra\":[{\"text\":\"világ\"},\"!\"]}"))[..11],
+                "extra-tömb");
+            AssertEqual("", flat(Json("{\"translate\":\"pack.name\"}")), "translate nem szöveg");
+            AssertEqual("", flat(Json("{\"unknown\":123}")), "ismeretlen alak üres");
+            AssertEqual("5", flat(Json("5")), "szám");
+            Assert(!flat(Json("{\"text\":\"x\",\"extra\":[{\"a\":1}]}")).Contains("{"), "nincs JSON-maradék");
+        });
+
+        Check("Szöveg: §-kód vágás és log-rövidítés", () =>
+        {
+            AssertEqual("Hello világ",
+                TurulMC.Core.Text.DisplayText.StripSectionCodes("§aHello §lvilág§r"), "§-kódok");
+            AssertEqual("simaszöveg",
+                TurulMC.Core.Text.DisplayText.StripSectionCodes("simaszöveg"), "kód nélkül változatlan");
+            AssertEqual("Indul a játék",
+                TurulMC.Core.Minecraft.GameLoadingStatus.TrimForLog("§eIndul §ba §cjá§dték"), "log-nézet tiszta");
+        });
+
+        Check("Szöveg: pack.mcmeta objektum-leírás nem JSON-ként jelenik meg", () =>
+        {
+            var root = NewDirectory("pack-desc");
+            var game = Path.Combine(root, "game");
+            var packs = Path.Combine(game, "resourcepacks");
+            Directory.CreateDirectory(packs);
+            using (var zip = ZipFile.Open(Path.Combine(packs, "obj.zip"), ZipArchiveMode.Create))
+            {
+                var e = zip.CreateEntry("pack.mcmeta");
+                using var w = new StreamWriter(e.Open());
+                w.Write("{\"pack\":{\"pack_format\":15,\"description\":{\"text\":\"Szép \",\"extra\":[\"pack\"]}}}");
+            }
+            var manager = new TurulMC.Core.Mods.ModManager();
+            var list = manager.ListResourcePacks(game);
+            AssertEqual(1, list.Count, "egy pack");
+            AssertEqual("Szép pack", list[0].Description, "lapított leírás");
+            Assert(!list[0].Description.Contains("{"), "nincs JSON");
+        });
+    }
+
+    private static System.Text.Json.JsonElement Json(string text)
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(text);
+        return doc.RootElement.Clone();
     }
 
     private static void LauncherPathsTests()
