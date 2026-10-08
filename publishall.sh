@@ -192,11 +192,15 @@ APPDATA
     MANIFEST_SHA="$(cut -d' ' -f1 "$TARBALL.sha256")"
   fi
   if [[ -n "$MANIFEST_FILE" ]]; then
+  # FIGYELEM: az updater CSAK turulnetwork.hu-ról telepít (hoszt-allowlist),
+  # ezért a manifest URL-je mindig a weboldal releases-mappájára mutat —
+  # az AppImage-et a GitHub-release MELLÉ oda is fel kell tölteni!
+  # A --github csak a jegyzetekhez/release-hez kell, ide nem.
   cat > "$DIST/stable-$RID.json" <<EOF
 {
   "version": "$VERSION",
   "required": false,
-  "url": "https://github.com/$GITHUB_OWNER/TurulLauncher-Linux/releases/download/v$VERSION/$MANIFEST_FILE",
+  "url": "https://turulnetwork.hu/launcher/linux/releases/$MANIFEST_FILE",
   "sha256": "$MANIFEST_SHA",
   "publishedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "changelog": [
