@@ -1,0 +1,11 @@
+TurulLauncher 4.4.4 test
+
+1. Build with publish-all.cmd.
+2. Select each theme (Gold/Green/Red/Purple/Sky), exit, relaunch and verify splash color + logo match before the main UI appears.
+3. Verify splash remains visible while WebView2 preloads and the main window does not flash behind it.
+4. Press the native Windows minimize button: launcher should disappear from the taskbar and appear in the notification area.
+5. Restore with left/double click on tray icon.
+6. Right-click tray icon and test TurulLauncher megnyitása and Kilépés.
+7. Set close behavior to Rendszertálcára rejtés and test X.
+8. Set game-start behavior to Rendszertálcára rejtés and launch Minecraft.
+9. Verify playtime/process tracking remains active while the launcher is hidden to tray.

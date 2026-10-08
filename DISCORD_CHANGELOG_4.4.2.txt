@@ -1,0 +1,15 @@
+```
+TurulLauncher Version: 4.4.2
+
+[+]
+Ablak bezárási viselkedés beállítása
+Játékindítás utáni launcher viselkedés
+
+[*]
+Minimalizálás a Windows tálcára
+Bezáráskor opcionális rákérdezés
+Playtime/process követés kompatibilis marad launcher bezárásnál is
+
+[-]
+Nincs
+```

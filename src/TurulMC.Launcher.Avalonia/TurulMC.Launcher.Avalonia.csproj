@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>TurulMC.Launcher.Avalonia</RootNamespace>
+    <AssemblyName>TurulLauncher</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0-linux</InformationalVersion>
+    <ApplicationTitle>TurulLauncher</ApplicationTitle>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <SatelliteResourceLanguages>en;hu</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.16" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.16" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.16" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.16" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TurulMC.Core\TurulMC.Core.csproj" />
+    <ProjectReference Include="..\TurulMC.Infrastructure\TurulMC.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\TurulMC.Launcher\Assets\turul-logo.png" Link="Assets\turul-logo.png" CopyToOutputDirectory="PreserveNewest" />
+    <!-- A téma-logók beágyazva (avares://TurulLauncher/Assets/Logos/...) töltődnek. -->
+    <AvaloniaResource Include="Assets\Logos\*.png" />
+  </ItemGroup>
+
+</Project>

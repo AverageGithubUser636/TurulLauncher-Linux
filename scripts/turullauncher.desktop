@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=TurulLauncher
+GenericName=Minecraft Launcher
+Comment=TurulLauncher for Linux — Minecraft launcher (magyarul)
+Exec=TurulLauncher
+Icon=turul-logo
+Terminal=false
+Categories=Game;
+Keywords=minecraft;launcher;turul;
+StartupWMClass=TurulLauncher

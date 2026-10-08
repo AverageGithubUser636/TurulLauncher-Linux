@@ -1,0 +1,31 @@
+TurulLauncher 4.3.4 - FINAL RELEASE CHECKLIST
+
+1. Telepitsd az Inno Setup 7-et:
+   winget install --id JRSoftware.InnoSetup.7 -e -s winget -i
+
+2. Futtasd:
+   publish-all.cmd
+
+3. Ellenorizd az updater UI-t:
+   publish\Updater\TurulMC.Updater.exe --preview
+
+4. A publish\WebDeploy mappa mar upload-kesz:
+   releases\TurulLauncher-4.3.4.zip -> https://turulnetwork.hu/launcher/releases/TurulLauncher-4.3.4.zip
+   download\TurulLauncher-Setup.exe -> https://turulnetwork.hu/launcher/download/TurulLauncher-Setup.exe
+   update\stable.json -> https://turulnetwork.hu/launcher/update/stable.json
+
+5. FONTOS: a publish.cmd automatikusan ujrageneralja a stable.json SHA-256 erteket.
+   Feltoltes elott csak a changelog mezot ellenorizd/szerkeszd, de a sha256-hoz ne nyulj.
+
+6. Gyors telepitesi teszt:
+   - Setup telepul admin nelkul
+   - Launcher elindul
+   - Updater preview megjelenik
+   - Uninstall mukodik
+   - %APPDATA%\TurulMC felhasznaloi adatok megmaradnak
+
+FREE HOSTING (ajanlott):
+- Cloudflare Pages csak: index.html + update/stable.json + _redirects + _headers
+- GitHub Releases: TurulLauncher-4.3.4.zip + TurulLauncher-Setup.exe
+- Futtasd: prepare-free-hosting.cmd
+- A stable.json TurulNetwork URL-je marad; Pages 302 redirect viszi GitHub Releasesre.

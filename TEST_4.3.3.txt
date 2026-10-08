@@ -1,0 +1,12 @@
+TurulLauncher 4.3.3 gyors teszt
+
+1. Futtasd: publish-all.cmd
+2. Ellenorizd, hogy a publish validacio OK.
+3. Inditsd: publish\GUI\TurulMC.Launcher.exe
+4. Elso inditasnal probald az UI scalinget (slider/gorgo), majd Kesz, mehet!.
+5. Beallitasokban: Frissitesek keresese.
+6. Indits egy olyan Minecraft verziot/instance-t, amelynek fajljai meg hianyoznak, es nezd a letoltesi progress panelt.
+7. Telepitsd a publish\Installer\TurulLauncher-Setup.exe fajlt, ellenorizd az asztali/Start Menu ikont.
+8. Ha minden jo: upload-github-release.cmd
+
+Megjegyzes: a forrascsomag itt statikusan ellenorizve lett, de ebben a kornyezetben nincs .NET SDK, ezert a Windows buildet a sajat gepeden kell lefuttatni.

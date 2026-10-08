@@ -1,0 +1,8 @@
+TurulLauncher 4.4.3 - Native preload splash
+
+- Added SplashWindow.xaml / SplashWindow.xaml.cs.
+- Main window is activated only to obtain a valid HWND, then hidden while WebView2 initializes.
+- Splash progress reflects real startup milestones instead of a fake timer.
+- Main UI is revealed only after WebView navigation and initial state delivery completes.
+- 30 second safety timeout falls back to the launcher's normal loading view.
+- Removed the old HTML startup splash to avoid a double-splash transition.

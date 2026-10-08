@@ -1,0 +1,13 @@
+{
+  "version": "4.4.5",
+  "required": false,
+  "url": "https://turulnetwork.hu/launcher/releases/TurulLauncher-4.4.5.zip",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "publishedAt": "2026-09-21T17:48:35.651339+00:00",
+  "changelog": [
+    "Helyi hibamagyarázó a sikertelen indításokhoz és játékösszeomlásokhoz",
+    "Automatikus mentés a modok és modbeállítások módosítása előtt",
+    "Instance-enként 5 mod-visszaállítási pont, sérülésellenőrzéssel",
+    "Visszaállítás előtti külön mentés és megszakadt visszaállítás helyreállítása"
+  ]
+}

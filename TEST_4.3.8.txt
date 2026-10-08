@@ -1,0 +1,13 @@
+TurulLauncher 4.3.8 TEST
+
+1. Install a Modrinth modpack into a new Instance.
+2. Open Mods in that modpack Instance and search for a mod included by the pack.
+   Expected: button says "✓ Telepítve", not "Telepítés".
+3. Open the same mod's details.
+   Expected: install button says "✓ Telepítve" and is disabled.
+4. Switch to another Instance without that mod and search again.
+   Expected: "Telepítés" is available there.
+5. For an older existing modpack, first search can take longer while JAR hashes are identified.
+   Repeat the search: state should now be cached and fast.
+6. Remove a mod from Installed Mods, then search for it again.
+   Expected: "Telepítés" becomes available.

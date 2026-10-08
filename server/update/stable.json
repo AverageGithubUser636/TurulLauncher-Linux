@@ -1,0 +1,14 @@
+﻿{
+    "version":  "4.6.0",
+    "required":  false,
+    "url":  "https://turulnetwork.hu/launcher/releases/TurulLauncher-4.6.0.zip",
+    "sha256":  "46ecfcfa1904ba2398ba3ae44177cabd9b07388ae0fd90fda3feecc6a75d96c8",
+    "publishedAt":  "2026-10-06T22:02:30.6381417+02:00",
+    "changelog":  [
+                      "Ablak bezárási viselkedés beállítása",
+                      "Játékindítás utáni launcher viselkedés",
+                      "Minimalizálás a Windows tálcára",
+                      "Bezáráskor opcionális rákérdezés",
+                      "Playtime/process követés stabilitási javítások"
+                  ]
+}

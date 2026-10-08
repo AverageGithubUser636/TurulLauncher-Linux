@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TurulMC.Launcher.Avalonia.Views.HomeView">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="26,22,26,20">
+
+        <!-- Fejléc -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+            <TextBlock Text="Játék" FontSize="24" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulTextBrush}"/>
+            <TextBlock Text="{Binding ProfileLine}" FontSize="12"
+                       Foreground="{StaticResource TurulTextDimBrush}"/>
+        </StackPanel>
+
+        <!-- Instance lista -->
+        <Border Grid.Row="1" Background="{StaticResource TurulSurfaceBrush}"
+                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                CornerRadius="10" Padding="6">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="8,6,8,4">
+                    <Button Content="Új Instance" Click="OnCreateInstance"
+                            Background="{StaticResource TurulSurface2Brush}"
+                            Foreground="{StaticResource TurulTextBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                    <Button Content="Szerkesztés" Click="OnEditInstance"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulTextBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                    <Button Content="Törlés" Click="OnDeleteInstance"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulDangerBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                </StackPanel>
+
+                <!-- Üres állapot: a nagy kártya ne egy fekete lyuk legyen. -->
+                <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Spacing="8" Margin="20,28" MaxWidth="420">
+                    <Border Width="54" Height="54" CornerRadius="27"
+                            HorizontalAlignment="Center"
+                            Background="{StaticResource TurulSurface2Brush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                        <TextBlock Text="◆" FontSize="24" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource TurulGoldBrush}"/>
+                    </Border>
+                    <TextBlock Text="Még nincs Instance" FontSize="16" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" TextAlignment="Center"
+                               Foreground="{StaticResource TurulTextBrush}"/>
+                    <TextBlock Text="{Binding EmptyText}" FontSize="13" TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                </StackPanel>
+
+                <ListBox x:Name="InstanceList"
+                         Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding Instances}"
+                         SelectedItem="{Binding SelectedInstance, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,9" ColumnSpacing="14">
+                                <Border Grid.Column="0" Width="34" Height="34" CornerRadius="7"
+                                        Background="{StaticResource TurulSurface2Brush}">
+                                    <!-- Nem ⛏: az Inter nem tartalmazza, doboz jelenne meg helyette. -->
+                                    <TextBlock Text="◆" FontSize="15" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TurulGoldBrush}"/>
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                    <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
+                                        <Run Text="MC "/><Run Text="{Binding MinecraftVersion}"/>
+                                        <Run Text=" · "/><Run Text="{Binding Loader}"/>
+                                        <Run Text=" · "/><Run Text="{Binding RamMb}"/><Run Text=" MB"/>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="{Binding ModpackName}" FontSize="11"
+                                               Foreground="{StaticResource TurulGoldBrush}"/>
+                                    <TextBlock Text="{Binding LastPlayedText}" FontSize="10"
+                                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Alsó sáv: állapot + PLAY -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,16,0,0">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="3">
+                <TextBlock Text="{Binding StatusText}" FontSize="12"
+                           Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
+                <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
+                             Height="4" IsVisible="{Binding ProgressVisible}"
+                             Foreground="{StaticResource TurulGoldBrush}"
+                             Background="{StaticResource TurulBorderBrush}"/>
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="PlayButton"
+                    Content="▶  JÁTÉK" Click="OnPlay"
+                    MinWidth="190" Padding="22,13"
+                    FontSize="15" FontWeight="Bold"
+                    HorizontalContentAlignment="Center"
+                    Background="{StaticResource TurulGoldBrush}"
+                    Foreground="{StaticResource TurulBgBrush}"
+                    BorderThickness="0" CornerRadius="8"/>
+        </Grid>
+
+    </Grid>
+</UserControl>

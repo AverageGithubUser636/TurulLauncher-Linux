@@ -1,0 +1,15 @@
+TurulLauncher Version: 4.3.4
+
+[+]
+Texture/resource pack keresés és telepítés
+Telepített texture packok kezelése
+Modrinth modpack keresés és telepítés
+.mrpack import támogatás
+Modpackok külön Instance-ba telepítése
+
+[*]
+Modpack Fabric Loader verziókezelés javítva
+Modpack szinkron biztonságosabb: saját modokat/configokat nem töröl
+
+[-]
+Nincs

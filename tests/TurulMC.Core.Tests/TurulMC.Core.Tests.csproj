@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Rögzített verziók: a korábbi 17.* / 2.* float minden restore-nál más binárist
+         hozott, ami megismételhetetlen teszteket és offline build-hibát okozott. -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TurulMC.Core\TurulMC.Core.csproj" />
+    <ProjectReference Include="..\..\src\TurulMC.Infrastructure\TurulMC.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

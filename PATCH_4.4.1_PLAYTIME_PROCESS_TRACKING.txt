@@ -1,0 +1,8 @@
+TurulLauncher 4.4.2
+
+- Persistent per-instance playtime stored in .turul-playtime.json
+- Current session counter + total playtime in UI
+- Global Minecraft process tracker survives Instance service reconfiguration
+- game-session.json allows PID/start-time verified reattachment after launcher restart
+- PID/start-time verification prevents attaching to a reused unrelated PID
+- Running process status is polled every 3 seconds; visible timer ticks every second

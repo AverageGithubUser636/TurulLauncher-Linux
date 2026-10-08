@@ -1,0 +1,28 @@
+/* Mod recovery / crash explanation. Scoped to preserve the existing launcher layout. */
+.recovery-dialog{color:var(--t1,#e8e6e3);background:var(--bg-c,#12151a);border:1px solid var(--bdr-c,#343840);border-radius:14px;padding:0;width:min(600px,calc(100vw - 28px));max-height:calc(100dvh - 28px);margin:auto;box-shadow:0 24px 80px #0009;font-family:var(--f,sans-serif);font-size:13px;line-height:1.6;overflow:auto}
+.recovery-dialog::backdrop{background:#000b}
+.recovery-dialog .recovery-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 14px;border-bottom:1px solid var(--bdr-c,#343840)}
+.recovery-dialog h2{font-size:19px;line-height:1.3;margin:0 0 6px;letter-spacing:-.3px}
+.recovery-dialog .recovery-sub{font-size:12px;color:var(--t2,#adb1b8);overflow-wrap:anywhere}
+.recovery-dialog .recovery-body{padding:18px 22px}
+.recovery-dialog .recovery-footer{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;padding:14px 22px 20px}
+.recovery-dialog button{font:600 12px var(--f,sans-serif);border-radius:8px;border:1px solid var(--bdr-c,#343840);padding:9px 13px;min-height:36px;background:var(--bg-e,#181c22);color:var(--t1,#e8e6e3);cursor:pointer;white-space:normal}
+.recovery-dialog button:hover{border-color:var(--gold,#d4af37)}
+.recovery-dialog button:focus-visible{outline:2px solid var(--gold,#d4af37);outline-offset:3px}
+.recovery-dialog button:disabled{opacity:.55;cursor:wait}
+.recovery-dialog button.recovery-primary{background:var(--gold,#d4af37);color:#08090b;border-color:transparent}
+.recovery-dialog .recovery-close{font-size:20px;line-height:1;padding:6px 10px}
+.recovery-dialog .recovery-note{padding:12px 14px;border-radius:9px;background:var(--gold-s,#d4af3718);border:1px solid var(--bdr-c,#343840);margin:0 0 16px;color:var(--t2,#adb1b8)}
+.recovery-dialog .recovery-row{display:flex;align-items:center;justify-content:space-between;gap:14px;border-top:1px solid var(--bdr-c,#343840);padding:14px 0}
+.recovery-dialog .recovery-row:first-child{border-top:0}
+.recovery-dialog .recovery-row>div{min-width:0}
+.recovery-dialog .recovery-row b{display:block;font-size:13px;overflow-wrap:anywhere}
+.recovery-dialog .recovery-row small{display:block;color:var(--t2,#adb1b8);font-size:11px;margin-top:3px}
+.recovery-dialog .recovery-row button{flex-shrink:0}
+.recovery-dialog .recovery-warning{color:var(--warn,#fbbf24)!important}
+.recovery-dialog .recovery-empty{padding:20px 0;color:var(--t2,#adb1b8)}
+.recovery-dialog ol{margin:14px 0 0;padding-left:22px}.recovery-dialog li{margin:8px 0}
+.recovery-dialog details{margin-top:18px}.recovery-dialog summary{cursor:pointer;color:var(--t2,#adb1b8)}
+.recovery-dialog pre{white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;font:11px/1.6 var(--fm,monospace);background:var(--bg,#08090b);padding:12px;border-radius:8px;margin-top:8px}
+.recovery-dialog .recovery-status{color:var(--t2,#adb1b8);padding-top:12px;min-height:24px}
+@media(max-width:480px){.recovery-dialog .recovery-row{align-items:stretch;flex-direction:column;gap:8px}.recovery-dialog .recovery-body,.recovery-dialog .recovery-head{padding:15px}.recovery-dialog .recovery-footer{padding:12px 15px 16px}}

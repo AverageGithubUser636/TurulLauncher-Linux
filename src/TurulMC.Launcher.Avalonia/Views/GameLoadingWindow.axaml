@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TurulMC.Launcher.Avalonia.Views.GameLoadingWindow"
+        Title="Minecraft betöltése…"
+        Width="560" Height="520"
+        MinWidth="480" MinHeight="420"
+        Background="{StaticResource TurulBgBrush}"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26,22,26,20">
+
+        <!-- Fejléc: logó + név + idő -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="0,0,0,12">
+            <Image x:Name="LogoImage" Grid.Column="0" Width="48" Height="48"
+                   VerticalAlignment="Center" Stretch="Uniform"/>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <TextBlock x:Name="InstanceNameText" Text="Minecraft" FontSize="17" FontWeight="SemiBold"
+                           Foreground="{StaticResource TurulTextBrush}"/>
+                <TextBlock x:Name="DetailText" Text="" FontSize="12"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+            </StackPanel>
+            <TextBlock Grid.Column="2" x:Name="ElapsedText" Text="0:00" FontSize="12"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource TurulTextFaintBrush}"/>
+        </Grid>
+
+        <!-- Státusz -->
+        <Border Grid.Row="1" Background="{StaticResource TurulSurfaceBrush}"
+                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="StatusText" Text="Indítás…" FontSize="13" FontWeight="SemiBold"
+                           Foreground="{StaticResource TurulGoldBrush}" TextWrapping="Wrap"/>
+                <ProgressBar x:Name="LoadingBar" Minimum="0" Maximum="100" Value="0"
+                             Height="4" IsIndeterminate="True"
+                             Foreground="{StaticResource TurulGoldBrush}"
+                             Background="{StaticResource TurulBorderBrush}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Log -->
+        <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
+                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                CornerRadius="10" Padding="4" Margin="0,0,0,12">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" x:Name="LogCountText" Text="játéknapló" FontSize="10"
+                           Margin="12,8,12,4"
+                           Foreground="{StaticResource TurulTextFaintBrush}"/>
+                <ScrollViewer x:Name="LogScroller" Margin="4,0,4,4">
+                    <TextBlock x:Name="LogBox" FontSize="11" TextWrapping="Wrap"
+                               Margin="8,0,8,8" FontFamily="monospace"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Gombok -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button x:Name="HideButton" Content="Elrejtés" Click="OnHide"
+                    MinWidth="110" Padding="14,9" CornerRadius="6"
+                    Background="{StaticResource TurulSurface2Brush}"
+                    Foreground="{StaticResource TurulTextBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"/>
+            <Button x:Name="CloseButton" Content="Bezárás" Click="OnClose"
+                    IsVisible="False"
+                    MinWidth="110" Padding="14,9" CornerRadius="6" FontWeight="SemiBold"
+                    Background="{StaticResource TurulGoldBrush}"
+                    Foreground="{StaticResource TurulBgBrush}"
+                    BorderThickness="0"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

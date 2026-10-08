@@ -1,0 +1,14 @@
+TurulLauncher Version: 4.4.0
+
+[+]
+Copy to another Instance funkció
+🇭🇺 Magyar / 🇬🇧 English nyelvválasztás első indításkor
+Nyelvváltás a Beállításokban
+
+[*]
+A kiválasztott nyelv elmentődik
+Instance másolás előtt fájlszám és méret előnézet
+Fájlütközések kezelése: kérdezés / kihagyás / felülírás
+
+[-]
+Nincs

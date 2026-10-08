@@ -1,0 +1,6 @@
+TurulLauncher 4.3.8 - Mod install state
+
+- Modpack mods are cached with Modrinth project/version metadata.
+- Existing jars without cache are identified by SHA-512 against Modrinth once.
+- Search results expose installed state per active Instance.
+- Mod detail install button also respects installed state.

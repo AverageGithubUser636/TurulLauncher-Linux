@@ -1,0 +1,10 @@
+TurulLauncher 4.4.4 - Tray + themed preload splash
+
+- Real Windows notification-area (system tray) icon via NotifyIcon.
+- Native minimize button, close behavior and game-start hide can all route to tray.
+- Double click / left click tray icon restores the launcher; tray menu can restore or exit.
+- Existing legacy "minimize" setting is migrated at runtime to tray behavior.
+- Splash reads LauncherSettings before first render and uses the saved theme + language.
+- Native splash uses the exact themed Turul logo assets extracted from the launcher's theme set.
+- Splash stays top-most during hidden MainWindow/WebView2 preload to prevent startup flashing.
+- Progress is monotonic and cross-thread-safe; startup timeout fallback remains intact.

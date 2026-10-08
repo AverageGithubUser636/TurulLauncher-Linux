@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:TurulMC.Launcher.Avalonia.Views"
+        x:Class="TurulMC.Launcher.Avalonia.Views.ShellWindow"
+        Title="TurulLauncher"
+        Width="1180" Height="740"
+        MinWidth="940" MinHeight="600"
+        Background="{StaticResource TurulBgBrush}"
+        WindowStartupLocation="CenterScreen">
+
+    <!--
+        Mindhárom nézet állandó gyerek, és a kijelölés láthatósággal vált.
+        Egyszerűbb és stabilabb, mint DataTemplate-tel VM-eket generálni:
+        minden nézet a saját VM-ét használja, egyszer inicialálódik, és nem
+        keletkezik kidobandó „árnyék" VM a navigációban.
+    -->
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- Bal oldali navigáció -->
+        <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
+                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="16,18,16,8" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="9">
+                        <Image x:Name="LogoImage" Width="26" Height="26"
+                               Stretch="UniformToFill"/>
+                        <TextBlock Text="TURULLAUNCHER" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TurulTextBrush}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding VersionText}" FontSize="10"
+                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,14" Spacing="6">
+                    <TextBlock Text="{Binding DataRootText}" FontSize="9"
+                               Foreground="{StaticResource TurulTextFaintBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <ListBox x:Name="NavList" Classes="nav" Margin="8,6"
+                         Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding NavItems}"
+                         SelectedIndex="{Binding SelectedNavIndex}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="11" Margin="4,7">
+                                <TextBlock Text="{Binding Icon}" FontSize="13" Width="18"
+                                           Foreground="{StaticResource TurulGoldBrush}"/>
+                                <TextBlock Text="{Binding Label}" FontSize="13"
+                                           Foreground="{StaticResource TurulTextBrush}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Jobb oldali tartalom -->
+        <Panel Grid.Column="1">
+            <views:HomeView x:Name="HomePage" />
+            <views:ModsView x:Name="ModsPage" IsVisible="False" />
+            <views:ResourcePacksView x:Name="PacksPage" IsVisible="False" />
+            <views:ModpacksView x:Name="ModpacksPage" IsVisible="False" />
+            <views:ServersView x:Name="ServersPage" IsVisible="False" />
+            <views:JavaView x:Name="JavaPage" IsVisible="False" />
+            <views:SettingsView x:Name="SettingsPage" IsVisible="False" />
+            <views:DoctorView x:Name="DoctorPage" IsVisible="False" />
+        </Panel>
+
+    </Grid>
+</Window>

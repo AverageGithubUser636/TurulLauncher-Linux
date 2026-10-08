@@ -1,0 +1,6 @@
+4.3.6 hotfix
+- SettingsStorage concurrent save race fixed with serialized unique temp-file commits.
+- First-run completion no longer depends on noncritical UI resync.
+- Production WebView2 DevTools/context menus/browser accelerator keys disabled.
+- Public ZIP/installer excludes PDB files; local symbols are kept under publish\Symbols.
+- Validate-Release fails if any PDB leaks into the public ZIP.

@@ -1,0 +1,60 @@
+<Window
+    x:Class="TurulMC.Launcher.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="TurulLauncher">
+
+    <Grid Background="#08090B">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Native drag area: WebView2 cannot provide a reliable Windows caption drag region. -->
+        <Grid x:Name="TitleBar" Grid.Row="0" Visibility="Collapsed" Background="#0D0F12"
+              PointerPressed="TitleBar_PointerPressed"
+              DoubleTapped="TitleBar_DoubleTapped">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Padding="14,0" VerticalAlignment="Center" Spacing="8">
+                <Border Width="20" Height="20" CornerRadius="5" Background="#D4AF37">
+                    <TextBlock Text="T" FontSize="12" FontWeight="Bold" Foreground="#08090B"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="TURULLAUNCHER" FontSize="11" FontWeight="SemiBold" Foreground="#E8E6E3"
+                           CharacterSpacing="80" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TitleBarVersion" Text="…" FontSize="10" Foreground="#565A62" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0">
+                <Button x:Name="BtnMinimize" Content="&#xE921;" FontFamily="Segoe Fluent Icons"
+                        FontSize="10" Width="46" Height="40" Background="Transparent"
+                        Foreground="#9CA3AF" BorderThickness="0" Click="OnMinimizeClick"/>
+                <Button x:Name="BtnMaximize" Content="&#xE922;" FontFamily="Segoe Fluent Icons"
+                        FontSize="10" Width="46" Height="40" Background="Transparent"
+                        Foreground="#9CA3AF" BorderThickness="0" Click="OnMaximizeClick"/>
+                <Button x:Name="BtnClose" Content="&#xE8BB;" FontFamily="Segoe Fluent Icons"
+                        FontSize="10" Width="46" Height="40" Background="Transparent"
+                        Foreground="#9CA3AF" BorderThickness="0" Click="OnCloseClick"
+                        PointerEntered="OnCloseHover" PointerExited="OnCloseLeave"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="WebViewHost" Grid.Row="1">
+            <!-- WebView2 is intentionally created from C# after Window.Activate().
+                 Keeping it out of XAML prevents a WebView2/native runtime failure
+                 from crashing MainWindow.InitializeComponent with XamlParseException. -->
+            <Border x:Name="WebViewStatus" Background="#08090B">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14">
+                    <ProgressRing x:Name="WebViewSpinner" Width="28" Height="28" IsActive="True" Foreground="#D4AF37"/>
+                    <TextBlock x:Name="WebViewStatusText" Text="A TurulLauncher felület betöltése..."
+                               Foreground="#8A8D93" FontSize="13" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

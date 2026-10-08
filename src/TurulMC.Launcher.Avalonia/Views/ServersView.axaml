@@ -1,0 +1,136 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TurulMC.Launcher.Avalonia.Views.ServersView">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="26,22,26,20">
+
+        <!-- Fejléc -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
+            <TextBlock Text="Szerverek" FontSize="24" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulTextBrush}"/>
+            <TextBlock Text="Mentett szerverek — ping, hozzáadás, csatlakozás az aktív Instance-szal."
+                       FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, 300" ColumnSpacing="14">
+
+            <!-- Szerver lista -->
+            <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    CornerRadius="10" Padding="6">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="8,6,8,4">
+                        <Button Content="Frissítés" Click="OnPingAll"
+                                Background="{StaticResource TurulSurface2Brush}"
+                                Foreground="{StaticResource TurulTextBrush}"
+                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        <Button Content="Csatlakozás" Click="OnConnect"
+                                Background="{StaticResource TurulGoldBrush}"
+                                Foreground="{StaticResource TurulBgBrush}"
+                                BorderThickness="0" Padding="12,7" CornerRadius="6"
+                                FontSize="12" FontWeight="SemiBold"/>
+                        <Button Content="Törlés" Click="OnDelete"
+                                Background="Transparent"
+                                Foreground="{StaticResource TurulDangerBrush}"
+                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                Padding="12,7" CornerRadius="6" FontSize="12"/>
+                    </StackPanel>
+
+                    <!-- Üres állapot -->
+                    <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Spacing="8" Margin="20,28" MaxWidth="440">
+                        <Border Width="54" Height="54" CornerRadius="27"
+                                HorizontalAlignment="Center"
+                                Background="{StaticResource TurulSurface2Brush}"
+                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                            <TextBlock Text="●" FontSize="22" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TurulGoldBrush}"/>
+                        </Border>
+                        <TextBlock Text="Nincs mentett szerver" FontSize="16" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   Foreground="{StaticResource TurulTextBrush}"/>
+                        <TextBlock Text="Jobb oldalt add meg a nevet és a címet, majd kattints a Hozzáadás gombra."
+                                   FontSize="13" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                    </StackPanel>
+
+                    <ListBox x:Name="ServerList" Background="Transparent" BorderThickness="0"
+                             ItemsSource="{Binding Servers}"
+                             SelectedItem="{Binding SelectedServer, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,7" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="12" Height="12" CornerRadius="6"
+                                            VerticalAlignment="Center"
+                                            Background="{Binding DotBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource TurulTextBrush}"/>
+                                        <TextBlock Text="{Binding Address}" FontSize="11"
+                                                   Foreground="{StaticResource TurulTextFaintBrush}"/>
+                                        <TextBlock Text="{Binding DetailText}" FontSize="11"
+                                                   Foreground="{StaticResource TurulTextDimBrush}"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{Binding PingText}" FontSize="11"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                                </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- Hozzáadás panel -->
+            <Border Grid.Column="1" Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    CornerRadius="10" Padding="20,18" VerticalAlignment="Top">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Új szerver" FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource TurulTextBrush}"/>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Név" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <TextBox Text="{Binding NewName, Mode=TwoWay}" Watermark="pl. Kedvenc szerver"
+                                 MaxLength="48"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Cím (host)" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <TextBox Text="{Binding NewHost, Mode=TwoWay}" Watermark="pl. mc.example.hu"
+                                 MaxLength="253"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Port" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <NumericUpDown Value="{Binding NewPort, Mode=TwoWay}"
+                                       Minimum="1" Maximum="65535" Increment="1"
+                                       FormatString="0"/>
+                    </StackPanel>
+                    <Button Content="Hozzáadás" Click="OnAdd"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            Background="{StaticResource TurulGoldBrush}"
+                            Foreground="{StaticResource TurulBgBrush}"
+                            BorderThickness="0" Padding="12,9" CornerRadius="6"
+                            FontSize="13" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                    <TextBlock Text="{Binding AddHint}" FontSize="11" TextWrapping="Wrap"
+                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Alsó sáv -->
+        <StackPanel Grid.Row="2" Spacing="3" Margin="0,12,0,0">
+            <TextBlock Text="{Binding StatusText}" FontSize="12"
+                       Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
+            <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
+                         Height="4" IsVisible="{Binding ProgressVisible}"
+                         Foreground="{StaticResource TurulGoldBrush}"
+                         Background="{StaticResource TurulBorderBrush}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

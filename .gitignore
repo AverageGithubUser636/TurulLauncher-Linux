@@ -1,0 +1,48 @@
+# .NET build-termékek
+bin/
+obj/
+out/
+publish/
+*.user
+*.suo
+.vs/
+*.userprefs
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+
+# Publikálás (a publishall.sh állítja elő — nem verziózott)
+dist/
+*.tar.gz
+*.zip
+!**/Assets/**/*.zip
+
+# Naplók és helyi adatok
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Szerkesztők / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OpenCode munkakönyvtár
+.opencode/
+
+# .NET SDK / hoszt maradék
+.dsh-*/
+.dotnet/
+aspNetCertificateSentinel
+target/
+
+# Teszt-lefedettség
+TestResults/
+coverage*/
+*.coverage
+*.coveragexml

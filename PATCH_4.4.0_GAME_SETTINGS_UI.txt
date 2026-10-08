@@ -1,0 +1,13 @@
+TurulLauncher 4.4.0
+
+- Instance copy modal viewport-safe, internal scrolling, sticky close/footer.
+- Modpack version list no longer overlays following UI cards.
+- Game > Launch settings: Minecraft version, modpack version, RAM slider.
+- Minecraft/modpack version bidirectional sync.
+- Compatibility checks for Fabric, Modrinth mods, resource packs and selected modpack version.
+- In-place Modrinth modpack version switching with staging and managed-file cleanup.
+- Existing manually copied Fabric mods can show embedded JAR icons.
+- World icon.png shown in Library.
+- Duplicate modpack instance names use -2, -3, ... suffixes.
+- Installed mod delete button made explicit.
+- Downloads remain based on .NET HttpClient/LauncherHttpClient, not aria2c.

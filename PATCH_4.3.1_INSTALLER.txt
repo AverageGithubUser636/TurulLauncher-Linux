@@ -1,0 +1,14 @@
+TurulLauncher 4.3.3 - Installer infrastructure
+
+[+]
+Inno Setup alapú TurulLauncher installer
+Start menü parancsikon
+Opcionális asztali parancsikon
+Uninstaller / Windows Apps listás bejegyzés
+Magyar + angol telepítő
+publish-all.cmd teljes release buildhez
+
+[*]
+Launcher, Updater és CLI publish self-contained lett
+Telepítéshez nem szükséges külön .NET runtime
+Felhasználói adatok (%APPDATA%\TurulMC) telepítés/frissítés/eltávolítás során megmaradnak

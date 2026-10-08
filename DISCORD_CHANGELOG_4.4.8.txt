@@ -1,0 +1,19 @@
+TurulLauncher Version: 4.4.8
+
+[+]
+Szerverek fül végre a menüben: mentett szerverek listája, hozzáadás és törlés
+Szerverkártyákon élő státusz (online játékosszám, verzió) és egykattintásos csatlakozás
+Profiloldalon jelzi, ha sérült névtelen bejegyzést ugrott át
+
+[*]
+Szerverek oldal dinamikusan tölt a servers.json-ból, státuszlekérés nem blokkolja a listát
+SavedServer bővítve: type, provider, mcVersion, ramMb, dirId, eulaAccepted mezők is megmaradnak
+Új szerver mentése név + cím + port űrlappal, mentés után a lista azonnal frissül
+Csatlakozás a mentett porttal megy át a játéknak (--server/--port)
+Navigáláskor és UI-szinkronkor is újratölt a Szerverek oldal
+Verziók 4.4.8-ra szinkronizálva (kód, UI-placeholderek, publish scriptek, installer)
+
+[-]
+Elérhetetlen Szerverek oldal (létezett, de nem volt menügombja)
+Extra szervermezők elvesztése mentéskor
+Néma szűrés a Profilok oldalon

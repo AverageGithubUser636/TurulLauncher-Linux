@@ -1,0 +1,12 @@
+TurulLauncher 4.4.0 TEST
+
+1. publish-all.cmd
+2. publish\GUI\TurulMC.Launcher.exe
+3. Instance másolás modal: 1366x768-on X mindig látszik, belső scroll működik.
+4. Modpack verziólista: nem lóg át a következő kártyára, belül scrollozható.
+5. Játék > Indítási beállítások: Minecraft verzió, modpack verzió, RAM slider.
+6. Modpack verzió váltáskor Minecraft verzió szinkronizálódik.
+7. Nem kompatibilis mod/verzió esetén mentés blokkolva és hiba kiírva.
+8. Kézzel bemásolt Fabric mod: Telepítve lista ikon + Törlés gomb.
+9. Világ: saves/<world>/icon.png megjelenik a Könyvtárban.
+10. Ugyanaz a modpack kétszer: név, név-2, név-3.

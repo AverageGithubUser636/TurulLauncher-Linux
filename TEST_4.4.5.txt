@@ -1,0 +1,33 @@
+TurulLauncher 4.4.5 — ellenőrzések
+
+Sikeres:
+- .NET 10 Core és Infrastructure fordítás.
+- A meglévő xUnit tesztcsomag: 53 sikeres, 0 hibás, 0 kihagyott teszt.
+- 21 célzott, ténylegesen futtatott C# ellenőrzés az új recovery tesztprogrammal:
+  mentés/visszaállítás/visszavonás, világok megőrzése, üres kezdeti állapot,
+  5 pontos megőrzés, legrégebbi pont visszaállítása, sérült/hiányos mentés,
+  más Instance és útvonal-manipuláció tiltása, megszakadt művelet visszagörgetése,
+  befejezett művelet takarítása, elhagyott staging, 9 hibatípus és ismeretlen ok,
+  korábbi session naplóinak kizárása, symlink elutasítása.
+- Az új MainWindow.Recovery.cs külön C# fordítása és integrációs próba teszt-
+  helyettesítőkkel: automatikus mentés, futó játék tiltása, megerősítés,
+  verzióellenőrzés, visszaállítás, hibaelemzés tárolása és exit code.
+- Chromium alapú UI teszt szimulált WebView2 backenddel: megnyitás, megerősítés,
+  mégse/Escape, hiba és újrapróbálás, siker, másik Instance crash jelentése,
+  inkompatibilis és üres lista, HU/EN, bezárt ablakhoz visszaérkező válasz,
+  HTML-ként nem végrehajtott naplószöveg. Nincs oldal-JavaScript hiba.
+- 1366x768, 900x600 és 480x600 dialog elrendezés; képi ellenőrzés.
+
+Korlát:
+- Teljes Windows/WinUI build és valódi Minecraft futás nem történt meg.
+  A Linuxos build a Windows XamlCompiler.exe indításánál áll meg
+  (Exec format error), ezért kész Windows EXE nem szerepel a csomagban.
+
+Windowsos végső próba:
+1. Futtasd a test-recovery.cmd, majd az update.cmd fájlt.
+2. Teszt Instance-en telepíts/kapcsolj ki egy modot. Nézd meg az új mentést.
+3. Változtass a modkonfiguráción, állítsd vissza a korábbi pontot, majd a
+   visszaállítás előtti állapotot. A világmentések maradjanak változatlanok.
+4. Futó Minecraft mellett a modmódosítás és visszaállítás legyen tiltott.
+5. Hibás modösszeállítással ellenőrizd az indítási hibamagyarázót, majd egy
+   játék közbeni összeomlás után a Játék > Hibamagyarázó gombot.

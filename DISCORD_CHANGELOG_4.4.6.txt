@@ -1,0 +1,26 @@
+TurulLauncher Version: 4.4.6
+
+[+]
+Mentett szerverek: lista, hozzáadás és törlés CLI-ből és GUI-ból (servers.json)
+Szerver-csatlakozás javítva: a --server/--port most tényleg átmegy a játéknak
+Saját szerver hosting: Paper/Purpur/Vanilla jar telepítés hash-ellenőrzéssel
+Saját szerver indítás/leállítás, log és mappa-nyitás, EULA-kapuval
+Modpack CLI: manifest-hash, export, import (kötelező hash, zip-slip védelem)
+Single-instance: a 2. indítás már nem nyit új ablakot, hanem előtérbe hozza a futót
+
+[*]
+Kötelező SHA-ellenőrzés minden letöltésnél: hiba esetén törlés + egyértelmű hiba
+Csak HTTPS manifest és letöltés (localhost/file csak DEBUG buildben)
+Modrinth letöltés csak cdn.modrinth.com-ról, 512 MB cap, max 25 függőség-mélység
+Java-útvonal szigorítva: csak létező java.exe/javaw.exe, argumentum-injektálás zárva
+Tiltott JVM-flagok (javaagent, agentlib, bootclasspath) elutasítva
+Naplókban a tokenek maszkolva (***), DevTools csak DEBUG-ban érhető el
+Profil-műveletek zárolva, beállítás-mentés versenyhelyzet ellen védve
+Java legacy: csak offline auth, cert-ignore kivéve, UTF-8 credential-fájl
+AllowUnsafeBlocks kivéve, verziók 4.4.6-ra szinkronizálva
+
+[-]
+HTTP/file manifest release buildben
+Hash nélküli modpack-szinkron és -export
+Második launcher-példány párhuzamos futása
+Mojang-auth a legacy Java-kódban

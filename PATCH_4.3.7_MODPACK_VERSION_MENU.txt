@@ -1,0 +1,7 @@
+TurulLauncher 4.3.7
+
+- Native HTML select helyett saját dark dropdown.
+- Max 310px magas, belső scrollbar.
+- Stable / Beta / Alpha csoportok és badge-ek.
+- A Modrinth version_type mező alapján automatikus besorolás.
+- Kiválasztott verzió külön triggerben látszik MC verzióval.

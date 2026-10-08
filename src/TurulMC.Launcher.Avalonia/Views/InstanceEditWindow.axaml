@@ -1,0 +1,113 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TurulMC.Launcher.Avalonia.Views.InstanceEditWindow"
+        Title="Instance szerkesztése"
+        Width="520" Height="640"
+        MinWidth="460" MinHeight="560"
+        Background="{StaticResource TurulBgBrush}"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollViewer Grid.Row="0">
+            <StackPanel Spacing="14" Margin="24,20">
+                <TextBlock Text="Instance szerkesztése" FontSize="18" FontWeight="SemiBold"
+                           Foreground="{StaticResource TurulTextBrush}"/>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Név" FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <TextBox Text="{Binding Name, Mode=TwoWay}" MaxLength="64"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Minecraft verzió" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <TextBox Text="{Binding MinecraftVersion, Mode=TwoWay}" MaxLength="32"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Betöltő (loader)" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <ComboBox ItemsSource="{Binding LoaderOptions}"
+                                  SelectedItem="{Binding Loader, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Loader verzió (üres = ajánlott)" FontSize="12"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <TextBox Text="{Binding LoaderVersion, Mode=TwoWay}" MaxLength="64"
+                             Watermark="pl. 0.16.14"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="RAM (MB)" FontSize="12"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <NumericUpDown Value="{Binding RamMb, Mode=TwoWay}"
+                                   Minimum="1024" Maximum="65536" Increment="512"
+                                   FormatString="0"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Java útvonal (üres = automatikus)" FontSize="12"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <TextBox Grid.Column="0" Text="{Binding JavaPath, Mode=TwoWay}"
+                                 Watermark="/usr/lib/jvm/…/bin/java"/>
+                        <Button Grid.Column="1" Content="…" Click="OnPickJava"
+                                MinWidth="44" Padding="10,7"/>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Extra JVM argumentumok" FontSize="12"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <TextBox Text="{Binding JvmArgs, Mode=TwoWay}"
+                             Watermark="-XX:+UseG1GC"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Ablak szélesség (0 = alap)" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <NumericUpDown Value="{Binding WindowWidth, Mode=TwoWay}"
+                                       Minimum="0" Maximum="7680" Increment="10"
+                                       FormatString="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Ablak magasság (0 = alap)" FontSize="12"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                        <NumericUpDown Value="{Binding WindowHeight, Mode=TwoWay}"
+                                       Minimum="0" Maximum="4320" Increment="10"
+                                       FormatString="0"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Megjegyzés" FontSize="12"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <TextBox Text="{Binding Notes, Mode=TwoWay}" MaxLength="512"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding ErrorText}" FontSize="12" TextWrapping="Wrap"
+                           IsVisible="{Binding HasError}"
+                           Foreground="{StaticResource TurulDangerBrush}"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                    Spacing="10" Margin="24,12,24,18">
+            <Button Content="Mégse" Click="OnCancel" MinWidth="110"
+                    Padding="14,9" CornerRadius="6"
+                    Background="{StaticResource TurulSurface2Brush}"
+                    Foreground="{StaticResource TurulTextBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"/>
+            <Button Content="Mentés" Click="OnSave" MinWidth="110"
+                    Padding="14,9" CornerRadius="6" FontWeight="SemiBold"
+                    Background="{StaticResource TurulGoldBrush}"
+                    Foreground="{StaticResource TurulBgBrush}"
+                    BorderThickness="0"/>
+        </StackPanel>
+    </Grid>
+</Window>

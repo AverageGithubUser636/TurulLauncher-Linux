@@ -1,0 +1,57 @@
+{
+  "id": "turulmc-dev",
+  "version": "1.0.0-dev",
+  "minecraftVersion": "26.1.2",
+  "loader": "fabric",
+  "loaderVersion": "0.19.3",
+  "files": [
+    {
+      "path": "mods/fabric-api.jar",
+      "url": "http://localhost:8080/mods/fabric-api.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "mods/sodium.jar",
+      "url": "http://localhost:8080/mods/sodium.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "mods/iris.jar",
+      "url": "http://localhost:8080/mods/iris.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "mods/lithium.jar",
+      "url": "http://localhost:8080/mods/lithium.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "mods/starlight.jar",
+      "url": "http://localhost:8080/mods/starlight.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "mods/turulcore.jar",
+      "url": "http://localhost:8080/mods/turulcore.jar",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "config/turulcore.toml",
+      "url": "http://localhost:8080/config/turulcore.toml",
+      "sha256": "",
+      "size": 0
+    },
+    {
+      "path": "config/sodium-options.txt",
+      "url": "http://localhost:8080/config/sodium-options.txt",
+      "sha256": "",
+      "size": 0
+    }
+  ]
+}

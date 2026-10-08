@@ -1,0 +1,10 @@
+TurulLauncher 4.3.3 - Build Fix
+
+Fixed .NET 9/10 WinForms WFO1000 analyzer errors in TurulMC.Updater:
+- SpinnerControl.Logo marked DesignerSerializationVisibility.Hidden
+- SpinnerControl.Paused marked DesignerSerializationVisibility.Hidden
+- SmoothProgressBar.Value marked DesignerSerializationVisibility.Hidden
+- FlatWindowButton.IsClose marked DesignerSerializationVisibility.Hidden
+- Removed unused UpdaterForm._installStarted field/assignment (CS0414)
+
+No WFO1000 suppression was added; the properties are explicitly configured instead.

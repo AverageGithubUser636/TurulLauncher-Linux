@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>TurulMC.Updater</AssemblyName>
+    <RootNamespace>TurulMC.Updater</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <!-- Ne csomagoljon ki natív függőségeket a %TEMP%-be indulásnál: pont ez a lépés
+         hasalt el "Access to the path '...\Temp\<random>' is denied" hibával olyan gépeken,
+         ahol a Temp írásvédett/tele van, vagy egy vírusirtó blokkolja. A bundle-ből
+         memóriából betöltve nem kell ideiglenes fájl. -->
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Assets\turullauncher.ico</ApplicationIcon>
+    <Version>4.6.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\turul-logo.png" />
+  </ItemGroup>
+</Project>

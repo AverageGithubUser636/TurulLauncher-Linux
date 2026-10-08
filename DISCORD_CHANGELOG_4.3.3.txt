@@ -1,0 +1,15 @@
+TurulLauncher Version: 4.3.3
+
+[+]
+UI Scaling beállítás és mentés
+Új indítási Splash Screen
+Minecraft letöltési progress (% / MB / MB/s)
+Frissítések keresése gomb a Beállításokban
+
+[*]
+TurulLauncher ikon javítva
+Első indítási overlay javítva
+Scaling görgővel is állítható
+
+[-]
+Nincs

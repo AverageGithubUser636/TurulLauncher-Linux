@@ -1,0 +1,147 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="using:TurulMC.Launcher.Avalonia.Views"
+             x:Class="TurulMC.Launcher.Avalonia.App"
+             RequestedThemeVariant="Dark">
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- ============================================================
+             TurulLauncher márkastílus.
+             A Fluent alapértelmezett akcentusa kék; itt felülírjuk aranyra,
+             hogy a felület egységes legyen a Windows-os verzió HTML UI-jával.
+             ============================================================ -->
+
+        <!-- Kártya -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource TurulSurface2Brush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="20,18" />
+        </Style>
+
+        <!-- Gombok -->
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="Inter" />
+        </Style>
+
+        <Style Selector="Button.accent /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="Foreground" Value="#08090B" />
+        </Style>
+
+        <Style Selector="Button.ghost /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource TurulSurface2Brush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TurulTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulBorderBrush}" />
+        </Style>
+
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.88" />
+        </Style>
+
+        <!-- Szöveges mezők -->
+        <Style Selector="TextBox">
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="10,7" />
+        </Style>
+
+        <!-- Lista: egységes sötét háttér, ne villanjon fehérre. -->
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <!--
+            Kijelölés / húzás ARANYRA — MINDEN listára (nem csak a navigációra).
+            A Fluent alapértelmezett kijelölése kék, ami teljesen kilógott a
+            márkából: ez látszott az instance lista kék során is.
+        -->
+        <Style Selector="ListBox > ListBoxItem">
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="Foreground" Value="{DynamicResource TurulTextBrush}" />
+        </Style>
+
+        <Style Selector="ListBox > ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource TurulSurface2Brush}" />
+        </Style>
+
+        <Style Selector="ListBox > ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource TurulSelectBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="ListBox > ListBoxItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+
+        <!-- A navigáció extra belső ritmusa. -->
+        <Style Selector="ListBox.nav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.nav > ListBoxItem">
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+
+        <!-- Checkbox: arany jelölő, sötét pipa.
+             A Fluent 11.3 sablonrészei: PART_Border (a teljes sor kerete —
+             NEM a kis doboz, ezért azt nem színezzük), NormalRectangle (a kis
+             színes doboz) és CheckGlyph (a pipa). A régi OuterBorder név nem
+             létezik, ezért maradt kék a jelölő. -->
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TurulTextDimBrush}" />
+        </Style>
+
+        <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+
+        <Style Selector="CheckBox:checked /template/ Path#CheckGlyph">
+            <Setter Property="Fill" Value="#08090B" />
+        </Style>
+
+        <!-- Fókuszgyűrű arany. -->
+        <Style Selector=":focus /template/ Border#FocusBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+    </Application.Styles>
+
+    <Application.Resources>
+        <!-- TurulLauncher márka-paletta (a Windows-os HTML UI-ból átvéve). -->
+        <Color x:Key="TurulBg">#08090B</Color>
+        <Color x:Key="TurulSurface">#0D0F12</Color>
+        <Color x:Key="TurulSurface2">#14171C</Color>
+        <Color x:Key="TurulBorder">#1E2126</Color>
+        <Color x:Key="TurulGold">#D4AF37</Color>
+        <Color x:Key="TurulGoldDim">#8A7322</Color>
+        <Color x:Key="TurulText">#E8E6E3</Color>
+        <Color x:Key="TurulTextDim">#8A8D93</Color>
+        <Color x:Key="TurulTextFaint">#565A62</Color>
+        <Color x:Key="TurulDanger">#E5484D</Color>
+        <Color x:Key="TurulOk">#46A758</Color>
+
+        <SolidColorBrush x:Key="TurulBgBrush" Color="{StaticResource TurulBg}" />
+        <SolidColorBrush x:Key="TurulSurfaceBrush" Color="{StaticResource TurulSurface}" />
+        <SolidColorBrush x:Key="TurulSurface2Brush" Color="{StaticResource TurulSurface2}" />
+        <SolidColorBrush x:Key="TurulBorderBrush" Color="{StaticResource TurulBorder}" />
+        <SolidColorBrush x:Key="TurulGoldBrush" Color="{StaticResource TurulGold}" />
+        <SolidColorBrush x:Key="TurulGoldDimBrush" Color="{StaticResource TurulGoldDim}" />
+        <SolidColorBrush x:Key="TurulTextBrush" Color="{StaticResource TurulText}" />
+        <SolidColorBrush x:Key="TurulTextDimBrush" Color="{StaticResource TurulTextDim}" />
+        <SolidColorBrush x:Key="TurulTextFaintBrush" Color="{StaticResource TurulTextFaint}" />
+        <SolidColorBrush x:Key="TurulDangerBrush" Color="{StaticResource TurulDanger}" />
+        <SolidColorBrush x:Key="TurulOkBrush" Color="{StaticResource TurulOk}" />
+        <!-- Kijelölés-háttér: témánként változik (sárga: #241E0B). -->
+        <SolidColorBrush x:Key="TurulSelectBrush" Color="#241E0B" />
+
+        <views:IconPathToBitmapConverter x:Key="IconConverter" />
+    </Application.Resources>
+
+</Application>

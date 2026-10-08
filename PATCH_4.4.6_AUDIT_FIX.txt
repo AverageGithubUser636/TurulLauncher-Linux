@@ -1,0 +1,39 @@
+TurulLauncher 4.4.6 — audit-fix (biztonság + szerverek + single-instance)
+
+Használat:
+- CLI szerverek: servers.list, servers.add <név> <host> [port],
+  servers.remove <név|id>, server.connect <név|id|host> [port].
+- CLI modpack: manifest-hash <manifest.json>,
+  modpack.export <instanceDir> <out.mrpack>,
+  modpack.import <in.mrpack> <instanceDir>.
+- GUI bridge: servers.list/add/remove, checkServer, server.connect,
+  localserver.install/eula/start/stop/log/open (Szerverek-oldal dinamikusan köthető).
+- Saját szerver: külön mappa szerverenként (%APPDATA%\TurulMC\local-servers\).
+  Telepítéshez kötelező a sha256 hash; indulás előtt EULA-elfogadás kell.
+- Single-instance: csak a GUI-ra vonatkozik (mutex + wake event).
+  A CLI külön exe, azt nem blokkolja.
+
+Biztonság:
+- ModpackService.GetManifestAsync csak https:// (DEBUG-ban file/localhost ok).
+- Minden modpack/szerver/Modrinth fájl kötelező hash-sel (sha256/sha512);
+  hiány vagy eltérés = fájl törlése + kivétel, csendes továbbhaladás nincs.
+- PathSecurity.ResolveInsideRoot minden Core-útvonalon; mrpack import
+  zip-slip guarddal; törlések symlink (ReparsePoint) ellenőrzéssel.
+- LauncherSettingsValidator: javaPath csak létező java.exe/javaw.exe,
+  metakarakter és argumentum nélkül; jvmArgs denylist
+  (-agentlib, -agentpath, -javaagent, -Xbootclasspath, ;-elválasztók).
+- Modrinth: cdn.modrinth.com pin, 512 MB fájlcap, max 25 függőség-mélység.
+- Logger token-maszkolás (Core + Infrastructure); DevTools #if DEBUG.
+- LocalAuthenticationService lockolva (SemaphoreSlim).
+
+Java legacy (src/main):
+- AuthManager offline-only, Mojang-auth nélkül; credential-fájl UTF-8.
+- MinecraftProcess: cert-ignore flag kivéve, jvmArgs denylist.
+
+Fordítás:
+- Az eredeti .NET 10 / Windows WinUI projekt maradt, teljes forráscsomag.
+- update.cmd: build + tesztek + indítás, 4.4.6 verzióval.
+- publish.cmd / publish-all.cmd és server/update JSON-ok most nem frissültek;
+  a valódi csomag hash-ét továbbra is a publish folyamat generálja.
+- A server/manifest/manifest.json dev minta (üres hash, localhost);
+  a release validáció elutasítja, szerveroldali hash-generálás kell.

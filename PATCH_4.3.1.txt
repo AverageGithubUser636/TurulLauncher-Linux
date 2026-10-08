@@ -1,0 +1,6 @@
+TurulLauncher 4.3.3
+- Compact movable updater UI
+- Real update progress + Pause/Resume/Cancel/Log
+- Updater-owned resumable download
+- Screen/DPI responsive launcher window
+- Updater preview mode

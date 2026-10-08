@@ -1,0 +1,19 @@
+TurulLauncher 4.3.0 Auto Update
+
++ Automatic update check on startup
++ Stable / Beta channels
++ Manual update check in Settings
++ Changelog update modal
++ SHA-256 verified downloads
++ Separate TurulMC.Updater.exe
++ Rollback if file replacement fails
++ Safe ZIP extraction / path traversal protection
++ HTTPS TurulNetwork-only update packages
++ Manifest generator PowerShell tool
+
+Deploy:
+1. Run publish.cmd
+2. Upload publish/TurulLauncher-4.3.0.zip to launcher.turulnetwork.hu/releases/
+3. Run tools/Make-UpdateManifest.ps1 with the release ZIP
+4. Edit changelog in server/update/stable.json
+5. Upload stable.json to launcher.turulnetwork.hu/update/stable.json

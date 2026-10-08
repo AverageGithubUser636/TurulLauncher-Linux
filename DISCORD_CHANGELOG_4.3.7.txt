@@ -1,0 +1,14 @@
+TurulLauncher Version: 4.3.7
+
+[+]
+Saját modpack verzióválasztó menü
+Stable / Beta / Alpha kiadások külön csoportban
+Görgethető verziólista
+
+[*]
+Modpack verzióválasztó stílusa javítva
+Kiválasztott verzió megjelenítése átláthatóbb
+Hosszú verziólisták kezelése javítva
+
+[-]
+Nincs

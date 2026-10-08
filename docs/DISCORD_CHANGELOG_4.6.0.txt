@@ -1,0 +1,39 @@
+🩹 Javítva: „instances.json.tmp — Access denied” indítási hiba
+• Ha a launcher adatfájlja (egy összeomlás vagy vírusirtó miatt) írásvédett/foglalt volt, a launcher el sem indult. Mostantól minden mentés robusztus: egyedi temp fájl, írásvédett fájlok automatikus javítása, biztonsági másolat — és ha mégis hiba lenne, a launcher akkor is elindul, csak jelez.
+• Induláskor a launcher kitakarítja a régi, elárvult temp fájlokat.
+• A „második példány” indítása sem hibázik el, ha az előző launcher összeomlott.
+
+✨ Szebb felület
+• Splash képernyő: fázisjelzők (Beállítások → Instance-ok → Felület → Kész), forgó gyűrű a logó körül, finom fény a haladássávon.
+• Minecraft-betöltő ablak: látszik, hol tart (Java → fájlok → indítás → ablak), élő napló, közben hasznos tippek váltakoznak.
+• Updater: a launcher témaszínét követi, fázisjelző csík (Letöltés → Ellenőrzés → Telepítés → Kész), animált haladássáv, szebb naplópanel.
+
+🎮 TurulLauncher 4.6.0 — mod-verziók, másolás okosan, Smart Repair 2.0
+
+🧠 Smart Repair mostantól a MODOKAT is ellenőrzi
+• Nem csak a Minecraft fájlokat és a Fabric Loadert, hanem minden modot: támogatja-e az Instance verzióját.
+• Megtalálja a duplikált modokat (két verzió ugyanabból — a leggyakoribb összeomlás-ok), a régi Fabric Loadert igénylő modokat és a sérült JAR-okat.
+• Egy kattintás: inkompatibilis modok letiltása vagy karanténba helyezése (visszaállítható). Javítás előtt automatikus modmentés.
+
+⬆️ Modfrissítés a Modrinthről
+• Modok oldal → Frissítés: kilistázza, mely modoknak van a te verziódhoz illő új kiadása.
+• Soha nem ajánl fel régebbi verziót, mint ami telepítve van. Stabil kiadás előnyt élvez, de jelzi, ha csak béta van.
+• A letöltött fájl ellenőrzőösszeg-ellenőrzése kötelező, a régi mod biztonsági mentésbe kerül.
+
+📦 Instance-másolás verzióütközés-figyelmeztetéssel
+• Ha a két Instance verziója eltér (pl. 1.21.11 → 26.2), a launcher szól, és megmutatja, hány mod nem fog elindulni.
+• Választhatsz: átmásol + frissíti a modokat, vagy kihagyja az inkompatibiliseket, vagy mindent változatlanul másol (figyelmeztetéssel).
+• A másolás ablak kompaktabb lett: kisebb kijelzőn is mindig elérhető a „Másolás indítása" gomb, és ha valamit nem választottál ki, most megmondja, mit hiányol.
+
+⚙️ Instance szerkesztő: sokkal több mindent támogat
+• Fabric Loader verzió (üres = automatikus), Instance-szintű Java útvonal, extra JVM argumentumok, játékablak méret, megjegyzés.
+• Gyors gombok: Instance mappa, Modok mappa, Kompatibilitás ellenőrzése, Smart Repair.
+• A verziólista már a valódi Mojang lista (kiadások + pillanatképek) — a 26.2 azonnal választható, és a szerkesztő nem állítja vissza csendben a verziót.
+
+🛠️ Egyéb
+• Extra JVM argumentumok mostantól tényleg érvényesülnek minden Minecraft-verziónál.
+• Smart Repair kitakarítja a félbemaradt .part letöltéseket és az elavult mod-metaadatokat — de CSAK akkor, ha javítást kérsz (puszta ellenőrzésnél nem nyúl a fájljaidhoz).
+• Ha a cél Instance-ban már újabb verzió van egy modból, a frissítés nem lép vissza, és a duplikált modokat biztonsági mentésbe teszi.
+• Az élő letöltések (Modrinth, Adoptium) éles tesztje még hátravan — jelezz, ha valami akad!
+
+🔍 Ezt a kört egy független ellenőrzés is átnézte (135 saját teszt): egy HIGH és hat MEDIUM hibát talált, mindet javítottuk (terv/telepítés ellentmondás, visszalépés-védelem, ellenőrzés közbeni törlés, cél-Instance ütközések, határesetek).

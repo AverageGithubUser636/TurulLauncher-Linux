@@ -1,0 +1,16 @@
+TurulLauncher 4.3.3 - UI / Launch Progress update
+
+[+]
+- Rendes TurulLauncher app/shortcut ikon
+- Indulasi splash screen
+- Elso inditasnal UI scaling valaszto
+- Beallitasokban lathato Frissitesek keresese gomb
+- Minecraft letoltesi progress: %, MB, MB/s, fajl es fajlszam
+
+[*]
+- UI scale 75-150% kozott allithato es mentodik
+- A scale slideren gorgovel, illetve Ctrl+gorgovel is allithato
+- Elso inditas Kesz, mehet! utan rendesen bezar az onboarding es a fooldal jon be
+- First-run/tutorial overlay meretezesi hiba javitva
+- GitHub release repo fixen AverageGithubUser636/TurulLauncher-Releases
+- Release validator most a .PRI es app ikon fajlt is ellenorzi
