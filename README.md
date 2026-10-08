@@ -1,81 +1,84 @@
 # TurulLauncher for Linux 🐦
 
-Natív Linux Minecraft-launcher (C# + Avalonia) — a Windowsos TurulLauncher testvére, nem portja: saját `1.0.0`-tól induló verziószámozással.
+Native Linux Minecraft launcher (C# + Avalonia) — sibling of the Windows
+TurulLauncher, not a port: independent versioning starting at `1.0.0`.
 
-## Telepítés (2 perc)
+*Magyarul: [README.hu.md](README.hu.md)*
 
-**A) AppImage — ajánlott** (egyetlen fájl):
+## Install (2 minutes)
+
+**A) AppImage — recommended** (single file):
 ```bash
 chmod +x TurulLauncher-Linux-*.AppImage
 ./TurulLauncher-Linux-*.AppImage
-# Menübe (Super-gomb → TurulLauncher):
+# Add to menu (Super key → TurulLauncher):
 ./install-appimage.sh TurulLauncher-Linux-*.AppImage
 ```
 
-**B) Tarball — klasszikus**:
+**B) Tarball — classic**:
 ```bash
 tar xzf TurulLauncher-Linux-*.tar.gz
-cd TurulLauncher-Linux-*/ && sudo ./install.sh   # vagy: ./install.sh --user
+cd TurulLauncher-Linux-*/ && sudo ./install.sh   # or: ./install.sh --user
 ```
 
-Követelmény: 64 bites Linux — sem .NET, sem Java nem kell előre
-(self-contained csomag; a Java-t a launcher intézi).
-Menübejegyzés minden disztrón működik (GNOME, KDE, XFCE, …).
+Requirements: 64-bit Linux — no .NET, no Java needed up front
+(self-contained package; the launcher handles Java).
+Menu entry works on every distro (GNOME, KDE, XFCE, …).
 
-## Funkciók
+## Features
 
-| Terület | Mit tud |
+| Area | What it does |
 |---|---|
-| 🎮 Játék | Instance-ok, Fabric/vanilla indítás, világ/RAM/Java instance-onként |
-| 🧩 Modok | ki/bekapcsolás, fájl-hozzáadás, **Modrinth-böngészés** (függőségekkel!) |
-| 🗺 Textúrák | resource pack lista, `options.txt`-alapú kapcsolás, Modrinth |
-| 📦 Modpackok | Modrinth-böngészés, `.mrpack` import/export új Instance-ba |
-| 🌐 Szerverek | mentett szerverek, élő ping, egykattintásos csatlakozás |
-| ☕ Java | észlelt runtime-ok, Temurin-telepítés, ajánlás az Instance-hoz |
-| 🎨 Témák | 5 színséma (arany/zöld/piros/lila/égszín) + Turul-logók |
-| ⚕ Doctor | 17 ellenőrzés, support-csomag |
-| ⬆ Frissítés | automatikus ellenőrzés + egykattintásos telepítés (hordozható módban) |
+| 🎮 Play | Instances, Fabric/vanilla launch, per-instance world/RAM/Java |
+| 🧩 Mods | enable/disable, add from file, **Modrinth browser** (with dependencies!) |
+| 🗺 Textures | resource pack list, `options.txt`-based toggling, Modrinth |
+| 📦 Modpacks | Modrinth browser, `.mrpack` import/export into new instances |
+| 🌐 Servers | saved servers, live ping, one-click join |
+| ☕ Java | detected runtimes, Temurin install, per-instance recommendation |
+| 🎨 Themes | 5 color schemes (gold/green/red/purple/sky) + Turul logos |
+| ⚕ Doctor | 17 checks, support bundle |
+| 🔄 Update | automatic check + one-click install (in portable mode) |
 
-## Adatok (XDG)
+## Data (XDG)
 
 ```
-~/.local/share/TurulMC/   instance-ok, modok, beállítások, logok, java/
-~/.config/...             NEM használjuk (a világok nem configok)
+~/.local/share/TurulMC/   instances, mods, settings, logs, java/
+~/.config/...             NOT used (worlds are not configs)
 ```
 
-## Frissítés
+## Updates
 
-A launcher induláskor ellenőrzi a
-`turulnetwork.hu/launcher/linux/update/stable.json`-t.
-Hordozható módban (tarball-telepítés, AppImage) egy kattintással telepít
-(SHA-256 ellenőrzéssel); csomagos telepítésnél a letöltési oldalt nyitja meg.
+On startup the launcher checks
+`turulnetwork.hu/launcher/linux/update/stable.json`.
+In portable mode (tarball install, AppImage) it installs in one click
+(with SHA-256 verification); with packaged installs it opens the download page.
 
-## Forrásból
+## From source
 
 ```bash
-dotnet run --project src/TurulMC.Launcher.Avalonia   # futtatás
-./publishall.sh --version 1.1.0 --github <neved>     # kiadás-gyártás
+dotnet run --project src/TurulMC.Launcher.Avalonia   # run
+./publishall.sh --version 1.1.0 --github <name>      # build a release
 ./upload-github-repo.sh --version 1.1.0              # GitHub release
 ```
 
-Tesztek: `dotnet test tests/TurulMC.Core.Tests` + a két smoke-projekt
-(összesen 165+ ellenőrzés, hálózat nélkül).
+Tests: `dotnet test tests/TurulMC.Core.Tests` plus the two smoke projects
+(165+ checks total, no network needed).
 
-## Hibaelhárítás
+## Troubleshooting
 
-- **Nem indul a játék?** Doctor lap → Futtatás (Java, mappa, jogok, hálózat).
-- **Fekete/kék valami?** Téma + `~/.local/share/TurulMC/logs/startup-*.log`.
-- **Összeomlott a játék?** A betöltőfigyelő nyitva marad a napló-farokkal.
-- **Tiszta lap?** Töröld az `instances/`-t (a mentéseid instance-onként vannak!).
+- **Game won't start?** Doctor tab → Run (Java, folders, permissions, network).
+- **Something looks off?** Themes + `~/.local/share/TurulMC/logs/startup-*.log`.
+- **Game crashed?** The loading monitor stays open with the log tail.
+- **Clean slate?** Delete `instances/` (your saves live per-instance!).
 
-## Különbségek a Windows-verzióhoz képest
+## Differences from the Windows version
 
-- Nincs WebView2: natív Avalonia-felület (gyorsabb, stabilabb).
-- Nincs külső `Updater.exe`: a launcher önmagát frissíti (vagy jelez).
-- Nincs tálca-ikon (Linuxon `minimize` a megfelelője).
-- Adatkönyvtár XDG-helyen, nem `%APPDATA%`-ban.
+- No WebView2: native Avalonia UI (faster, more stable).
+- No external `Updater.exe`: the launcher updates itself (or notifies).
+- No tray icon (on Linux `minimize` is the equivalent).
+- XDG data directory instead of `%APPDATA%`.
 
-## Licenc
+## License
 
-Minden jog fenntartva © Turul Network. A kód olvasható, de felhasználási
-engedélyt külön megállapodás ad (ha nyílt licencet szeretnél, nyiss egy issue-t).
+All rights reserved © Turul Network. The code is readable, but usage
+requires a separate agreement (open an issue if you want an open license).
