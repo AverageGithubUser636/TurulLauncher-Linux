@@ -50,7 +50,7 @@ cd "$REPO_ROOT"
 HAVE_GH=0
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then HAVE_GH=1; fi
 if [[ "$HAVE_GH" -eq 0 && -z "$TOKEN" ]]; then
-  echo "HIBA: se `gh` bejelentkezés, se GITHUB_TOKEN."
+  echo "HIBA: se gh-bejelentkezés, se GITHUB_TOKEN."
   echo "  Választás:"
   echo "    A) Telepítsd a gh-t és lépj be:  sudo pacman -S github-cli && gh auth login"
   echo "    B) Hozz létre classic PAT-et (repo scope): https://github.com/settings/tokens"
