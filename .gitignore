@@ -1,6 +1,8 @@
 # .NET build-termékek
 bin/
 obj/
+*.xbf
+bin-fixed*
 out/
 publish/
 *.user
