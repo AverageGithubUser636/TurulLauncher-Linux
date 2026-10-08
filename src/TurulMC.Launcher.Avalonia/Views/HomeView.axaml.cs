@@ -106,6 +106,7 @@ public sealed class HomeViewModel : PropertyChangedBase
         {
             if (!Raise(ref _selectedInstance, value)) return;
             OnPropertyChanged(nameof(CanPlay));
+            RefreshHero();
         }
     }
 
@@ -114,6 +115,26 @@ public sealed class HomeViewModel : PropertyChangedBase
     public string StatusText { get => _statusText; internal set => Raise(ref _statusText, value); }
     public string ProfileLine { get => _profileLine; private set => Raise(ref _profileLine, value); }
     public string EmptyText { get => _emptyText; private set => Raise(ref _emptyText, value); }
+
+    // HERO-kötések az aktív Instance-ről.
+    public string HeroName => SelectedInstance?.Name ?? "Nincs Instance";
+    public string HeroVersion => SelectedInstance is null ? "—" : $"MC {SelectedInstance.MinecraftVersion}";
+    public string HeroLoader => SelectedInstance is null
+        ? "—"
+        : string.Equals(SelectedInstance.Loader, "fabric", StringComparison.OrdinalIgnoreCase)
+            ? string.IsNullOrWhiteSpace(SelectedInstance.LoaderVersion)
+                ? "Fabric" : $"Fabric {SelectedInstance.LoaderVersion}"
+            : "Vanilla";
+    public string HeroMods => _heroMods;
+    public bool HasMods => _heroModsCount > 0;
+    public string HeroLastPlayed => SelectedInstance is null
+        ? ""
+        : SelectedInstance.LastUsed == default
+            ? "Még sosem indítva"
+            : $"Utoljára játszva: {SelectedInstance.LastUsed.ToLocalTime():yyyy.MM.dd. HH:mm}";
+
+    private string _heroMods = "";
+    private int _heroModsCount;
     public double Progress { get => _progress; private set => Raise(ref _progress, value); }
     public bool ProgressVisible { get => _progressVisible; private set => Raise(ref _progressVisible, value); }
     public bool IsEmpty => Instances.Count == 0;
@@ -158,6 +179,32 @@ public sealed class HomeViewModel : PropertyChangedBase
             : "";
         OnPropertyChanged(nameof(IsEmpty));
         OnPropertyChanged(nameof(CanPlay));
+        RefreshHero();
+    }
+
+    /// <summary>HERO-frissítés: név, chipek, modszám az aktív Instance-ről.</summary>
+    private void RefreshHero()
+    {
+        var count = 0;
+        if (SelectedInstance is not null)
+        {
+            try
+            {
+                var modsDir = Path.Combine(
+                    _services.Instances.GetInstanceDirectory(SelectedInstance.Id), "mods");
+                if (Directory.Exists(modsDir))
+                    count = Directory.GetFiles(modsDir, "*.jar*").Length;
+            }
+            catch { }
+        }
+        _heroModsCount = count;
+        _heroMods = count == 0 ? "" : count == 1 ? "1 mod" : $"{count} mod";
+        OnPropertyChanged(nameof(HeroName));
+        OnPropertyChanged(nameof(HeroVersion));
+        OnPropertyChanged(nameof(HeroLoader));
+        OnPropertyChanged(nameof(HeroMods));
+        OnPropertyChanged(nameof(HasMods));
+        OnPropertyChanged(nameof(HeroLastPlayed));
     }
 
     private async Task RefreshProfileAsync()

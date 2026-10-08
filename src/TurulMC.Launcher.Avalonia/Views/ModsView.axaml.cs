@@ -118,6 +118,12 @@ public sealed class ModRow : PropertyChangedBase
 
     public string StateText => Enabled ? "BE" : "KI";
 
+    /// <summary>Pill-háttér a BE/KI jelzéshez (zöld vs. semleges).</summary>
+    public string StateBg => Enabled ? "#16281D" : "#1A1D22";
+
+    /// <summary>Pill-szövegszín a BE/KI jelzéshez.</summary>
+    public string StateFg => Enabled ? "#46A758" : "#8A8D93";
+
     /// <summary>Helyi ikonfájl-útvonal (Modrinth-gyorsítótárból), vagy null.</summary>
     public string? IconPath
     {
@@ -125,8 +131,12 @@ public sealed class ModRow : PropertyChangedBase
         set => Raise(ref _iconPath, value);
     }
 
-    /// <summary>Az Enabled változásakor a származtatott StateText-et is frissíti.</summary>
-    public void NotifyStateChanged() => OnPropertyChanged(nameof(StateText));
+    public void NotifyStateChanged()
+    {
+        OnPropertyChanged(nameof(StateText));
+        OnPropertyChanged(nameof(StateBg));
+        OnPropertyChanged(nameof(StateFg));
+    }
 }
 
 /// <summary>Egy Modrinth találati sor a böngészőben.</summary>

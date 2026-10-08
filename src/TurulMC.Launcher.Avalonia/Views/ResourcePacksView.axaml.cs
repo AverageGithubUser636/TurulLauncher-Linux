@@ -113,13 +113,24 @@ public sealed class PackRow : PropertyChangedBase
 
     public string StateText => Active ? "AKTÍV" : "KI";
 
+    /// <summary>Pill-háttér az AKTÍV/KI jelzéshez (zöld vs. semleges).</summary>
+    public string StateBg => Active ? "#16281D" : "#1A1D22";
+
+    /// <summary>Pill-szövegszín az AKTÍV/KI jelzéshez.</summary>
+    public string StateFg => Active ? "#46A758" : "#8A8D93";
+
     public string? IconPath
     {
         get => _iconPath;
         set => Raise(ref _iconPath, value);
     }
 
-    public void NotifyStateChanged() => OnPropertyChanged(nameof(StateText));
+    public void NotifyStateChanged()
+    {
+        OnPropertyChanged(nameof(StateText));
+        OnPropertyChanged(nameof(StateBg));
+        OnPropertyChanged(nameof(StateFg));
+    }
 }
 
 public sealed class ResourcePacksViewModel : PropertyChangedBase

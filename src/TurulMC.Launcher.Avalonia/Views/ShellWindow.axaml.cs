@@ -62,12 +62,17 @@ public sealed class NavItem
 {
     public required string Icon { get; init; }
     public required string Label { get; init; }
+    public bool IsHeader { get; init; }
+    public bool IsItem => !IsHeader;
 }
 
 public sealed class ShellViewModel : PropertyChangedBase
 {
     private int _selectedNavIndex;
+    private int _lastValidIndex;
     private string _title = "TurulLauncher";
+    private string _profileName = "…";
+    private string _profileInitial = "?";
 
     public string VersionText { get; } = "v" + AppInfo.Version;
     public string DataRootText { get; } = Core.Storage.LauncherPaths.DataRoot;
@@ -77,13 +82,18 @@ public sealed class ShellViewModel : PropertyChangedBase
         private set => Raise(ref _title, value);
     }
 
+    public string ProfileName { get => _profileName; private set => Raise(ref _profileName, value); }
+    public string ProfileInitial { get => _profileInitial; private set => Raise(ref _profileInitial, value); }
+
     public ObservableCollection<NavItem> NavItems { get; } =
     [
         new() { Icon = "🎮", Label = "Játék" },
+        new() { Icon = "", Label = "Tartalom", IsHeader = true },
         new() { Icon = "🧩", Label = "Modok" },
         new() { Icon = "🗺", Label = "Textúrák" },
         new() { Icon = "📦", Label = "Modpackok" },
         new() { Icon = "🌐", Label = "Szerverek" },
+        new() { Icon = "", Label = "Rendszer", IsHeader = true },
         new() { Icon = "☕", Label = "Java" },
         new() { Icon = "⚙", Label = "Beállítások" },
         new() { Icon = "⚕", Label = "Doctor" },
@@ -97,10 +107,31 @@ public sealed class ShellViewModel : PropertyChangedBase
         get => _selectedNavIndex;
         set
         {
+            // Fejléc nem választható: vissza az utolsó érvényesre.
+            if (value >= 0 && value < NavItems.Count && NavItems[value].IsHeader)
+                value = _lastValidIndex;
             Raise(ref _selectedNavIndex, value);
+            _lastValidIndex = _selectedNavIndex;
             ApplySelection();
         }
     }
+
+    /// <summary>
+    /// Nav-index → lapindex leképezés (a fejlécek eltolják: a SelectionChanged
+    /// már a tiszta lapindexet kapja, nem a nyers nav-indexet).
+    /// </summary>
+    private static int PageIndexOf(int navIndex) => navIndex switch
+    {
+        0 => 0, // Játék
+        2 => 1, // Modok
+        3 => 2, // Textúrák
+        4 => 3, // Modpackok
+        5 => 4, // Szerverek
+        7 => 5, // Java
+        8 => 6, // Beállítások
+        9 => 7, // Doctor
+        _ => -1
+    };
 
     /// <summary>
     /// A kijelölt oldal alkalmazása. Külön metódus, mert induláskor az index
@@ -111,13 +142,32 @@ public sealed class ShellViewModel : PropertyChangedBase
     {
         if (_selectedNavIndex < 0 || _selectedNavIndex >= NavItems.Count) return;
         var item = NavItems[_selectedNavIndex];
+        if (item.IsHeader) return;
         Title = item.Label + " — TurulLauncher";
-        SelectionChanged?.Invoke(_selectedNavIndex);
+        var page = PageIndexOf(_selectedNavIndex);
+        if (page >= 0) SelectionChanged?.Invoke(page);
     }
 
     public void OnOpened()
     {
         StartupLog.Trace("ShellWindow megnyitva; DataRoot=" + Core.Storage.LauncherPaths.DataRoot);
         ApplySelection();
+        _ = RefreshProfileAsync();
+    }
+
+    private async Task RefreshProfileAsync()
+    {
+        try
+        {
+            var profile = await Services.LauncherServices.Current.Auth.GetCurrentProfileAsync();
+            var name = profile?.Username;
+            ProfileName = string.IsNullOrWhiteSpace(name) ? "Nincs profil" : name;
+            ProfileInitial = string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[..1].ToUpperInvariant();
+        }
+        catch
+        {
+            ProfileName = "Nincs profil";
+            ProfileInitial = "?";
+        }
     }
 }

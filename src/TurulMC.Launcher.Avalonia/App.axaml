@@ -13,23 +13,25 @@
              hogy a felület egységes legyen a Windows-os verzió HTML UI-jával.
              ============================================================ -->
 
-        <!-- Kártya -->
+        <!-- Kártya: puhább, árnyékolt, lélegző. -->
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{DynamicResource TurulSurface2Brush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource TurulBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="20,18" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="24,20" />
+            <Setter Property="BoxShadow" Value="0 10 28 0 #30000000" />
         </Style>
 
-        <!-- Gombok -->
+        <!-- Gombok: finom átmenetek mindenhol. -->
         <Style Selector="Button">
             <Setter Property="FontFamily" Value="Inter" />
-        </Style>
-
-        <Style Selector="Button.accent /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource TurulGoldBrush}" />
-            <Setter Property="Foreground" Value="#08090B" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.12" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="Button.ghost /template/ ContentPresenter">
@@ -42,10 +44,44 @@
             <Setter Property="Opacity" Value="0.88" />
         </Style>
 
-        <!-- Szöveges mezők -->
+        <Style Selector="Button:pressed /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.72" />
+        </Style>
+
+        <Style Selector="Button:disabled /template/ ContentPresenter">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+
+        <!-- Szöveges mezők: magasabb, fókuszban arany keret. -->
         <Style Selector="TextBox">
-            <Setter Property="MinHeight" Value="34" />
-            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.12" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+
+        <!-- ComboBox: a legördülő elemei is arany kijelölést kapnak. -->
+        <Style Selector="ComboBox">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource TurulSelectBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="ComboBoxItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TurulGoldBrush}" />
         </Style>
 
         <!-- Lista: egységes sötét háttér, ne villanjon fehérre. -->
@@ -60,8 +96,13 @@
             márkából: ez látszott az instance lista kék során is.
         -->
         <Style Selector="ListBox > ListBoxItem">
-            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="CornerRadius" Value="9" />
             <Setter Property="Foreground" Value="{DynamicResource TurulTextBrush}" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.1" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="ListBox > ListBoxItem:pointerover /template/ ContentPresenter">
@@ -85,8 +126,8 @@
         </Style>
 
         <Style Selector="ListBox.nav > ListBoxItem">
-            <Setter Property="Padding" Value="12,9" />
-            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="Margin" Value="0,1" />
         </Style>
 
         <!-- Checkbox: arany jelölő, sötét pipa.
@@ -110,6 +151,22 @@
         <!-- Fókuszgyűrű arany. -->
         <Style Selector=":focus /template/ Border#FocusBorder">
             <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+
+        <!-- Felirat (overline): kis kapitális szekciócím. -->
+        <Style Selector="TextBlock.overline">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource TurulTextFaintBrush}" />
+            <Setter Property="LetterSpacing" Value="1.5" />
+        </Style>
+
+        <!-- Vékony, sötét görgetősáv. -->
+        <Style Selector="ScrollBar:vertical">
+            <Setter Property="Width" Value="10" />
+        </Style>
+        <Style Selector="ScrollBar:horizontal">
+            <Setter Property="Height" Value="10" />
         </Style>
     </Application.Styles>
 

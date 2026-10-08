@@ -32,7 +32,27 @@
                                Foreground="{StaticResource TurulTextFaintBrush}"/>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="12,8,12,14" Spacing="6">
+                <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,12" Spacing="6">
+                    <!-- Profil-lábléc -->
+                    <Border Background="{StaticResource TurulSurface2Brush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            CornerRadius="9" Padding="8,6">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <Border Width="26" Height="26" CornerRadius="13"
+                                    Background="{StaticResource TurulSelectBrush}"
+                                    BorderBrush="{StaticResource TurulGoldBrush}" BorderThickness="1">
+                                <TextBlock Text="{Binding ProfileInitial}" FontSize="12" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Foreground="{StaticResource TurulGoldBrush}"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="0">
+                                <TextBlock Text="{Binding ProfileName}" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TurulTextBrush}"/>
+                                <TextBlock Text="offline profil" FontSize="10"
+                                           Foreground="{StaticResource TurulTextFaintBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                     <TextBlock Text="{Binding DataRootText}" FontSize="9"
                                Foreground="{StaticResource TurulTextFaintBrush}"
                                TextWrapping="Wrap"/>
@@ -44,12 +64,21 @@
                          SelectedIndex="{Binding SelectedNavIndex}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="11" Margin="4,7">
-                                <TextBlock Text="{Binding Icon}" FontSize="13" Width="18"
-                                           Foreground="{StaticResource TurulGoldBrush}"/>
-                                <TextBlock Text="{Binding Label}" FontSize="13"
-                                           Foreground="{StaticResource TurulTextBrush}"/>
-                            </StackPanel>
+                            <Panel>
+                                <!-- Szekciófejléc: nem választható. -->
+                                <TextBlock Text="{Binding Label}" Classes="overline"
+                                           Margin="12,10,4,4"
+                                           IsVisible="{Binding IsHeader}"/>
+                                <!-- Menüpont -->
+                                <StackPanel Orientation="Horizontal" Spacing="12" Margin="4,6"
+                                            IsVisible="{Binding IsItem}">
+                                    <TextBlock Text="{Binding Icon}" FontSize="15" Width="22"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource TurulGoldBrush}"/>
+                                    <TextBlock Text="{Binding Label}" FontSize="13"
+                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                </StackPanel>
+                            </Panel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
