@@ -79,14 +79,14 @@ public sealed class ShellViewModel : PropertyChangedBase
 
     public ObservableCollection<NavItem> NavItems { get; } =
     [
-        new() { Icon = "▶", Label = "Játék" },
-        new() { Icon = "◈", Label = "Modok" },
-        new() { Icon = "▣", Label = "Textúrák" },
+        new() { Icon = "🎮", Label = "Játék" },
+        new() { Icon = "🧩", Label = "Modok" },
+        new() { Icon = "🗺", Label = "Textúrák" },
         new() { Icon = "📦", Label = "Modpackok" },
-        new() { Icon = "●", Label = "Szerverek" },
+        new() { Icon = "🌐", Label = "Szerverek" },
         new() { Icon = "☕", Label = "Java" },
         new() { Icon = "⚙", Label = "Beállítások" },
-        new() { Icon = "✚", Label = "Doctor" },
+        new() { Icon = "⚕", Label = "Doctor" },
     ];
 
     /// <summary>A kijelölt lap váltásakor fut — a nézet erre kapcsolja a láthatóságot.</summary>

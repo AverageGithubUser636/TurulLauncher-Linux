@@ -38,7 +38,7 @@
                 <!-- Üres állapot: a nagy panel ne egy fekete lyuk legyen. -->
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                             Spacing="8" IsVisible="{Binding IsEmpty}">
-                    <TextBlock Text="✚" FontSize="30" HorizontalAlignment="Center"
+                    <TextBlock Text="⚕" FontSize="30" HorizontalAlignment="Center"
                                Foreground="{StaticResource TurulGoldDimBrush}"/>
                     <TextBlock Text="Még nem futott le ellenőrzés" FontSize="14" FontWeight="SemiBold"
                                HorizontalAlignment="Center"
