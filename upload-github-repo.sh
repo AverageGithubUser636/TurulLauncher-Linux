@@ -147,6 +147,9 @@ release_notes() {
 }
 
 ASSETS=(dist/*.tar.gz dist/*.sha256)
+shopt -s nullglob
+for appimage in dist/*.AppImage; do ASSETS+=("$appimage"); done
+shopt -u nullglob
 [[ -f dist/stable.json ]] && ASSETS+=(dist/stable.json)
 
 if [[ "$HAVE_GH" -eq 1 ]]; then
