@@ -1,0 +1,33 @@
+```
+TurulLauncher Linux Version: 1.0.0 🐧 (első Linux-kiadás!)
+
+[+]
+Natív Linux-kiadás: Avalonia-felület, AppImage (egyetlen fájl) + tarball
+Modrinth-böngészés modokra, textúrákra és modpackokra — függőségek automatikusan jönnek
+Mod- és pack-ikonok a listákban (Modrinth-gyorsítótárral)
+Modpack import (.mrpack fájlból) és export új Instance-ba
+Java-kezelő fül: észlelt runtime-ok, egykattintásos Temurin-telepítés, törlés
+Szerverek fül: mentett szerverek, élő ping, egykattintásos csatlakozás
+Instance-szerkesztő: név, RAM, verzió, loader, Java-út, JVM-args, ablakméret
+5 téma (arany/zöld/piros/lila/égszín) + igazi Turul-logók mindenhol
+Splash screen fázisokkal + játékbetöltő-figyelő élő naplóval
+Önálló Frissítés-oldal: induláskori ellenőrzés, changelog, egykattintásos telepítés
+Menü-integráció: Super-gomb → TurulLauncher (GNOME, KDE, XFCE…)
+XDG-adatkönyvtár: ~/.local/share/TurulMC
+
+[*]
+Linuxon TÉNYLEG működő Java-telepítés (Temurin .tar.gz, nem Windows .zip)
+Linux natives/library-szabályok — nélkülük a játék el sem indulna
+Mod ki/bekapcsolás (.jar.disabled), pack kapcsolás (options.txt)
+Szövegtisztítás a felületen: nincs több nyers JSON / HTML-entitás / §-kód
+servers.json és java-cache a jó (XDG) helyre kerül
+Önálló 1.0.0-s verziószámozás + saját Linux-frissítési manifest
+
+[-]
+WebView2-függőség (natív felület van helyette)
+Külső Updater.exe (a launcher önmagát frissíti)
+Tálca-ikon (Linuxon a minimalizálás a megfelelője)
+%APPDATA%-függés (XDG van helyette)
+
+turulnetwork.hu
+```

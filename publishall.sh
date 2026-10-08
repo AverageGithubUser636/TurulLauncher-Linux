@@ -211,9 +211,28 @@ EOF
   fi
 done
 
+# Discord-changelog váz: ha még nincs, létrehozzuk a szokásos
+# [-] / [*] / [+] tagolással, ```-be zárva. Töltsd ki kiadás előtt!
+DISCORD_FILE="$REPO_ROOT/DISCORD_CHANGELOG_$VERSION.txt"
+if [[ ! -f "$DISCORD_FILE" ]]; then
+  cat > "$DISCORD_FILE" <<EOF
+\`\`\`
+TurulLauncher Linux Version: $VERSION
+
+[+]
+
+[*]
+
+[-]
+
+turulnetwork.hu
+\`\`\`
+EOF
+  echo "    (új Discord-váz: $DISCORD_FILE — töltsd ki!)"
+fi
+
 echo
 echo "==> KÉSZ. dist/ tartalma:"
-# Kanonikus manifest: AppImage előnyben (az updater egyetlen URL-t tölt).
 if [[ -f "$DIST/stable-linux-x64.json" ]]; then
   cp "$DIST/stable-linux-x64.json" "$DIST/stable.json"
   echo "    (dist/stable.json — ezt tedd ki a weboldalra:"
