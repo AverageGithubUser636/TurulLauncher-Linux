@@ -5,6 +5,11 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-10-09 — második kiadás 🚀
+
+Minden új funkció, visszafelé kompatibilisen: meglévő instance-ok,
+beállítások és modok változtatás nélkül működnek tovább.
+
 ### Added
 
 - ✨ **Shaderek-lap**: shaderpack lista átnevezéses ki/bekapcsolással
@@ -23,12 +28,44 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
   a többi nézet értesítést kap (`InstancesChanged`)
 - 💾 **Instance-backup**: ZIP-export (`logs`/`crash-reports` nélkül)
   fájlmentés-párbeszéddel
+- 🎨 **Szépített felület**: csoportosított navigáció (Tartalom/Rendszer),
+  profil-lábléc, hero-kezdőlap, pill-badge-ek, kártya-árnyékok, emoji-ikonok
+- 🔄 **Önálló Frissítés-oldal**: hero, changelog-idővonal, induláskori
+  néma ellenőrzés + arany jelvény/banner
+- 📖 **Dokumentáció**: `README.md` (angol) + `README.hu.md`, `CHANGELOG.md`,
+  `docs/linux-architecture.md`, `docs/linux-build-release.md`
+- 🖥️ **Menü-integráció**: `install.sh` + `install-appimage.sh`
+  (Super-gomb → TurulLauncher, minden disztrón)
 
 ### Changed
 
 - `InstanceStore` teszt-izolált gyökérrel (`HydrateModpackMetadata` is);
   `CopyInstanceAsync` + `ExportBackupAsync` új Core-műveletek
-- Nav bővítve: Shaderek (Tartalom), Naplók (Rendszer végén)
+- Nav bővítve: Shaderek (Tartalom), Naplók (Rendszer végén) — 11 lap
+- Frissítési manifest-URL a weboldalra mutat (`turulnetwork.hu`,
+  az updater hoszt-allowlistje miatt)
+- `publishall.sh`: `--format tarball|appimage|all`, Discord-váz generálás
+
+### Fixed
+
+- **Fabric-indítás „nincs telepítve" hibája**: a feloldott `LoaderVersion`
+  nem került át a settings-be (regressziós teszttel őrizve)
+- Szöveghibák a felületen: nyers JSON (`pack.mcmeta`), HTML-entitások,
+  markdown és `§`-kódok mentesítése (`DisplayText`, 4 új teszttel)
+- Ikon-takarító törölte a `.download` átmeneti fájlt a `Move` előtt
+- Traversal-bejegyzés az egész modpack/updater-telepítést dobja
+- Fluent-kék maradványok → arany (lista, checkbox, ComboBox)
+
+### Removed
+
+- Windows-maradékok a repóból: gyökér `PATCH_*`/`TEST_*`/`BUILD_*` jegyzetek,
+  `.cmd` scriptek, `pom.xml`, `tools/`, `installer/`, `prereqs/`,
+  a halott Java-ág (`src/main`), `Assets/` + `ui/` (a fork saját másolatokat használ)
+- 7 hívatlan metódus + üres stubok (halottkód-irtás, bizonyítékkal)
+
+### Security
+
+- Repó-átvilágítás: nincs kulcs/token/jelszó/webhook/privát IP a kódban
 
 ## [1.0.0] — 2026-10-08 — első Linux-kiadás 🎉
 

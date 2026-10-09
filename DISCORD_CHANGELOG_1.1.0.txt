@@ -1,0 +1,26 @@
+```
+TurulLauncher Linux Version: 1.1.0 🚀
+
+[+]
+Shaderek-lap: lista, ki/bekapcsolás, Modrinth shader-böngészés ikonokkal
+Mod-frissítések: ellenőrzés + egykattintásos frissítés (tiltás megmarad)
+Mod-kereső és szűrők (név + BE/KI/hibás) + tömeges műveletek (Mind be/ki)
+Naplók-lap: játék/crash/launcher logok tallózása
+Instance-duplikálás új azonosítóval + backup ZIP-export
+Szépített felület: csoportos nav, profil-lábléc, hero-kezdőlap, pill-badge-ek
+Önálló Frissítés-oldal: induláskori ellenőrzés + jelvény/banner
+README (angol + magyar), CHANGELOG, architektúra- és kiadás-doksik
+Menü-integráció: Super-gomb → TurulLauncher minden disztrón
+
+[*]
+Fabric-indítás javítva („nincs telepítve" hiba megszűnt)
+Nincs több nyers JSON / HTML-entitás / §-kód a felületen
+Frissítési manifest már a weboldal URL-jét hozza (updater-kompatibilis)
+publishall: AppImage + tarball formátumválasztással
+
+[-]
+Windows-maradékok a repóból (PATCH/TEST jegyzetek, .cmd-k, pom, tools, Java-ág, régi Assets/ui)
+7 hívatlan metódus + üres stubok (halottkód-irtás)
+
+turulnetwork.hu
+```
