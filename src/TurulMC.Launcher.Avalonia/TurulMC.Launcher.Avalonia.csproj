@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\TurulMC.Launcher\Assets\turul-logo.png" Link="Assets\turul-logo.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Logos\turul-logo.png" CopyToOutputDirectory="PreserveNewest" />
     <!-- A téma-logók beágyazva (avares://TurulLauncher/Assets/Logos/...) töltődnek. -->
     <AvaloniaResource Include="Assets\Logos\*.png" />
   </ItemGroup>

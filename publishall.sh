@@ -122,7 +122,7 @@ for RID in $RIDS; do
   rm -f "$STAGE"/*.pdb
   # Hordozható jelölő: CSAK ettől mer az updater önmagát frissíteni.
   touch "$STAGE/TurulMC.portable"
-  cp "$REPO_ROOT/src/TurulMC.Launcher/Assets/Logos/turul-logo-yellow.png" "$STAGE/turul-logo.png"
+  cp "$REPO_ROOT/src/TurulMC.Launcher.Avalonia/Assets/Logos/turul-logo-yellow.png" "$STAGE/turul-logo.png"
   cp "$REPO_ROOT/scripts/turullauncher.desktop" "$STAGE/" 2>/dev/null || true
   cp "$REPO_ROOT/scripts/install.sh" "$STAGE/" 2>/dev/null || true
   cp "$REPO_ROOT/scripts/README-Linux.txt" "$STAGE/" 2>/dev/null || true
@@ -145,7 +145,7 @@ for RID in $RIDS; do
     # FIGYELEM: TurulMC.portable NEM kerül bele — az AppImage squashfs
     # írásvédett, az önfrissítés szétrombolná. AppImage-ből futva az updater
     # a kézi letöltést kínálja fel (lásd UpdateService).
-    cp "$REPO_ROOT/src/TurulMC.Launcher/Assets/Logos/turul-logo-yellow.png" "$APPDIR/turul-logo.png"
+    cp "$REPO_ROOT/src/TurulMC.Launcher.Avalonia/Assets/Logos/turul-logo-yellow.png" "$APPDIR/turul-logo.png"
     cp "$APPDIR/turul-logo.png" "$APPDIR/.DirIcon"
     cp "$APPDIR/turul-logo.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/turul-logo.png"
     cp "$REPO_ROOT/scripts/turullauncher.desktop" "$APPDIR/TurulLauncher.desktop"
