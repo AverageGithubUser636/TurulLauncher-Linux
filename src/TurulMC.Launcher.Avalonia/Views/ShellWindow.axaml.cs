@@ -30,7 +30,7 @@ public partial class ShellWindow : Window
         // Lapindex → nav-index (fejlécek miatt eltolva).
         Services.LauncherServices.Current.NavigateRequested += page =>
         {
-            var nav = page switch { 0=>0, 1=>2, 2=>3, 3=>4, 4=>5, 5=>7, 6=>8, 7=>9, 8=>10, _=>-1 };
+            var nav = page switch { 0=>0, 1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>8, 7=>9, 8=>10, 9=>11, 10=>12, _=>-1 };
             if (nav >= 0)
                 global::Avalonia.Threading.Dispatcher.UIThread.Post(() => vm.SelectedNavIndex = nav);
         };
@@ -42,12 +42,14 @@ public partial class ShellWindow : Window
             HomePage.IsVisible = index == 0;
             ModsPage.IsVisible = index == 1;
             PacksPage.IsVisible = index == 2;
-            ModpacksPage.IsVisible = index == 3;
-            ServersPage.IsVisible = index == 4;
-            JavaPage.IsVisible = index == 5;
-            SettingsPage.IsVisible = index == 6;
-            UpdatePage.IsVisible = index == 7;
-            DoctorPage.IsVisible = index == 8;
+            ShadersPage.IsVisible = index == 3;
+            ModpacksPage.IsVisible = index == 4;
+            ServersPage.IsVisible = index == 5;
+            JavaPage.IsVisible = index == 6;
+            SettingsPage.IsVisible = index == 7;
+            UpdatePage.IsVisible = index == 8;
+            DoctorPage.IsVisible = index == 9;
+            LogsPage.IsVisible = index == 10;
         };
 
         Opened += (_, _) => vm.OnOpened();
@@ -109,6 +111,7 @@ public sealed class ShellViewModel : PropertyChangedBase
         new() { Icon = "", Label = "Tartalom", IsHeader = true },
         new() { Icon = "🧩", Label = "Modok" },
         new() { Icon = "🗺", Label = "Textúrák" },
+        new() { Icon = "✨", Label = "Shaderek" },
         new() { Icon = "📦", Label = "Modpackok" },
         new() { Icon = "🌐", Label = "Szerverek" },
         new() { Icon = "", Label = "Rendszer", IsHeader = true },
@@ -116,6 +119,7 @@ public sealed class ShellViewModel : PropertyChangedBase
         new() { Icon = "⚙", Label = "Beállítások" },
         new() { Icon = "🔄", Label = "Frissítés" },
         new() { Icon = "⚕", Label = "Doctor" },
+        new() { Icon = "📋", Label = "Naplók" },
     ];
 
     /// <summary>A kijelölt lap váltásakor fut — a nézet erre kapcsolja a láthatóságot.</summary>
@@ -144,12 +148,14 @@ public sealed class ShellViewModel : PropertyChangedBase
         0 => 0, // Játék
         2 => 1, // Modok
         3 => 2, // Textúrák
-        4 => 3, // Modpackok
-        5 => 4, // Szerverek
-        7 => 5, // Java
-        8 => 6, // Beállítások
-        9 => 7, // Frissítés
-        10 => 8, // Doctor
+        4 => 3, // Shaderek
+        5 => 4, // Modpackok
+        6 => 5, // Szerverek
+        8 => 6, // Java
+        9 => 7, // Beállítások
+        10 => 8, // Frissítés
+        11 => 9, // Doctor
+        12 => 10, // Naplók
         _ => -1
     };
 

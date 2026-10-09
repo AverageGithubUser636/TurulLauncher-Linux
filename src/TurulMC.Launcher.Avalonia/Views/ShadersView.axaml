@@ -1,12 +1,12 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="TurulMC.Launcher.Avalonia.Views.ModsView">
+             x:Class="TurulMC.Launcher.Avalonia.Views.ShadersView">
 
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26,22,26,20">
 
         <!-- Fejléc -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Modok" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Shaderek" FontSize="24" FontWeight="SemiBold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="{Binding Subtitle}" FontSize="12"
                        Foreground="{StaticResource TurulTextDimBrush}"/>
@@ -36,111 +36,75 @@
                         Background="Transparent"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
-                <Button Content="🧩 Böngészés" Click="OnShowBrowser"
+                        Padding="12,7" CornerRadius="8" FontSize="12"/>
+                <Button Content="✨ Böngészés" Click="OnShowBrowser"
                         IsVisible="{Binding IsInstalledMode}"
                         Background="{StaticResource TurulSurface2Brush}"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        Padding="12,7" CornerRadius="8" FontSize="12"/>
             </StackPanel>
         </Grid>
 
         <!-- Tartalom -->
         <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                CornerRadius="10" Padding="6">
+                CornerRadius="14" Padding="8">
             <Panel>
 
             <!-- Telepített lista -->
             <DockPanel IsVisible="{Binding IsInstalledMode}">
-                <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="8,6,8,4">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Hozzáadás…" Click="OnAdd"
-                                Background="{StaticResource TurulSurface2Brush}"
-                                Foreground="{StaticResource TurulTextBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Törlés" Click="OnDelete"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulDangerBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Frissítés" Click="OnRefresh"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulTextDimBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBox Text="{Binding FilterText, Mode=TwoWay}" Watermark="Keresés…"
-                                 MinWidth="180" MaxWidth="260"/>
-                        <ComboBox ItemsSource="{Binding FilterStates}"
-                                  SelectedItem="{Binding FilterState, Mode=TwoWay}"
-                                  MinWidth="130"/>
-                        <Button Content="Mind be" Click="OnEnableAll"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulTextBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Mind ki" Click="OnDisableAll"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulTextBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Frissítések keresése" Click="OnCheckUpdates"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulGoldBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Kijelölt frissítése" Click="OnUpdateSelected"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulGoldBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                        <Button Content="Mind frissítése" Click="OnUpdateAll"
-                                Background="Transparent"
-                                Foreground="{StaticResource TurulGoldBrush}"
-                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="8" FontSize="12"/>
-                    </StackPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="10,8,10,6">
+                    <Button Content="Hozzáadás…" Click="OnAdd"
+                            Background="{StaticResource TurulSurface2Brush}"
+                            Foreground="{StaticResource TurulTextBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
+                    <Button Content="Törlés" Click="OnDelete"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulDangerBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
+                    <Button Content="Frissítés" Click="OnRefresh"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulTextDimBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
                             HorizontalAlignment="Center" VerticalAlignment="Center"
-                            Spacing="8" Margin="20,28" MaxWidth="440">
+                            Spacing="8" Margin="20,24" MaxWidth="440">
                     <Border Width="54" Height="54" CornerRadius="27"
                             HorizontalAlignment="Center"
                             Background="{StaticResource TurulSurface2Brush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
-                        <TextBlock Text="🧩" FontSize="22" HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="{StaticResource TurulGoldBrush}"/>
+                        <TextBlock Text="✨" FontSize="22" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="Nincs mod ebben az Instance-ban" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="Nincs shader ebben az Instance-ban" FontSize="16" FontWeight="SemiBold"
                                HorizontalAlignment="Center" TextAlignment="Center"
                                Foreground="{StaticResource TurulTextBrush}"/>
-                    <TextBlock Text="A Hozzáadás gombbal .jar fájlokat másolhatsz be, vagy a Böngészéssel a Modrinth-ről tölthetsz le (függőségekkel együtt)."
+                    <TextBlock Text="A Hozzáadás gombbal .zip shadereket másolhatsz be (Iris/Sodium-hoz), vagy a Böngészéssel a Modrinth-ről tölthetsz le."
                                FontSize="13" TextAlignment="Center" TextWrapping="Wrap"
                                Foreground="{StaticResource TurulTextDimBrush}"/>
                 </StackPanel>
 
-                <ListBox x:Name="ModList" Background="Transparent" BorderThickness="0"
-                         SelectionMode="Multiple"
-                         ItemsSource="{Binding Mods}"
-                         SelectedItem="{Binding SelectedMod, Mode=TwoWay}">
+                <ListBox Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding Shaders}"
+                         SelectedItem="{Binding SelectedShader, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="8,7" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="10,8" ColumnSpacing="12">
                                 <CheckBox Grid.Column="0" VerticalAlignment="Center"
                                           IsChecked="{Binding Enabled, Mode=OneWay}"
-                                          Checked="OnModChecked" Unchecked="OnModUnchecked"/>
+                                          Checked="OnShaderChecked" Unchecked="OnShaderUnchecked"/>
                                 <Border Grid.Column="1" Width="40" Height="40" CornerRadius="8"
                                         VerticalAlignment="Center"
                                         Background="{StaticResource TurulSurface2Brush}"
                                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
                                     <Grid>
-                                        <TextBlock Text="🧩" FontSize="14" HorizontalAlignment="Center"
+                                        <TextBlock Text="✨" FontSize="15" HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Foreground="{StaticResource TurulGoldDimBrush}"/>
                                         <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
@@ -148,19 +112,10 @@
                                     </Grid>
                                 </Border>
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
+                                    <TextBlock Text="{Binding FileName}" FontSize="14" FontWeight="SemiBold"
                                                Foreground="{StaticResource TurulTextBrush}"/>
-                                    <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
-                                        <Run Text="{Binding Version}"/>
-                                        <Run Text=" · "/><Run Text="{Binding Loader}"/>
-                                        <Run Text=" · "/><Run Text="{Binding FileName}"/>
-                                    </TextBlock>
-                                    <TextBlock Text="{Binding Error}" FontSize="11" IsVisible="{Binding HasError}"
-                                               Foreground="{StaticResource TurulDangerBrush}"
-                                               TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding UpdateText}" FontSize="11" FontWeight="SemiBold"
-                                               IsVisible="{Binding HasUpdate}"
-                                               Foreground="{StaticResource TurulGoldBrush}"/>
+                                    <TextBlock Text="{Binding SizeText}" FontSize="11"
+                                               Foreground="{StaticResource TurulTextFaintBrush}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="4"
                                             HorizontalAlignment="Right">
@@ -170,9 +125,6 @@
                                         <TextBlock Text="{Binding StateText}" FontSize="10" FontWeight="Bold"
                                                    Foreground="{Binding StateFg}"/>
                                     </Border>
-                                    <TextBlock Text="{Binding SizeText}" FontSize="10"
-                                               Foreground="{StaticResource TurulTextFaintBrush}"
-                                               HorizontalAlignment="Right"/>
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
@@ -182,33 +134,33 @@
 
             <!-- Modrinth böngésző -->
             <DockPanel IsVisible="{Binding IsBrowserMode}">
-                <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="8,6,8,4">
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="10,8,10,6">
                     <TextBox Grid.Column="0" Text="{Binding SearchQuery, Mode=TwoWay}"
                              Watermark="Keresés a Modrinth-en… (Enter is indít)"
                              KeyDown="OnSearchKey"/>
                     <Button Grid.Column="1" Content="Keresés" Click="OnSearch"
                             Background="{StaticResource TurulGoldBrush}"
                             Foreground="{StaticResource TurulBgBrush}"
-                            BorderThickness="0" Padding="16,7" CornerRadius="6"
+                            BorderThickness="0" Padding="16,7" CornerRadius="8"
                             FontSize="12" FontWeight="SemiBold"
                             IsEnabled="{Binding CanSearch}"/>
                 </Grid>
 
                 <TextBlock DockPanel.Dock="Top" Text="{Binding SearchInfo}" FontSize="11"
-                           Margin="12,0,12,6" TextWrapping="Wrap"
+                           Margin="14,0,14,6" TextWrapping="Wrap"
                            Foreground="{StaticResource TurulTextFaintBrush}"/>
 
                 <ListBox Background="Transparent" BorderThickness="0"
                          ItemsSource="{Binding SearchResults}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,7" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,8" ColumnSpacing="12">
                                 <Border Grid.Column="0" Width="48" Height="48" CornerRadius="9"
                                         VerticalAlignment="Center"
                                         Background="{StaticResource TurulSurface2Brush}"
                                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
                                     <Grid>
-                                        <TextBlock Text="◈" FontSize="18" HorizontalAlignment="Center"
+                                        <TextBlock Text="✨" FontSize="18" HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Foreground="{StaticResource TurulGoldDimBrush}"/>
                                         <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
@@ -223,7 +175,6 @@
                                     <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
                                         <Run Text="{Binding Author}"/>
                                         <Run Text=" · "/><Run Text="{Binding DownloadsText}"/>
-                                        <Run Text=" · "/><Run Text="{Binding InstalledText}"/>
                                     </TextBlock>
                                     <TextBlock Text="{Binding Description}" FontSize="11"
                                                Foreground="{StaticResource TurulTextDimBrush}"
@@ -234,7 +185,7 @@
                                         Click="OnInstallSearch"
                                         VerticalAlignment="Center"
                                         IsEnabled="{Binding CanInstall}"
-                                        MinWidth="110" Padding="12,8" CornerRadius="6"
+                                        MinWidth="110" Padding="12,8" CornerRadius="8"
                                         FontSize="12" FontWeight="SemiBold"
                                         Background="{StaticResource TurulGoldBrush}"
                                         Foreground="{StaticResource TurulBgBrush}"

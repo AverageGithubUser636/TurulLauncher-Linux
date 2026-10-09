@@ -38,7 +38,22 @@ public partial class ModsView : UserControl
     }
 
     private async void OnDelete(object? sender, RoutedEventArgs e)
-        => await _vm.DeleteSelectedAsync();
+        => await _vm.DeleteAsync(ModList.SelectedItems?.OfType<ModRow>().ToList() ?? new());
+
+    private async void OnEnableAll(object? sender, RoutedEventArgs e)
+        => await _vm.SetAllEnabledAsync(true);
+
+    private async void OnDisableAll(object? sender, RoutedEventArgs e)
+        => await _vm.SetAllEnabledAsync(false);
+
+    private async void OnCheckUpdates(object? sender, RoutedEventArgs e)
+        => await _vm.CheckUpdatesAsync();
+
+    private async void OnUpdateSelected(object? sender, RoutedEventArgs e)
+        => await _vm.UpdateRowAsync(_vm.SelectedMod);
+
+    private async void OnUpdateAll(object? sender, RoutedEventArgs e)
+        => await _vm.UpdateAllAsync();
 
     private void OnRefresh(object? sender, RoutedEventArgs e)
         => _vm.Refresh();
@@ -107,6 +122,9 @@ public sealed class ModRow : PropertyChangedBase
     public required string SizeText { get; init; }
     public string? Error { get; init; }
 
+    /// <summary>Modrinth projekt-azonosító a metából (frissítés-ellenőrzéshez).</summary>
+    public string ProjectId { get; set; } = "";
+
     public bool HasError => !string.IsNullOrWhiteSpace(Error);
 
     /// <summary>OneWay kötéshez: az esemény végzi a kapcsolást, nem a setter.</summary>
@@ -129,6 +147,29 @@ public sealed class ModRow : PropertyChangedBase
     {
         get => _iconPath;
         set => Raise(ref _iconPath, value);
+    }
+
+    private string _updateText = "";
+    private bool _hasUpdate;
+    private bool _updating;
+
+    /// <summary>Elérhető frissítés jelzése (pl. "↑ 1.1").</summary>
+    public string UpdateText
+    {
+        get => _updateText;
+        set => Raise(ref _updateText, value);
+    }
+
+    public bool HasUpdate
+    {
+        get => _hasUpdate;
+        set => Raise(ref _hasUpdate, value);
+    }
+
+    public bool Updating
+    {
+        get => _updating;
+        set => Raise(ref _updating, value);
     }
 
     public void NotifyStateChanged()
@@ -240,7 +281,6 @@ public sealed class ModsViewModel : PropertyChangedBase
 
     public string CountText { get => _countText; private set => Raise(ref _countText, value); }
     public string Subtitle { get => _subtitle; private set => Raise(ref _subtitle, value); }
-    public bool IsEmpty => Mods.Count == 0;
 
     public bool IsBrowserMode
     {
@@ -324,8 +364,41 @@ public sealed class ModsViewModel : PropertyChangedBase
 
     // ------------------------------------------------------------- telepített
 
+    // ------------------------------------------------------------- telepített
+
+    private readonly List<ModRow> _allMods = new();
+    private string _filterText = "";
+    private string _filterState = "Mind";
+    private bool _modsBusy;
+
+    public List<string> FilterStates { get; } = new() { "Mind", "Bekapcsolt", "Kikapcsolt", "Hibás" };
+
+    public string FilterText
+    {
+        get => _filterText;
+        set
+        {
+            if (!Raise(ref _filterText, value)) return;
+            ApplyFilter();
+        }
+    }
+
+    public string FilterState
+    {
+        get => _filterState;
+        set
+        {
+            if (!Raise(ref _filterState, value)) return;
+            ApplyFilter();
+        }
+    }
+
+    public bool IsEmpty => _allMods.Count == 0;
+
     public void Refresh()
     {
+        var keepFile = SelectedMod?.FileName;
+        _allMods.Clear();
         Mods.Clear();
         SelectedMod = null;
         if (SelectedInstance is null || string.IsNullOrEmpty(ModsDir)) { UpdateCount(); return; }
@@ -334,7 +407,8 @@ public sealed class ModsViewModel : PropertyChangedBase
         {
             foreach (var m in _services.Mods.ListMods(ModsDir))
             {
-                Mods.Add(new ModRow
+                var meta = Core.Mods.ModrinthInstaller.ReadMeta(ModsDir, m.FileName);
+                _allMods.Add(new ModRow
                 {
                     FileName = m.FileName,
                     Title = m.Title,
@@ -342,7 +416,8 @@ public sealed class ModsViewModel : PropertyChangedBase
                     Loader = m.Loader,
                     SizeText = FormatBytes(m.SizeBytes),
                     Error = m.Error,
-                    Enabled = m.Enabled
+                    Enabled = m.Enabled,
+                    ProjectId = meta?.ProjectId ?? ""
                 });
             }
             StatusText = "";
@@ -352,8 +427,252 @@ public sealed class ModsViewModel : PropertyChangedBase
             StatusText = "Lista hiba: " + ex.Message;
             LauncherLogger.Error("Mod lista hiba: " + ex.Message);
         }
+        ApplyFilter();
+        if (keepFile is not null)
+            SelectedMod = Mods.FirstOrDefault(m => m.FileName == keepFile);
         UpdateCount();
         _ = ResolveIconsAsync();
+    }
+
+    /// <summary>Szűrő alkalmazása a mesterlista alapján (keresés + állapot).</summary>
+    private void ApplyFilter()
+    {
+        var keepFile = SelectedMod?.FileName;
+        Mods.Clear();
+        var query = (_filterText ?? "").Trim();
+        foreach (var row in _allMods)
+        {
+            if (query.Length > 0 &&
+                !row.Title.Contains(query, StringComparison.OrdinalIgnoreCase) &&
+                !row.FileName.Contains(query, StringComparison.OrdinalIgnoreCase))
+                continue;
+            switch (_filterState)
+            {
+                case "Bekapcsolt" when !row.Enabled:
+                case "Kikapcsolt" when row.Enabled:
+                case "Hibás" when !row.HasError:
+                    continue;
+            }
+            Mods.Add(row);
+        }
+        if (keepFile is not null)
+            SelectedMod = Mods.FirstOrDefault(m => m.FileName == keepFile);
+        OnPropertyChanged(nameof(IsEmpty));
+        UpdateCount();
+    }
+
+    /// <summary>Tömeges ki/bekapcsolás a teljes mesterlistán (nem csak a szűrten).</summary>
+    public async Task SetAllEnabledAsync(bool enabled)
+    {
+        if (SelectedInstance is null || _modsBusy) return;
+        _modsBusy = true;
+        try
+        {
+            var ok = 0;
+            var errors = new List<string>();
+            foreach (var row in _allMods.ToList())
+            {
+                if (row.Enabled == enabled) continue;
+                try
+                {
+                    _services.Mods.SetEnabled(ModsDir, row.FileName, enabled);
+                    // Átnevezés történt: a sort újra kell kötni az új névre.
+                    var updated = _services.Mods.ListMods(ModsDir)
+                        .FirstOrDefault(m => m.Title == row.Title);
+                    row.Enabled = enabled;
+                    if (updated is not null)
+                    {
+                        var idx = _allMods.IndexOf(row);
+                        var fresh = new ModRow
+                        {
+                            FileName = updated.FileName,
+                            Title = updated.Title,
+                            Version = string.IsNullOrWhiteSpace(updated.Version) ? "?" : updated.Version,
+                            Loader = updated.Loader,
+                            SizeText = FormatBytes(updated.SizeBytes),
+                            Error = updated.Error,
+                            Enabled = updated.Enabled,
+                            ProjectId = row.ProjectId,
+                            IconPath = row.IconPath
+                        };
+                        if (idx >= 0) _allMods[idx] = fresh;
+                    }
+                    row.NotifyStateChanged();
+                    ok++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"{row.FileName}: {ex.Message}");
+                }
+            }
+            ApplyFilter();
+            StatusText = errors.Count == 0
+                ? $"{ok} mod {(enabled ? "bekapcsolva" : "kikapcsolva")}."
+                : $"{ok} átkapcsolva, {errors.Count} hiba: " + string.Join("; ", errors.Take(2));
+        }
+        finally
+        {
+            _modsBusy = false;
+        }
+        await Task.CompletedTask;
+    }
+
+    /// <summary>Több kijelölt sor törlése egyszerre.</summary>
+    public async Task DeleteAsync(IReadOnlyList<ModRow> rows)
+    {
+        if (SelectedInstance is null) return;
+        var targets = (rows ?? Array.Empty<ModRow>()).ToList();
+        if (targets.Count == 0)
+        {
+            StatusText = "Válassz ki legalább egy modot a törléshez.";
+            return;
+        }
+        var ok = 0;
+        var errors = new List<string>();
+        foreach (var row in targets)
+        {
+            try
+            {
+                _services.Mods.RemoveMod(ModsDir, row.FileName);
+                ok++;
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{row.FileName}: {ex.Message}");
+            }
+        }
+        Refresh();
+        StatusText = errors.Count == 0
+            ? $"{ok} mod törölve."
+            : $"{ok} törölve, {errors.Count} hiba: " + string.Join("; ", errors.Take(2));
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Frissítés-ellenőrzés minden olyan sorra, aminek van Modrinth-metája.
+    /// Hálózati művelet: tömeges projekt-lekérés helyett verziólisták
+    /// mennek (projektenként egy hívás, párhuzamosítva).
+    /// </summary>
+    public async Task CheckUpdatesAsync()
+    {
+        if (SelectedInstance is null || _modsBusy) return;
+        if (!RequireLoader(out var mcVersion, out var loader)) return;
+        var targets = _allMods.Where(m => !string.IsNullOrWhiteSpace(m.ProjectId)).ToList();
+        if (targets.Count == 0)
+        {
+            StatusText = "Egyik modhoz sincs Modrinth-meta (kézzel bemásolt modok nem ellenőrizhetők).";
+            return;
+        }
+
+        _modsBusy = true;
+        try
+        {
+            StatusText = $"Frissítés-ellenőrzés ({targets.Count} mod)…";
+            var found = 0;
+            await Task.WhenAll(targets.Select(async row =>
+            {
+                try
+                {
+                    var info = await _services.ModrinthInstall.CheckForUpdateAsync(
+                        ModsDir, row.FileName, mcVersion, loader);
+                    if (info is not null)
+                    {
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            row.UpdateText = $"↑ {info.NewVersion}";
+                            row.HasUpdate = true;
+                        });
+                        System.Threading.Interlocked.Increment(ref found);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LauncherLogger.Debug($"Frissítés-ellenőrzés hiba ({row.FileName}): {ex.Message}");
+                }
+            }));
+            StatusText = found == 0
+                ? "Minden ellenőrzött mod naprakész."
+                : $"{found} modhoz érhető el frissítés.";
+        }
+        finally
+        {
+            _modsBusy = false;
+        }
+    }
+
+    /// <summary>Egy sor frissítése (ha van rá ajánlat).</summary>
+    public async Task UpdateRowAsync(ModRow? row)
+    {
+        if (row is null || !row.HasUpdate || SelectedInstance is null || _modsBusy) return;
+        if (!RequireLoader(out var mcVersion, out var loader)) return;
+        await UpdateRowsAsync(new List<ModRow> { row }, mcVersion, loader);
+    }
+
+    /// <summary>Minden frissíthető sor frissítése.</summary>
+    public async Task UpdateAllAsync()
+    {
+        if (SelectedInstance is null || _modsBusy) return;
+        if (!RequireLoader(out var mcVersion, out var loader)) return;
+        var targets = _allMods.Where(m => m.HasUpdate && !m.Updating).ToList();
+        if (targets.Count == 0)
+        {
+            StatusText = "Nincs frissíthető mod — futtasd előbb a Frissítések keresését.";
+            return;
+        }
+        await UpdateRowsAsync(targets, mcVersion, loader);
+    }
+
+    private async Task UpdateRowsAsync(List<ModRow> targets, string mcVersion, string loader)
+    {
+        _modsBusy = true;
+        var ok = 0;
+        var errors = new List<string>();
+        try
+        {
+            foreach (var row in targets)
+            {
+                row.Updating = true;
+                StatusText = $"Frissítés: {row.Title}…";
+                try
+                {
+                    var updated = await _services.ModrinthInstall.UpdateModAsync(
+                        ModsDir, row.FileName, mcVersion, loader);
+                    if (updated is not null) ok++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"{row.Title}: {ex.Message}");
+                    LauncherLogger.Error($"Mod-frissítés hiba ({row.FileName}): " + ex.Message);
+                }
+                finally
+                {
+                    row.Updating = false;
+                }
+            }
+        }
+        finally
+        {
+            _modsBusy = false;
+        }
+        Refresh();
+        StatusText = errors.Count == 0
+            ? $"{ok} mod frissítve."
+            : $"{ok} frissítve, {errors.Count} hiba: " + string.Join("; ", errors.Take(2));
+    }
+
+    private bool RequireLoader(out string mcVersion, out string loader)
+    {
+        mcVersion = "";
+        loader = "";
+        if (SelectedInstance is null) return false;
+        mcVersion = SelectedInstance.MinecraftVersion;
+        loader = (SelectedInstance.Loader ?? "none").ToLowerInvariant();
+        if (loader is "none" or "")
+        {
+            StatusText = "Frissítéshez előbb válassz loadert az Instance szerkesztésében.";
+            return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -415,8 +734,17 @@ public sealed class ModsViewModel : PropertyChangedBase
         try
         {
             _services.Mods.SetEnabled(ModsDir, row.FileName, enabled);
-            row.Enabled = enabled;
-            OnModStateChanged();
+            // A fájl átneveződött (.jar ↔ .jar.disabled): a sort az új néven
+            // kell újrakötni, különben a következő művelet rossz néven futna.
+            var newName = enabled
+                ? row.FileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase)
+                    ? row.FileName[..^".disabled".Length]
+                    : row.FileName
+                : row.FileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase)
+                    ? row.FileName
+                    : row.FileName + ".disabled";
+            Refresh();
+            SelectedMod = Mods.FirstOrDefault(m => m.FileName == newName);
             StatusText = enabled
                 ? $"{row.Title} bekapcsolva."
                 : $"{row.Title} kikapcsolva (következő indításkor nem töltődik be).";
@@ -452,28 +780,6 @@ public sealed class ModsViewModel : PropertyChangedBase
             StatusText = $"{ok} hozzáadva, {errors.Count} hiba: " + string.Join("; ", errors.Take(3));
         else if (ok > 0)
             StatusText = $"{ok} mod hozzáadva: {SelectedInstance.Name}.";
-        await Task.CompletedTask;
-    }
-
-    public async Task DeleteSelectedAsync()
-    {
-        var row = SelectedMod;
-        if (row is null || SelectedInstance is null)
-        {
-            StatusText = "Válassz ki egy modot a törléshez.";
-            return;
-        }
-        try
-        {
-            _services.Mods.RemoveMod(ModsDir, row.FileName);
-            StatusText = $"Törölve: {row.Title}";
-            Refresh();
-        }
-        catch (Exception ex)
-        {
-            StatusText = "Törlési hiba: " + ex.Message;
-            LauncherLogger.Error("Mod törlés hiba: " + ex.Message);
-        }
         await Task.CompletedTask;
     }
 
@@ -618,17 +924,10 @@ public sealed class ModsViewModel : PropertyChangedBase
 
     // ------------------------------------------------------------------
 
-    private void OnModStateChanged()
-    {
-        OnPropertyChanged(nameof(IsEmpty));
-        UpdateCount();
-        foreach (var m in Mods) m.NotifyStateChanged();
-    }
-
     private void UpdateCount()
     {
-        var on = Mods.Count(m => m.Enabled);
-        CountText = Mods.Count == 0 ? "" : $"{on}/{Mods.Count} bekapcsolva";
+        var on = _allMods.Count(m => m.Enabled);
+        CountText = _allMods.Count == 0 ? "" : $"{on}/{_allMods.Count} bekapcsolva";
     }
 
     private static string FormatBytes(long bytes)

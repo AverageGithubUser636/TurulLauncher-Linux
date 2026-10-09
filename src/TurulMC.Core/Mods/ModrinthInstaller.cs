@@ -101,6 +101,126 @@ public sealed class ModrinthInstaller
 
     // ------------------------------------------------------------------ mag
 
+    /// <summary>
+    /// Frissítés-ellenőrzés egy telepített modhoz (meta alapján).
+    /// Szabály: csak akkor ajánl, ha a legjobb kompatibilis verzió más
+    /// <c>versionId</c>-jú ÉS (üres a telepített verziószám VAGY bizonyítottan
+    /// újabb) — visszalépés (downgrade) soha, értelmezhetetlen számozásnál
+    /// inkább csend.
+    /// </summary>
+    /// <returns>A frissítési lehetőség, vagy <c>null</c>.</returns>
+    public async Task<ModUpdateInfo?> CheckForUpdateAsync(
+        string modsDir,
+        string fileName,
+        string minecraftVersion,
+        string loader,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(fileName)) return null;
+        var meta = ReadMeta(modsDir, fileName);
+        if (meta is null || string.IsNullOrWhiteSpace(meta.ProjectId)) return null;
+
+        var versions = await _client.GetVersionsAsync(
+            meta.ProjectId,
+            new[] { loader.ToLowerInvariant() },
+            new[] { minecraftVersion },
+            cancellationToken).ConfigureAwait(false);
+        var best = PickBest(versions);
+        if (best is null) return null;
+
+        if (best.VersionId.Equals(meta.VersionId, StringComparison.OrdinalIgnoreCase))
+            return null; // naprakész
+
+        if (!string.IsNullOrWhiteSpace(meta.VersionNumber) &&
+            !ModVersionOrder.IsNewer(best.VersionNumber, meta.VersionNumber))
+            return null; // nem bizonyítottan újabb (downgrade-védelem)
+
+        return new ModUpdateInfo(
+            ProjectId: meta.ProjectId,
+            CurrentVersion: meta.VersionNumber,
+            NewVersion: best.VersionNumber,
+            NewVersionId: best.VersionId,
+            NewFileName: best.Files.FirstOrDefault(f => f.Primary)?.FileName
+                ?? best.Files.FirstOrDefault()?.FileName ?? "");
+    }
+
+    /// <summary>
+    /// Egy mod frissítése a legjobb kompatibilis verzióra. A tiltott állapot
+    /// megmarad (a `.disabled` az új fájlra költözik), a régi fájl + metája
+    /// törlődik. Nincs frissítés → <c>null</c>.
+    /// </summary>
+    public async Task<InstalledModFile?> UpdateModAsync(
+        string modsDir,
+        string fileName,
+        string minecraftVersion,
+        string loader,
+        IProgress<DownloadProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        var info = await CheckForUpdateAsync(modsDir, fileName, minecraftVersion, loader, cancellationToken)
+            .ConfigureAwait(false);
+        if (info is null) return null;
+
+        var version = await _client.GetVersionAsync(info.NewVersionId, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException("A kiválasztott verzió már nem elérhető.");
+        EnsureCompatible(version, minecraftVersion, loader);
+
+        Directory.CreateDirectory(modsDir);
+        var wasDisabled = fileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase);
+        var baseName = wasDisabled ? fileName[..^".disabled".Length] : fileName;
+
+        var newFileName = await DownloadVersionFileAsync(
+            version, modsDir, "mod", progress, cancellationToken).ConfigureAwait(false);
+        WriteMeta(modsDir, newFileName, version);
+
+        // Régi fájl + régi meta takarítása (ha eltér az új névtől).
+        if (!baseName.Equals(newFileName, StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var oldPath = PathSecurity.ResolveInsideRoot(modsDir, Path.GetFileName(fileName));
+                PathSecurity.SafeDeleteFile(modsDir, oldPath);
+            }
+            catch (Exception ex)
+            {
+                LauncherLogger.Warning($"Régi modfájl törlése nem sikerült ({fileName}): {ex.Message}");
+            }
+            try
+            {
+                var oldMeta = Path.Combine(modsDir, ".turul-meta", baseName + ".json");
+                var newMeta = Path.Combine(modsDir, ".turul-meta", newFileName + ".json");
+                if (File.Exists(oldMeta) &&
+                    !oldMeta.Equals(newMeta, StringComparison.OrdinalIgnoreCase))
+                    File.Delete(oldMeta);
+            }
+            catch (Exception ex)
+            {
+                LauncherLogger.Warning($"Régi mod-meta törlése nem sikerült ({fileName}): {ex.Message}");
+            }
+        }
+
+        // Tiltott állapot átvitele az új fájlra.
+        if (wasDisabled)
+        {
+            var dest = PathSecurity.ResolveInsideRoot(modsDir, newFileName);
+            if (File.Exists(dest) && !newFileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                var disabled = dest + ".disabled";
+                if (File.Exists(disabled)) File.Delete(disabled);
+                File.Move(dest, disabled);
+            }
+        }
+
+        LauncherLogger.Info($"Mod frissítve: {fileName} → {newFileName} ({info.NewVersion})");
+        return new InstalledModFile(
+            ProjectId: version.ProjectId,
+            VersionId: version.VersionId,
+            VersionNumber: version.VersionNumber,
+            FileName: newFileName,
+            WasDependency: false);
+    }
+
     private async Task InstallVersionCoreAsync(
         ModrinthVersion version,
         string minecraftVersion,
@@ -393,13 +513,21 @@ public sealed class ModrinthInstaller
     }
 }
 
-/// <summary>Egy telepített Modrinth-fájl adatai.</summary>
+/// <summary>Egy telepített modfájl adatai.</summary>
 public sealed record InstalledModFile(
     string ProjectId,
     string VersionId,
     string VersionNumber,
     string FileName,
     bool WasDependency);
+
+/// <summary>Felajánlható mod-frissítés adatai.</summary>
+public sealed record ModUpdateInfo(
+    string ProjectId,
+    string CurrentVersion,
+    string NewVersion,
+    string NewVersionId,
+    string NewFileName);
 
 /// <summary>A <c>.turul-meta</c> fájlok tartalma.</summary>
 public sealed record ModInstallMeta(

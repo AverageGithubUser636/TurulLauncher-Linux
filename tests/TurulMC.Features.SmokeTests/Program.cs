@@ -46,6 +46,7 @@ internal static class Program
             UpdateTests();
             DisplayTextTests();
             LaunchSyncTests();
+            ContentOpsTests();
             await LinuxPortTestsAsync();
             await DoctorTestsAsync();
             await SupportBundleTestsAsync();
@@ -2120,6 +2121,167 @@ internal static class Program
             AssertEqual("fabric", settings.Loader, "kisbetűsítve");
             AssertEqual("0.16.14", settings.LoaderVersion, "verzió");
             AssertEqual(8192, settings.DefaultRamMb, "0 RAM nem ír felül");
+        });
+    }
+
+    // ---------------------------------------------------------------- Shader + frissítés + másolás
+
+    /// <summary>
+    /// Shaderek, mod-frissítés és instance-másolás/backup lefedése.
+    /// A hálózat stub handleren át megy.
+    /// </summary>
+    private static void ContentOpsTests()
+    {
+        var manager = new TurulMC.Core.Mods.ModManager();
+
+        Check("Shaderek: lista, ki/bekapcsolás, hozzáadás, törlés", () =>
+        {
+            var root = NewDirectory("shaders");
+            var game = Path.Combine(root, "game");
+            var shaders = Path.Combine(game, "shaderpacks");
+            Directory.CreateDirectory(shaders);
+            File.WriteAllText(Path.Combine(shaders, "szep.zip"), "PK");
+            File.WriteAllText(Path.Combine(shaders, "regi.zip.disabled"), "PK");
+            File.WriteAllText(Path.Combine(shaders, "leiras.txt"), "x");
+
+            var list = manager.ListShaders(game);
+            AssertEqual(2, list.Count, "csak a zip-ek");
+            Assert(list.First(s => s.FileName == "szep.zip").Enabled, "simma zip be");
+            Assert(!list.First(s => s.FileName == "regi.zip.disabled").Enabled, "disabled ki");
+
+            manager.SetShaderEnabled(game, "szep.zip", false);
+            Assert(File.Exists(Path.Combine(shaders, "szep.zip.disabled")), "kikapcsolva");
+            manager.SetShaderEnabled(game, "szep.zip.disabled", true);
+            Assert(File.Exists(Path.Combine(shaders, "szep.zip")), "visszakapcsolva");
+
+            var src = Path.Combine(root, "uj.zip");
+            File.WriteAllText(src, "PK");
+            var txtSrc = Path.Combine(root, "x.txt");
+            File.WriteAllText(txtSrc, "x");
+            AssertEqual("uj.zip", manager.AddShaderPack(game, src), "hozzáadva");
+            manager.RemoveShaderPack(game, "uj.zip");
+            Assert(!File.Exists(Path.Combine(shaders, "uj.zip")), "törölve");
+            AssertThrows<ArgumentException>(() => manager.AddShaderPack(game, txtSrc),
+                "nem zip elutasítva");
+        });
+
+        Check("Mod-frissítés: újabb verzió települ, tiltás megmarad", () =>
+        {
+            var routes = new RoutingHandler();
+            var v2json = "{\"id\":\"v2\",\"project_id\":\"testmod\",\"version_number\":\"1.1\",\"version_type\":\"release\",\"loaders\":[\"fabric\"],\"game_versions\":[\"1.21.1\"],\"files\":[{\"filename\":\"mod-1.1.jar\",\"url\":\"https://cdn.modrinth.com/data/t/mod-1.1.jar\",\"primary\":true,\"size\":10,\"hashes\":{}}],\"dependencies\":[]}";
+            routes.Map("version/v2", v2json);
+            // Modrinth-sorrend: legfrissebb elöl → PickBest a v2 release-t adja.
+            var v1json = "{\"id\":\"v1\",\"project_id\":\"testmod\",\"version_number\":\"1.0\",\"version_type\":\"release\",\"loaders\":[\"fabric\"],\"game_versions\":[\"1.21.1\"],\"files\":[{\"filename\":\"mod-1.0.jar\",\"url\":\"https://cdn.modrinth.com/data/t/mod-1.0.jar\",\"primary\":true,\"size\":10,\"hashes\":{}}],\"dependencies\":[]}";
+            routes.Map("project/testmod/version", "[" + v2json + "," + v1json + "]");
+            routes.MapBytes("cdn.modrinth.com/data/t/mod-1.1.jar",
+                "PK-mod-1.1!!!"u8.ToArray(), "application/java-archive");
+
+            var root = NewDirectory("mod-update");
+            var mods = Path.Combine(root, "mods");
+            Directory.CreateDirectory(Path.Combine(mods, ".turul-meta"));
+            File.WriteAllText(Path.Combine(mods, "mod-1.0.jar"), "PK-old");
+            File.WriteAllText(Path.Combine(mods, ".turul-meta", "mod-1.0.jar.json"),
+                """{"ProjectId":"testmod","VersionId":"v1","VersionNumber":"1.0","FileName":"mod-1.0.jar","InstalledAt":"2026-01-01T00:00:00Z"}""");
+
+            var installer = CreateInstaller(routes);
+            var info = installer.CheckForUpdateAsync(mods, "mod-1.0.jar", "1.21.1", "fabric")
+                .GetAwaiter().GetResult();
+            Assert(info is not null && info.NewVersion == "1.1", "frissítés felajánlva");
+
+            var updated = installer.UpdateModAsync(mods, "mod-1.0.jar", "1.21.1", "fabric")
+                .GetAwaiter().GetResult();
+            Assert(updated is not null && updated.FileName == "mod-1.1.jar", "új fájl");
+            Assert(File.Exists(Path.Combine(mods, "mod-1.1.jar")), "új fájl a helyén");
+            Assert(!File.Exists(Path.Combine(mods, "mod-1.0.jar")), "régi törölve");
+            var meta = TurulMC.Core.Mods.ModrinthInstaller.ReadMeta(mods, "mod-1.1.jar");
+            Assert(meta is not null && meta.VersionId == "v2", "meta frissítve");
+        });
+
+        Check("Mod-frissítés: tiltott mod tiltva marad, naprakészre nincs ajánlat", () =>
+        {
+            var routes = new RoutingHandler();
+            routes.Map("version/v2", """{"id":"v2","project_id":"testmod","version_number":"1.1","version_type":"release","loaders":["fabric"],"game_versions":["1.21.1"],"files":[{"filename":"mod-1.1.jar","url":"https://cdn.modrinth.com/data/t/mod-1.1.jar","primary":true,"size":10,"hashes":{}}],"dependencies":[]}""");
+            routes.Map("project/testmod/version", """
+                [{"id":"v2","project_id":"testmod","version_number":"1.1","version_type":"release",
+                  "loaders":["fabric"],"game_versions":["1.21.1"],
+                  "files":[{"filename":"mod-1.1.jar","url":"https://cdn.modrinth.com/data/t/mod-1.1.jar",
+                            "primary":true,"size":10,"hashes":{}}],
+                  "dependencies":[]}]
+                """);
+            routes.MapBytes("cdn.modrinth.com/data/t/mod-1.1.jar",
+                "PK-mod-1.1!!!"u8.ToArray(), "application/java-archive");
+
+            var root = NewDirectory("mod-update-dis");
+            var mods = Path.Combine(root, "mods");
+            Directory.CreateDirectory(Path.Combine(mods, ".turul-meta"));
+            File.WriteAllText(Path.Combine(mods, "mod-1.0.jar.disabled"), "PK-old");
+            File.WriteAllText(Path.Combine(mods, ".turul-meta", "mod-1.0.jar.json"),
+                """{"ProjectId":"testmod","VersionId":"v1","VersionNumber":"1.0","FileName":"mod-1.0.jar","InstalledAt":"2026-01-01T00:00:00Z"}""");
+
+            var installer = CreateInstaller(routes);
+            var updated = installer.UpdateModAsync(mods, "mod-1.0.jar.disabled", "1.21.1", "fabric")
+                .GetAwaiter().GetResult();
+            Assert(updated is not null, "frissült");
+            Assert(File.Exists(Path.Combine(mods, "mod-1.1.jar.disabled")), "új fájl tiltva maradt");
+            Assert(!File.Exists(Path.Combine(mods, "mod-1.1.jar")), "nincs engedélyezett duplikátum");
+            Assert(!File.Exists(Path.Combine(mods, "mod-1.0.jar.disabled")), "régi törölve");
+
+            // Naprakész: a meta már v2-re mutat.
+            File.WriteAllText(Path.Combine(mods, ".turul-meta", "mod-1.1.jar.json"),
+                """{"ProjectId":"testmod","VersionId":"v2","VersionNumber":"1.1","FileName":"mod-1.1.jar","InstalledAt":"2026-01-01T00:00:00Z"}""");
+            var none = installer.CheckForUpdateAsync(mods, "mod-1.1.jar.disabled", "1.21.1", "fabric")
+                .GetAwaiter().GetResult();
+            Assert(none is null, "naprakészre nincs ajánlat");
+
+            // Meta nélkül nincs ellenőrzés.
+            var nometa = installer.CheckForUpdateAsync(mods, "kezileg.jar", "1.21.1", "fabric")
+                .GetAwaiter().GetResult();
+            Assert(nometa is null, "meta nélkül nincs ajánlat");
+        });
+
+        Check("Instance: duplikálás (logs nélkül) és backup export", () =>
+        {
+            var root = NewDirectory("inst-copy");
+            var store = new TurulMC.Core.Storage.InstanceStore(
+                Path.Combine(root, "instances.json"),
+                Path.Combine(root, "instances"));
+            var list = new List<TurulMC.Core.Models.LauncherInstance>
+            {
+                new() { Id = "abc123", Name = "Eredeti", MinecraftVersion = "1.21.1",
+                        Loader = "fabric", RamMb = 4096 }
+            };
+            store.Save(list, "abc123");
+
+            var srcDir = store.GetInstanceDirectory("abc123");
+            Directory.CreateDirectory(Path.Combine(srcDir, "mods"));
+            Directory.CreateDirectory(Path.Combine(srcDir, "logs"));
+            File.WriteAllText(Path.Combine(srcDir, "mods", "a.jar"), "PK");
+            File.WriteAllText(Path.Combine(srcDir, "logs", "latest.log"), "log");
+            File.WriteAllText(Path.Combine(srcDir, "options.txt"), "opt");
+
+            var (created, targetDir) = store.CopyInstanceAsync("abc123", "Eredeti")
+                .GetAwaiter().GetResult();
+            Assert(created.Id != "abc123", "új azonosító");
+            Assert(created.Name != "Eredeti", "egyedi név: " + created.Name);
+            AssertEqual("fabric", created.Loader, "loader öröklődik");
+            Assert(File.Exists(Path.Combine(targetDir, "mods", "a.jar")), "mod másolva");
+            Assert(File.Exists(Path.Combine(targetDir, "options.txt")), "config másolva");
+            Assert(!Directory.Exists(Path.Combine(targetDir, "logs")), "logs kimarad");
+
+            var (reloadedActive, reloaded) = store.Load();
+            AssertEqual(2, reloaded.Count, "két instance mentve");
+            AssertEqual(created.Id, reloadedActive, "az új az aktív");
+
+            var zip = Path.Combine(root, "backup.zip");
+            store.ExportBackupAsync(created.Id, zip).GetAwaiter().GetResult();
+            Assert(File.Exists(zip), "zip elkészült");
+            using var archive = ZipFile.OpenRead(zip);
+            var names = archive.Entries.Select(e => e.FullName).ToArray();
+            Assert(names.Contains("mods/a.jar"), "mod a zipben");
+            Assert(!names.Any(n => n.StartsWith("logs/")), "logs nincs a zipben");
+
+            AssertThrows<InvalidOperationException>(() =>
+                store.CopyInstanceAsync("nincs", "X").GetAwaiter().GetResult(), "hiányzó forrás");
         });
     }
 

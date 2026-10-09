@@ -208,13 +208,15 @@ public sealed class InstanceStore
         return ok.Trim('.', '_');
     }
 
-    private static void HydrateModpackMetadata(LauncherInstance instance)
+    private void HydrateModpackMetadata(LauncherInstance instance)
     {
         if (!string.IsNullOrWhiteSpace(instance.ModpackProjectId) &&
             !string.IsNullOrWhiteSpace(instance.ModpackVersionId))
             return;
 
-        var dir = Path.Combine(LauncherPaths.InstancesRoot, SanitizeId(instance.Id));
+        // FIGYELEM: a globális gyökér helyett a példány gyökerét használjuk,
+        // különben a tesztek a valódi adatkönyvtárba nyúlnának.
+        var dir = Path.Combine(_instancesRoot, SanitizeId(instance.Id));
         var path = Path.Combine(dir, ".turul-modpack.json");
         if (!File.Exists(path)) return;
 
@@ -230,6 +232,173 @@ public sealed class InstanceStore
         {
             LauncherLogger.Warning($"Modpack metaadat nem olvasható ({instance.Name}): {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Instance duplikálása: új azonosító + másolt mappa (a <c>logs</c> és
+    /// <c>crash-reports</c> kivételével), a lista végére fűzve és mentve
+    /// (az új példány lesz az aktív). A modpack-kötés megmarad.
+    /// </summary>
+    public async Task<(LauncherInstance Instance, string Directory)> CopyInstanceAsync(
+        string sourceId,
+        string newName,
+        IProgress<(string Text, double Percent)>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        var (activeId, list) = Load();
+        var source = list.FirstOrDefault(x => x.Id == sourceId)
+            ?? throw new InvalidOperationException("A másolandó Instance nem található.");
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new ArgumentException("Adj meg egy nevet a másolathoz.", nameof(newName));
+
+        var name = MakeUniqueName(newName.Trim(), list);
+        var created = new LauncherInstance
+        {
+            Id = Guid.NewGuid().ToString("N")[..12],
+            Name = name,
+            MinecraftVersion = source.MinecraftVersion,
+            Loader = source.Loader,
+            LoaderVersion = source.LoaderVersion,
+            RamMb = source.RamMb,
+            JavaPath = source.JavaPath,
+            JvmArgs = source.JvmArgs,
+            WindowWidth = source.WindowWidth,
+            WindowHeight = source.WindowHeight,
+            Notes = source.Notes,
+            ModpackProjectId = source.ModpackProjectId,
+            ModpackVersionId = source.ModpackVersionId,
+            ModpackName = source.ModpackName,
+            CreatedAt = DateTime.UtcNow,
+            LastUsed = DateTime.UtcNow
+        };
+
+        var sourceDir = GetInstanceDirectory(source.Id);
+        var targetDir = GetInstanceDirectory(created.Id);
+        Directory.CreateDirectory(targetDir);
+
+        try
+        {
+            await CopyDirectoryAsync(sourceDir, targetDir, progress, cancellationToken)
+                .ConfigureAwait(false);
+
+            var newList = new List<LauncherInstance>(list) { created };
+            var save = Save(newList, created.Id);
+            if (!save.Success)
+                throw new IOException("Instance mentése nem sikerült: " + save.Error);
+
+            LauncherLogger.Info($"Instance duplikálva: {source.Name} → {name}");
+            return (created, targetDir);
+        }
+        catch
+        {
+            try { if (Directory.Exists(targetDir)) Directory.Delete(targetDir, true); } catch { }
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Instance biztonsági mentése ZIP-be (világ, modok, config — a
+    /// <c>logs</c> és <c>crash-reports</c> mappák nélkül).
+    /// </summary>
+    public async Task<string> ExportBackupAsync(
+        string instanceId,
+        string outputZip,
+        IProgress<(string Text, double Percent)>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        var sourceDir = GetInstanceDirectory(instanceId);
+        if (!Directory.Exists(sourceDir))
+            throw new DirectoryNotFoundException("Az Instance mappa nem található: " + sourceDir);
+
+        var skipDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "logs", "crash-reports" };
+
+        var files = Directory.EnumerateFiles(sourceDir, "*", SearchOption.AllDirectories)
+            .Select(full => Path.GetRelativePath(sourceDir, full).Replace('\\', '/'))
+            .Where(rel =>
+            {
+                var top = rel.Contains('/') ? rel[..rel.IndexOf('/')] : rel;
+                return !skipDirs.Contains(top);
+            })
+            .OrderBy(rel => rel, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (files.Length == 0)
+            throw new InvalidOperationException("Nincs menthető fájl az Instance-ban.");
+
+        var outDir = Path.GetDirectoryName(Path.GetFullPath(outputZip));
+        if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
+        if (File.Exists(outputZip)) File.Delete(outputZip);
+
+        using var zip = System.IO.Compression.ZipFile.Open(outputZip, System.IO.Compression.ZipArchiveMode.Create);
+        for (var i = 0; i < files.Length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var rel = files[i];
+            progress?.Report(($"Mentés ({i + 1}/{files.Length}): {rel}",
+                files.Length == 0 ? 100 : (i * 100.0 / files.Length)));
+            var full = Path.Combine(sourceDir, rel);
+            var entry = zip.CreateEntry(rel, System.IO.Compression.CompressionLevel.Optimal);
+            await using var src = File.OpenRead(full);
+            await using var dst = entry.Open();
+            await src.CopyToAsync(dst, cancellationToken).ConfigureAwait(false);
+        }
+
+        progress?.Report(("Kész.", 100));
+        LauncherLogger.Info($"Instance backup készítve: {outputZip} ({files.Length} fájl)");
+        return outputZip;
+    }
+
+    private static string MakeUniqueName(string wanted, List<LauncherInstance> instances)
+    {
+        var names = new HashSet<string>(
+            instances.Select(i => i.Name), StringComparer.OrdinalIgnoreCase);
+        if (!names.Contains(wanted)) return wanted.Length > 48 ? wanted[..48].Trim() : wanted;
+        for (var i = 2; i < 1000; i++)
+        {
+            var candidate = $"{wanted} ({i})";
+            if (candidate.Length > 48) candidate = $"{wanted[..Math.Max(0, 48 - $" ({i})".Length)].Trim()} ({i})";
+            if (!names.Contains(candidate)) return candidate;
+        }
+        return $"{wanted} {Guid.NewGuid():N}";
+    }
+
+    private static async Task CopyDirectoryAsync(
+        string sourceDir,
+        string targetDir,
+        IProgress<(string Text, double Percent)>? progress,
+        CancellationToken cancellationToken)
+    {
+        if (!Directory.Exists(sourceDir)) return;
+
+        var skipDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "logs", "crash-reports" };
+
+        var files = Directory.EnumerateFiles(sourceDir, "*", SearchOption.AllDirectories)
+            .Select(full => Path.GetRelativePath(sourceDir, full).Replace('\\', '/'))
+            .Where(rel =>
+            {
+                var top = rel.Contains('/') ? rel[..rel.IndexOf('/')] : rel;
+                return !skipDirs.Contains(top);
+            })
+            .OrderBy(rel => rel, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        for (var i = 0; i < files.Length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var rel = files[i];
+            progress?.Report(($"Másolás ({i + 1}/{files.Length}): {rel}",
+                files.Length == 0 ? 100 : (i * 100.0 / files.Length)));
+            var dest = Path.Combine(targetDir, rel);
+            var destDir = Path.GetDirectoryName(dest);
+            if (!string.IsNullOrEmpty(destDir)) Directory.CreateDirectory(destDir);
+            using var src = File.OpenRead(Path.Combine(sourceDir, rel));
+            await using var dst = File.Create(dest);
+            await src.CopyToAsync(dst, cancellationToken).ConfigureAwait(false);
+        }
+
+        progress?.Report(("Kész.", 100));
     }
 
     public readonly record struct SaveResult(bool Success, string? Error)

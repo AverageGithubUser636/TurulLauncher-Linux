@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using TurulMC.Core.Logging;
 using TurulMC.Core.Models;
@@ -83,6 +84,47 @@ public partial class HomeView : UserControl
     private async void OnDeleteInstance(object? sender, RoutedEventArgs e)
         => await _vm.DeleteSelectedAsync();
 
+    private async void OnDuplicateInstance(object? sender, RoutedEventArgs e)
+        => await _vm.DuplicateSelectedAsync();
+
+    private async void OnBackupInstance(object? sender, RoutedEventArgs e)
+    {
+        var top = TopLevel.GetTopLevel(this);
+        if (top?.StorageProvider is null)
+        {
+            _vm.StatusText = "Fájlválasztó nem elérhető.";
+            return;
+        }
+        var instance = _vm.SelectedInstance;
+        if (instance is null)
+        {
+            _vm.StatusText = "Válassz ki egy Instance-t a backuphoz.";
+            return;
+        }
+        var file = await top.StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions
+            {
+                Title = "Instance backup mentése",
+                SuggestedFileName = SanitizeFileName(instance.Name) + "-backup.zip",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("ZIP archívum")
+                    {
+                        Patterns = new[] { "*.zip" }
+                    }
+                }
+            });
+        if (file is null) return;
+        await _vm.ExportBackupAsync(file.Path.LocalPath);
+    }
+
+    private static string SanitizeFileName(string name)
+    {
+        var clean = string.Join("_", (name ?? "instance").Split(Path.GetInvalidFileNameChars()));
+        clean = clean.Trim();
+        return string.IsNullOrWhiteSpace(clean) ? "instance" : clean;
+    }
+
     private void OnGotoUpdate(object? sender, RoutedEventArgs e)
         => _vm.GoToUpdate();
 }
@@ -151,7 +193,7 @@ public sealed class HomeViewModel : PropertyChangedBase
     public string UpdateBannerText { get => _updateBannerText; private set => Raise(ref _updateBannerText, value); }
 
     /// <summary>Ugrás a Frissítés-lapra (a shell végzi a váltást).</summary>
-    public void GoToUpdate() => _services.RequestNavigate(7);
+    public void GoToUpdate() => _services.RequestNavigate(8);
 
     /// <summary>Az új-Instance dialógus sablon-értékei a globális beállításokból.</summary>
     public string SettingsMinecraftVersion => _services.Settings.MinecraftVersion;
@@ -352,6 +394,80 @@ public sealed class HomeViewModel : PropertyChangedBase
         OnPropertyChanged(nameof(IsEmpty));
         StatusText = $"Törölve: {instance.Name}";
         await Task.CompletedTask;
+    }
+
+    /// <summary>Kiválasztott Instance duplikálása (mappa-másolattal).</summary>
+    public async Task DuplicateSelectedAsync()
+    {
+        var instance = SelectedInstance;
+        if (instance is null)
+        {
+            StatusText = "Válassz ki egy Instance-t a duplikáláshoz.";
+            return;
+        }
+        if (_busy) return;
+        _busy = true;
+        OnPropertyChanged(nameof(CanPlay));
+        ProgressVisible = true;
+        try
+        {
+            var progress = new Progress<(string Text, double Percent)>(p =>
+                SetProgress(p.Text, p.Percent));
+            var (created, _) = await _services.Instances.CopyInstanceAsync(
+                instance.Id, instance.Name + " másolata", progress);
+
+            _activeId = created.Id;
+            ReloadInstances();
+            SelectedInstance = Instances.FirstOrDefault(x => x.Id == created.Id);
+            StatusText = $"Duplikálva: {created.Name}";
+            _services.NotifyInstancesChanged();
+        }
+        catch (Exception ex)
+        {
+            StatusText = "Duplikálási hiba: " + ex.Message;
+            LauncherLogger.Error("Instance duplikálás hiba: " + ex.Message);
+        }
+        finally
+        {
+            _busy = false;
+            ProgressVisible = false;
+            Progress = 0;
+            OnPropertyChanged(nameof(CanPlay));
+        }
+    }
+
+    /// <summary>Backup ZIP készítése a kiválasztott Instance-ről.</summary>
+    public async Task ExportBackupAsync(string outputZip)
+    {
+        var instance = SelectedInstance;
+        if (instance is null)
+        {
+            StatusText = "Válassz ki egy Instance-t a backuphoz.";
+            return;
+        }
+        if (_busy) return;
+        _busy = true;
+        OnPropertyChanged(nameof(CanPlay));
+        ProgressVisible = true;
+        try
+        {
+            var progress = new Progress<(string Text, double Percent)>(p =>
+                SetProgress(p.Text, p.Percent));
+            await _services.Instances.ExportBackupAsync(instance.Id, outputZip, progress);
+            StatusText = $"Backup kész: {outputZip}";
+        }
+        catch (Exception ex)
+        {
+            StatusText = "Backup hiba: " + ex.Message;
+            LauncherLogger.Error("Instance backup hiba: " + ex.Message);
+        }
+        finally
+        {
+            _busy = false;
+            ProgressVisible = false;
+            Progress = 0;
+            OnPropertyChanged(nameof(CanPlay));
+        }
     }
 
     private void SetProgress(string text, double percent)

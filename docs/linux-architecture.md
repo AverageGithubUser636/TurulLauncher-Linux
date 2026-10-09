@@ -24,15 +24,17 @@ TurulMC.sln (lásd: csak a fork-projekt van bekötve + Core/Infra/tesztek)
 
 | Lap | VM | Core-kapcsolat |
 |---|---|---|
-| Játék (`HomeView`) | `HomeViewModel` | `LaunchInstanceAsync`, `Instances` |
-| Modok (`ModsView`) | `ModsViewModel` + `SearchRow` | `ModManager`, `Modrinth*`, `Icons` |
+| Játék (`HomeView`) | `HomeViewModel` | `LaunchInstanceAsync`, `Instances` (+ duplikálás/backup) |
+| Modok (`ModsView`) | `ModsViewModel` + `SearchRow` | `ModManager`, `Modrinth*`, `Icons` (+ frissítés/szűrő/bulk) |
 | Textúrák (`ResourcePacksView`) | u.a. packekre | `ModManager`, `Modrinth*` |
+| Shaderek (`ShadersView`) | `ShadersViewModel` | `ModManager` (shader-műveletek), `Modrinth*` |
 | Modpackok (`ModpacksView`) | `ModpacksViewModel` | `PackInstaller`, `ModpackPackager` |
 | Szerverek (`ServersView`) | `ServersViewModel` | `Servers`, `ServerStatus` |
 | Java (`JavaView`) | `JavaViewModel` | `Java`, `JavaProvisioner` |
 | Beállítások (`SettingsView`) | `SettingsViewModel` | `SettingsStorage`, `Auth`, `ThemeService` |
 | Frissítés (`UpdateView`) | `UpdateViewModel` | `Updates` |
 | Doctor (`DoctorView`) | `DoctorViewModel` | `LauncherDoctor` |
+| Naplók (`LogsView`) | `LogsViewModel` | `LauncherPaths.LogsRoot`, instance `logs/` + `crash-reports/` |
 | Splash / Betöltőfigyelő / Instance-szerkesztő | kód-behind + mini-VM | `GameLoadingStatus`, settings |
 
 MVVM-lite: `PropertyChangedBase` (INotifyPropertyChanged), nincs DI-konténer —

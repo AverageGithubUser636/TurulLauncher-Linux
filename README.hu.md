@@ -28,11 +28,13 @@ Menübejegyzés minden disztrón működik (GNOME, KDE, XFCE, …).
 
 | Terület | Mit tud |
 |---|---|
-| 🎮 Játék | Instance-ok, Fabric/vanilla indítás, világ/RAM/Java instance-onként |
-| 🧩 Modok | ki/bekapcsolás, fájl-hozzáadás, **Modrinth-böngészés** (függőségekkel!) |
+| 🎮 Játék | Instance-ok, Fabric/vanilla indítás, világ/RAM/Java instance-onként, duplikálás + backup export |
+| 🧩 Modok | ki/bekapcsolás, fájl-hozzáadás, keresés/szűrés, tömeges műveletek, **Modrinth-böngészés** (függőségekkel!), **egykattintásos frissítés** |
 | 🗺 Textúrák | resource pack lista, `options.txt`-alapú kapcsolás, Modrinth |
+| ✨ Shaderek | shaderpack lista, átnevezéses kapcsolás, Modrinth shader-böngészés |
 | 📦 Modpackok | Modrinth-böngészés, `.mrpack` import/export új Instance-ba |
 | 🌐 Szerverek | mentett szerverek, élő ping, egykattintásos csatlakozás |
+| 📋 Naplók | játék/launcher/crash naplók farka, csak olvasható nézet |
 | ☕ Java | észlelt runtime-ok, Temurin-telepítés, ajánlás az Instance-hoz |
 | 🎨 Témák | 5 színséma (arany/zöld/piros/lila/égszín) + Turul-logók |
 | ⚕ Doctor | 17 ellenőrzés, support-csomag |

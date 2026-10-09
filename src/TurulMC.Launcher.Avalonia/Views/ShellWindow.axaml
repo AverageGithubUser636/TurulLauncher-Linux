@@ -95,12 +95,14 @@
             <views:HomeView x:Name="HomePage" />
             <views:ModsView x:Name="ModsPage" IsVisible="False" />
             <views:ResourcePacksView x:Name="PacksPage" IsVisible="False" />
+            <views:ShadersView x:Name="ShadersPage" IsVisible="False" />
             <views:ModpacksView x:Name="ModpacksPage" IsVisible="False" />
             <views:ServersView x:Name="ServersPage" IsVisible="False" />
             <views:JavaView x:Name="JavaPage" IsVisible="False" />
             <views:SettingsView x:Name="SettingsPage" IsVisible="False" />
             <views:UpdateView x:Name="UpdatePage" IsVisible="False" />
             <views:DoctorView x:Name="DoctorPage" IsVisible="False" />
+            <views:LogsView x:Name="LogsPage" IsVisible="False" />
         </Panel>
 
     </Grid>

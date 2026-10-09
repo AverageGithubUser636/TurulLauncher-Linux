@@ -261,9 +261,113 @@ public sealed class ModManager
         return result;
     }
 
+    // ------------------------------------------------------------ shaderek
+
+    /// <summary>
+    /// Shaderpackek (<c>shaderpacks/*.zip</c>). A ki/bekapcsolás a modokhoz
+    /// hasonlóan átnevezéssel történik (<c>.zip.disabled</c>), mert az Iris
+    /// csak a <c>.zip</c> végűeket tölti be — nincs options.txt-kapcsoló.
+    /// </summary>
+    public IReadOnlyList<ManagedShader> ListShaders(string gameDir)
+    {
+        var result = new List<ManagedShader>();
+        var shadersDir = ShaderRoot(gameDir);
+        if (!Directory.Exists(shadersDir)) return result;
+
+        string[] files;
+        try
+        {
+            files = Directory.GetFiles(shadersDir, "*.zip*");
+        }
+        catch (Exception ex)
+        {
+            LauncherLogger.Warning($"Shader lista olvasási hiba ({shadersDir}): {ex.Message}");
+            return result;
+        }
+
+        foreach (var file in files.OrderBy(f => f, StringComparer.OrdinalIgnoreCase))
+        {
+            var name = Path.GetFileName(file);
+            if (!IsShaderFileName(name)) continue;
+            long size;
+            try { size = new FileInfo(file).Length; } catch { size = 0; }
+            result.Add(new ManagedShader(
+                FileName: name,
+                Enabled: !name.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase),
+                SizeBytes: size));
+        }
+
+        return result;
+    }
+
+    public void SetShaderEnabled(string gameDir, string fileName, bool enabled)
+    {
+        var shadersDir = ShaderRoot(gameDir);
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("Üres shader fájlnév.");
+        var current = PathSecurity.ResolveInsideRoot(shadersDir, Path.GetFileName(fileName));
+        var name = Path.GetFileName(current);
+        if (!IsShaderFileName(name))
+            throw new ArgumentException("Csak .zip / .zip.disabled kezelhető.");
+        if (!File.Exists(current))
+            throw new FileNotFoundException("A shader nem található.", current);
+
+        var isDisabled = name.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase);
+        if (enabled == !isDisabled) return;
+
+        var targetName = enabled ? TrimDisabledSuffix(name) : name + ".disabled";
+        var target = PathSecurity.ResolveInsideRoot(shadersDir, targetName);
+        if (File.Exists(target))
+            throw new IOException($"Már létezik ilyen fájl: {targetName}");
+
+        File.Move(current, target);
+        LauncherLogger.Info($"Shader {(enabled ? "bekapcsolva" : "kikapcsolva")}: {name} → {targetName}");
+    }
+
+    /// <returns>A telepített fájl neve a shaderpacks mappában.</returns>
+    public string AddShaderPack(string gameDir, string sourcePath)
+    {
+        if (string.IsNullOrWhiteSpace(sourcePath) || !File.Exists(sourcePath))
+            throw new FileNotFoundException("A forrásfájl nem létezik.", sourcePath);
+
+        var sourceName = Path.GetFileName(sourcePath);
+        if (!sourceName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Csak .zip fájl adható hozzá shaderként.");
+
+        var size = new FileInfo(sourcePath).Length;
+        if (size <= 0 || size > MaxPackBytes)
+            throw new IOException($"A shader fájlméret érvénytelen (max. {MaxPackBytes / 1024 / 1024} MB).");
+
+        var shadersDir = ShaderRoot(gameDir);
+        Directory.CreateDirectory(shadersDir);
+        var targetName = UniqueFileName(shadersDir, sourceName);
+        var target = PathSecurity.ResolveInsideRoot(shadersDir, targetName);
+        File.Copy(sourcePath, target);
+        LauncherLogger.Info($"Shader hozzáadva: {targetName}");
+        return targetName;
+    }
+
+    public void RemoveShaderPack(string gameDir, string fileName)
+    {
+        var shadersDir = ShaderRoot(gameDir);
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("Üres shader fájlnév.");
+        var path = PathSecurity.ResolveInsideRoot(shadersDir, Path.GetFileName(fileName));
+        if (!IsShaderFileName(Path.GetFileName(path)))
+            throw new ArgumentException("Csak .zip / .zip.disabled kezelhető.");
+        PathSecurity.SafeDeleteFile(shadersDir, path);
+        LauncherLogger.Info($"Shader törölve: {Path.GetFileName(path)}");
+    }
+
     // ------------------------------------------------------------------ segédek
 
     private static string PackRoot(string gameDir) => Path.Combine(gameDir, "resourcepacks");
+
+    private static string ShaderRoot(string gameDir) => Path.Combine(gameDir, "shaderpacks");
+
+    private static bool IsShaderFileName(string name)
+        => name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
+           name.EndsWith(".zip.disabled", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsModFileName(string name)
         => name.EndsWith(".jar", StringComparison.OrdinalIgnoreCase) ||
@@ -376,4 +480,10 @@ public sealed record ManagedPack(
     bool Active,
     string Description,
     int? PackFormat,
+    long SizeBytes);
+
+/// <summary>Egy felismert shaderpack a shaderpacks mappában.</summary>
+public sealed record ManagedShader(
+    string FileName,
+    bool Enabled,
     long SizeBytes);

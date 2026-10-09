@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TurulMC.Launcher.Avalonia.Views.LogsView">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26,22,26,20">
+
+        <!-- Fejléc -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
+            <TextBlock Text="Naplók" FontSize="24" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulTextBrush}"/>
+            <TextBlock Text="Játék- és launcher-naplók farka — csak olvasható nézet."
+                       FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
+        </StackPanel>
+
+        <!-- Forrásválasztó -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Forrás:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+                <ComboBox ItemsSource="{Binding Sources}"
+                          SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                          MinWidth="200"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
+                        IsVisible="{Binding ShowInstancePicker}">
+                <TextBlock Text="Instance:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+                <ComboBox ItemsSource="{Binding Instances}"
+                          SelectedItem="{Binding SelectedInstance, Mode=TwoWay}"
+                          MinWidth="180" MaxWidth="280">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBlock Grid.Column="2" Text="{Binding CountText}" FontSize="12"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource TurulTextFaintBrush}"/>
+            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8">
+                <Button Content="Frissítés" Click="OnRefresh"
+                        Background="{StaticResource TurulSurface2Brush}"
+                        Foreground="{StaticResource TurulTextBrush}"
+                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                        Padding="12,7" CornerRadius="8" FontSize="12"/>
+                <Button Content="Mappa megnyitása" Click="OnOpenFolder"
+                        Background="Transparent"
+                        Foreground="{StaticResource TurulTextDimBrush}"
+                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                        Padding="12,7" CornerRadius="8" FontSize="12"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Tartalom -->
+        <Grid Grid.Row="2" ColumnDefinitions="280,*" ColumnSpacing="14">
+            <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    CornerRadius="10" Padding="6">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Spacing="8" Margin="16,24" MaxWidth="240">
+                        <Border Width="48" Height="48" CornerRadius="24"
+                                HorizontalAlignment="Center"
+                                Background="{StaticResource TurulSurface2Brush}"
+                                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                            <TextBlock Text="📋" FontSize="20" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Nincs naplófájl" FontSize="14" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                   Foreground="{StaticResource TurulTextBrush}"/>
+                        <TextBlock Text="Indítsd el a játékot, vagy válassz másik forrást."
+                                   FontSize="12" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                    </StackPanel>
+                    <ListBox Background="Transparent" BorderThickness="0"
+                             ItemsSource="{Binding Files}"
+                             SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="8,6" Spacing="2">
+                                    <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                    <TextBlock FontSize="10" Foreground="{StaticResource TurulTextFaintBrush}">
+                                        <Run Text="{Binding SizeText}"/><Run Text=" · "/><Run Text="{Binding ModifiedText}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="1" Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    CornerRadius="10" Padding="4">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding ContentHint}" FontSize="10"
+                               Margin="12,8,12,4"
+                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                    <ScrollViewer x:Name="ContentScroller" Margin="4,0,4,4">
+                        <TextBlock Text="{Binding Content}" FontSize="11" TextWrapping="Wrap"
+                                   Margin="8,0,8,8" FontFamily="monospace"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Alsó sáv -->
+        <TextBlock Grid.Row="3" Text="{Binding StatusText}" FontSize="12" Margin="0,12,0,0"
+                   Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
+    </Grid>
+</UserControl>

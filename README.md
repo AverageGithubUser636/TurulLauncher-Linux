@@ -29,11 +29,13 @@ Menu entry works on every distro (GNOME, KDE, XFCE, …).
 
 | Area | What it does |
 |---|---|
-| 🎮 Play | Instances, Fabric/vanilla launch, per-instance world/RAM/Java |
-| 🧩 Mods | enable/disable, add from file, **Modrinth browser** (with dependencies!) |
+| 🎮 Play | Instances, Fabric/vanilla launch, per-instance world/RAM/Java, duplicate + backup export |
+| 🧩 Mods | enable/disable, add from file, search/filter, bulk ops, **Modrinth browser** (with dependencies!), **one-click updates** |
 | 🗺 Textures | resource pack list, `options.txt`-based toggling, Modrinth |
+| ✨ Shaders | shaderpack list, rename-toggle, Modrinth shader browser |
 | 📦 Modpacks | Modrinth browser, `.mrpack` import/export into new instances |
 | 🌐 Servers | saved servers, live ping, one-click join |
+| 📋 Logs | game/launcher/crash log tails, read-only viewer |
 | ☕ Java | detected runtimes, Temurin install, per-instance recommendation |
 | 🎨 Themes | 5 color schemes (gold/green/red/purple/sky) + Turul logos |
 | ⚕ Doctor | 17 checks, support bundle |

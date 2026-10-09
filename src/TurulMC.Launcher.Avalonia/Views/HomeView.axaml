@@ -106,6 +106,16 @@
                             Foreground="{StaticResource TurulTextBrush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
                             Padding="12,7" CornerRadius="8" FontSize="12"/>
+                    <Button Content="Duplikálás" Click="OnDuplicateInstance"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulTextBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
+                    <Button Content="Backup…" Click="OnBackupInstance"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulTextBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
                     <Button Content="Törlés" Click="OnDeleteInstance"
                             Background="Transparent"
                             Foreground="{StaticResource TurulDangerBrush}"

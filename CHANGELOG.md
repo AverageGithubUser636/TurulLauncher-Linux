@@ -5,6 +5,31 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+### Added
+
+- ✨ **Shaderek-lap**: shaderpack lista átnevezéses ki/bekapcsolással
+  (`.zip.disabled`, Iris-kompatibilis), fájl-hozzáadás, törlés,
+  Modrinth shader-böngészés ikonokkal + egykattintásos telepítéssel
+- 🔄 **Mod-frissítések**: frissítés-ellenőrzés minden Modrinth-metás modhoz
+  (downgrade-védelemmel), soronkénti „↑ verzió" jelzés, kijelölt/összes
+  frissítése; a tiltott állapot az új fájlra költözik
+- 🔍 **Mod-kereső és szűrők**: szöveges keresés (név/fájlnév) + állapot
+  (Mind/Bekapcsolt/Kikapcsolt/Hibás) a telepített listán
+- ☑️ **Tömeges mod-műveletek**: Mind be / Mind ki, többszörös kijelölés
+  törlése; a kapcsolás már az átnevezett fájlnevet követi
+- 📋 **Naplók-lap**: játéknapló / crash report / launcher-napló tallózása
+  (256 KB + 400 soros farok-korlát, autoscroll, mappa-megnyitás)
+- ⧉ **Instance-duplikálás**: teljes másolat új azonosítóval (`logs` nélkül),
+  a többi nézet értesítést kap (`InstancesChanged`)
+- 💾 **Instance-backup**: ZIP-export (`logs`/`crash-reports` nélkül)
+  fájlmentés-párbeszéddel
+
+### Changed
+
+- `InstanceStore` teszt-izolált gyökérrel (`HydrateModpackMetadata` is);
+  `CopyInstanceAsync` + `ExportBackupAsync` új Core-műveletek
+- Nav bővítve: Shaderek (Tartalom), Naplók (Rendszer végén)
+
 ## [1.0.0] — 2026-10-08 — első Linux-kiadás 🎉
 
 Ez **major** kiadás: új termék, nem a Windows-verzió átirata. Natív
