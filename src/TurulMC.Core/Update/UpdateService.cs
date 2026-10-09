@@ -169,6 +169,68 @@ public sealed class UpdateService
     }
 
     /// <summary>
+    /// AppImage önfrissítés: a manifest URL-ről letöltött `.AppImage`
+    /// SHA-256 ellenőrzéssel, atomikusan (azonos könyvtáras átnevezéssel)
+    /// átveszi a futó AppImage helyét, és futtathatóvá válik. Az újraindítást
+    /// a hívó végzi (a `$APPIMAGE` útvonalon). Csak akkor hívható, ha
+    /// `appImagePath` létező fájlra mutat — tipikusan a `$APPIMAGE` értékére.
+    /// </summary>
+    public async Task InstallAppImageAsync(
+        LauncherUpdateManifest manifest,
+        string appImagePath,
+        IProgress<DownloadProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+        if (string.IsNullOrWhiteSpace(appImagePath) || !File.Exists(appImagePath))
+            throw new InvalidOperationException(
+                "AppImage-frissítéshez a futó AppImage útvonala kell ($APPIMAGE).");
+        if (string.IsNullOrWhiteSpace(manifest.Url) ||
+            !manifest.Url.EndsWith(".AppImage", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("A manifest nem AppImage-csomagra mutat.");
+        if (string.IsNullOrWhiteSpace(manifest.Sha256))
+            throw new InvalidOperationException("A manifestben nincs SHA-256 — ellenőrzés nélkül nem telepítünk.");
+
+        EnsureSafeUpdateUrl(manifest.Url);
+
+        var dir = Path.GetDirectoryName(Path.GetFullPath(appImagePath))
+            ?? throw new InvalidOperationException("Érvénytelen AppImage-útvonal.");
+        var temp = Path.Combine(dir, Path.GetFileName(appImagePath) + ".download");
+        try
+        {
+            await DownloadToFileAsync(manifest.Url, temp, progress, cancellationToken)
+                .ConfigureAwait(false);
+            VerifySha256(temp, manifest.Sha256);
+
+            // Futtatható bit (0755), mint az eredeti AppImage-eken.
+            // Csak Unixon: Windowson a SetUnixFileMode nem támogatott.
+            if (!OperatingSystem.IsWindows())
+            {
+                File.SetUnixFileMode(temp,
+                    UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
+                    UnixFileMode.GroupRead | UnixFileMode.GroupExecute |
+                    UnixFileMode.OtherRead | UnixFileMode.OtherExecute);
+            }
+
+            if (File.Exists(appImagePath)) File.Delete(appImagePath);
+            File.Move(temp, appImagePath);
+            LauncherLogger.Info($"AppImage frissítve: {manifest.Version}");
+        }
+        finally
+        {
+            try { if (File.Exists(temp)) File.Delete(temp); } catch { }
+        }
+
+        progress?.Report(new DownloadProgress
+        {
+            FileName = Path.GetFileName(appImagePath),
+            BytesReceived = 1,
+            TotalBytes = 1,
+            Status = "done"
+        });
+    }
+
+    /// <summary>
     /// Hordozható frissítés: ZIP letöltés SHA-256 ellenőrzéssel, kicsomagolás
     /// a telepítési könyvtárra (zip-slip védelemmel), majd újraindulás.
     /// Csak <see cref="IsPortable"/> esetén hívható — egyébként kivételt dob,

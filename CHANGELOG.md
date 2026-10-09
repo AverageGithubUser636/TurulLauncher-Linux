@@ -5,6 +5,20 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+### Added
+
+- 🖼️ **Megjelenés+**: saját háttérkép (`backgrounds/` mappa, sötétítéssel),
+  ablak-átlátszóság (40–100%), betűméret-skála (85–120%, layout-helyes),
+  egyedi akcentusszín (#RRGGBB, számolt árnyalatokkal), animáció-kapcsoló
+- ⬆️ **AppImage auto-updater**: egykattintásos öncsere `$APPIMAGE`-úton
+  (SHA-256, atomi átnevezés, futtatható bit); újraindítás az új fájlból
+- 🔄 Frissítés-oldal AppImage-módszöveggel
+
+### Changed
+
+- Hover-átmenetek kódból kapcsolt stílusban (XAML-ből kiköltözve)
+- Csúszkák arany témázása (sablon-lokális értékek kódból felülírva)
+
 ## [1.1.0] — 2026-10-09 — második kiadás 🚀
 
 Minden új funkció, visszafelé kompatibilisen: meglévő instance-ok,

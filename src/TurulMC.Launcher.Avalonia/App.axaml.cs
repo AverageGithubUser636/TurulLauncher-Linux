@@ -65,7 +65,12 @@ public partial class App : Application
             splash.ReportProgress(22, "Beállítások betöltése…");
             var settings = await Services.LauncherServices.Current.LoadSettingsAsync();
             await Task.Run(() => Dispatcher.UIThread.Invoke(() =>
-                Services.ThemeService.Current.Apply(settings.Theme)));
+            {
+                Services.ThemeService.Current.Apply(settings.Theme);
+                if (!string.IsNullOrWhiteSpace(settings.CustomAccent))
+                    Services.ThemeService.Current.ApplyCustomAccent(settings.CustomAccent);
+                Services.ThemeService.Current.SetAnimationsEnabled(settings.AnimationsEnabled);
+            }));
             StartupLog.Trace($"OnLaunched: téma={settings.Theme}");
 
             // 3) Instance-ok előtöltése (a nézetek saját listát építenek,

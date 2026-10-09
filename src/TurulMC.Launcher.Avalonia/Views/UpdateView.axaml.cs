@@ -112,7 +112,9 @@ public sealed class UpdateViewModel : PropertyChangedBase
             await _services.LoadSettingsAsync();
             OnPropertyChanged(nameof(ChannelText));
             Subtitle = $"TurulLauncher Linux {CurrentVersionText} · {ChannelText}";
-            ModeText = Core.Update.UpdateService.IsPortable(AppContext.BaseDirectory)
+            ModeText = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("APPIMAGE"))
+                ? "AppImage-ből futsz: a telepítés egy kattintás — az új AppImage SHA-256 ellenőrzéssel átveszi a mostani helyét, utána a launcher újraindul."
+                : Core.Update.UpdateService.IsPortable(AppContext.BaseDirectory)
                 ? "Hordozható módban futsz: a telepítés egy kattintás, SHA-256 ellenőrzéssel, utána a launcher újraindul."
                 : "Nem hordozható módban futsz (csomagos/dev telepítés): a frissítés a letöltési oldalt nyitja meg — a csomagkezelőddel vagy kézzel telepíts.";
 
@@ -200,6 +202,45 @@ public sealed class UpdateViewModel : PropertyChangedBase
         var manifest = _pendingManifest;
         if (manifest is null || _busy) return;
 
+        // 1) AppImage: egykattintásos öncsere a $APPIMAGE útvonalon
+        //    (nincs portable-jelölő, mégis biztonságos: atomi átnevezés).
+        var appImage = Environment.GetEnvironmentVariable("APPIMAGE");
+        if (!string.IsNullOrWhiteSpace(appImage) && File.Exists(appImage))
+        {
+            _busy = true;
+            OnPropertyChanged(nameof(CanCheck));
+            ProgressVisible = true;
+            try
+            {
+                var progress = new Progress<Core.Models.DownloadProgress>(p =>
+                    global::Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        StatusText = $"Letöltés: {p.FileName}";
+                        Progress = p.TotalBytes > 0 ? Math.Clamp(p.Percentage, 0, 100) : 0;
+                    }));
+
+                StatusText = $"AppImage csere: v{manifest.Version}…";
+                await _services.Updates.InstallAppImageAsync(manifest, appImage, progress);
+
+                StatusText = "Telepítve — újraindítás…";
+                await Task.Delay(800);
+                RestartApp();
+            }
+            catch (Exception ex)
+            {
+                StatusText = "Telepítési hiba: " + ex.Message;
+                LauncherLogger.Error("AppImage frissítés hiba: " + ex.Message);
+            }
+            finally
+            {
+                _busy = false;
+                ProgressVisible = false;
+                Progress = 0;
+                OnPropertyChanged(nameof(CanCheck));
+            }
+            return;
+        }
+
         if (!Core.Update.UpdateService.IsPortable(AppContext.BaseDirectory))
         {
             StatusText = "Letöltési oldal megnyitása…";
@@ -248,7 +289,11 @@ public sealed class UpdateViewModel : PropertyChangedBase
     {
         try
         {
-            var exe = Environment.ProcessPath;
+            // AppImage-ből futva az APPIMAGE-útvonal a biztos (a ProcessPath
+            // a FUSE-csatolásra is mutathat).
+            var exe = Environment.GetEnvironmentVariable("APPIMAGE");
+            if (string.IsNullOrWhiteSpace(exe) || !File.Exists(exe))
+                exe = Environment.ProcessPath;
             if (string.IsNullOrWhiteSpace(exe)) return;
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {

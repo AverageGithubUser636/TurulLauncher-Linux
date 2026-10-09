@@ -23,15 +23,10 @@
             <Setter Property="BoxShadow" Value="0 10 28 0 #30000000" />
         </Style>
 
-        <!-- Gombok: finom átmenetek mindenhol. -->
+        <!-- Gombok: az átmeneteket a ThemeService kapcsolja (animáció-állítás).
+             Itt nincsenek, hogy a „kikapcsolva" valóban azonnali legyen. -->
         <Style Selector="Button">
             <Setter Property="FontFamily" Value="Inter" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Property="Background" Duration="0:0:0.12" />
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
-                </Transitions>
-            </Setter>
         </Style>
 
         <Style Selector="Button.ghost /template/ ContentPresenter">
@@ -57,11 +52,6 @@
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.12" />
-                </Transitions>
-            </Setter>
         </Style>
 
         <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
@@ -98,11 +88,6 @@
         <Style Selector="ListBox > ListBoxItem">
             <Setter Property="CornerRadius" Value="9" />
             <Setter Property="Foreground" Value="{DynamicResource TurulTextBrush}" />
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Property="Background" Duration="0:0:0.1" />
-                </Transitions>
-            </Setter>
         </Style>
 
         <Style Selector="ListBox > ListBoxItem:pointerover /template/ ContentPresenter">
@@ -146,6 +131,22 @@
 
         <Style Selector="CheckBox:checked /template/ Path#CheckGlyph">
             <Setter Property="Fill" Value="#08090B" />
+        </Style>
+
+        <!-- Csúszka: a Fluent a Foreground-ra köti a kitöltést és a pöcköt,
+             ezért elég azt aranyra állítani (a sablon helyi értékei
+             a Border/Thumb Background-beállítást felülírnák). -->
+        <Style Selector="Slider">
+            <Setter Property="Foreground" Value="{DynamicResource TurulGoldBrush}" />
+        </Style>
+
+        <Style Selector="Slider /template/ Border#TrackBackground">
+            <Setter Property="Background" Value="{DynamicResource TurulBorderBrush}" />
+        </Style>
+
+        <Style Selector="Slider /template/ Thumb#thumb /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
         </Style>
 
         <!-- Fókuszgyűrű arany. -->

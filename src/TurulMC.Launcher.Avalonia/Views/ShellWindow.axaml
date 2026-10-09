@@ -14,6 +14,17 @@
         minden nézet a saját VM-ét használja, egyszer inicialálódik, és nem
         keletkezik kidobandó „árnyék" VM a navigációban.
     -->
+    <!-- Háttérréteg: saját háttérkép + sötétítő (a tartalom alatta).
+         A Window háttér színe megmarad, ha nincs kép. -->
+    <Grid>
+        <Image x:Name="BackgroundImage" Stretch="UniformToFill"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               IsVisible="False"/>
+        <Border x:Name="BackgroundDim" Background="Black" Opacity="0.78"
+                IsVisible="False"/>
+
+        <!-- Betűméret-skála: layout-helyes nagyítás (LayoutTransform). -->
+        <LayoutTransformControl x:Name="ContentScaler">
     <Grid ColumnDefinitions="220,*">
 
         <!-- Bal oldali navigáció -->
@@ -104,6 +115,8 @@
             <views:DoctorView x:Name="DoctorPage" IsVisible="False" />
             <views:LogsView x:Name="LogsPage" IsVisible="False" />
         </Panel>
+    </Grid>
 
+        </LayoutTransformControl>
     </Grid>
 </Window>

@@ -52,7 +52,73 @@ public partial class ShellWindow : Window
             LogsPage.IsVisible = index == 10;
         };
 
-        Opened += (_, _) => vm.OnOpened();
+        Opened += (_, _) =>
+        {
+            vm.OnOpened();
+            // A splash-folyamat eddigre betöltötte a beállításokat —
+            // most már a mentett háttér/átlátszóság/skálával nyitunk.
+            ApplyAppearance();
+        };
+        ApplyAppearance();
+    }
+
+    /// <summary>
+    /// Megjelenés alkalmazása a beállításokból: háttérkép, átlátszóság,
+    /// betűméret-skála. A Beállítások-nézet is innen frissít (azonnali hatás).
+    /// </summary>
+    public void ApplyAppearance()
+    {
+        try
+        {
+            var settings = Services.LauncherServices.Current.Settings;
+
+            // Háttérkép (DataRoot/backgrounds/<fájl>), sötétítéssel.
+            var bgFile = (settings.BackgroundImage ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(bgFile))
+            {
+                var full = System.IO.Path.Combine(
+                    Core.Storage.LauncherPaths.DataRoot, "backgrounds",
+                    System.IO.Path.GetFileName(bgFile));
+                if (System.IO.File.Exists(full))
+                {
+                    try
+                    {
+                        using var stream = System.IO.File.OpenRead(full);
+                        BackgroundImage.Source =
+                            new global::Avalonia.Media.Imaging.Bitmap(stream);
+                        BackgroundImage.IsVisible = true;
+                        BackgroundDim.IsVisible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Core.Logging.LauncherLogger.Warning("Háttérkép betöltési hiba: " + ex.Message);
+                        BackgroundImage.IsVisible = false;
+                        BackgroundDim.IsVisible = false;
+                    }
+                }
+                else
+                {
+                    BackgroundImage.IsVisible = false;
+                    BackgroundDim.IsVisible = false;
+                }
+            }
+            else
+            {
+                BackgroundImage.IsVisible = false;
+                BackgroundDim.IsVisible = false;
+            }
+
+            // Ablak-átlátszóság (0.4–1.0).
+            Opacity = Math.Clamp(settings.WindowOpacity is <= 0 ? 1.0 : settings.WindowOpacity, 0.4, 1.0);
+
+            // Betűméret-skála (UiScalePercent, 50–150).
+            var scale = Math.Clamp(settings.UiScalePercent <= 0 ? 100 : settings.UiScalePercent, 50, 150) / 100.0;
+            ContentScaler.LayoutTransform = new global::Avalonia.Media.ScaleTransform(scale, scale);
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.LauncherLogger.Warning("Megjelenés-alkalmazási hiba: " + ex.Message);
+        }
     }
 
     private void RefreshLogo()

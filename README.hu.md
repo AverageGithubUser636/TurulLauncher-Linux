@@ -36,7 +36,7 @@ Menübejegyzés minden disztrón működik (GNOME, KDE, XFCE, …).
 | 🌐 Szerverek | mentett szerverek, élő ping, egykattintásos csatlakozás |
 | 📋 Naplók | játék/launcher/crash naplók farka, csak olvasható nézet |
 | ☕ Java | észlelt runtime-ok, Temurin-telepítés, ajánlás az Instance-hoz |
-| 🎨 Témák | 5 színséma (arany/zöld/piros/lila/égszín) + Turul-logók |
+| 🎨 Témák | 5 színséma (arany/zöld/piros/lila/égszín) + egyedi akcentus + Turul-logók, saját háttérkép, átlátszóság, betűméret, animáció-kapcsoló |
 | ⚕ Doctor | 17 ellenőrzés, support-csomag |
 | 🔄 Frissítés | automatikus ellenőrzés + egykattintásos telepítés (hordozható módban) |
 

@@ -37,7 +37,7 @@ Menu entry works on every distro (GNOME, KDE, XFCE, …).
 | 🌐 Servers | saved servers, live ping, one-click join |
 | 📋 Logs | game/launcher/crash log tails, read-only viewer |
 | ☕ Java | detected runtimes, Temurin install, per-instance recommendation |
-| 🎨 Themes | 5 color schemes (gold/green/red/purple/sky) + Turul logos |
+| 🎨 Themes | 5 color schemes (gold/green/red/purple/sky) + custom accent + Turul logos, custom wallpaper, opacity, font scale, animation toggle |
 | ⚕ Doctor | 17 checks, support bundle |
 | 🔄 Update | automatic check + one-click install (in portable mode) |
 

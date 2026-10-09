@@ -44,6 +44,22 @@ public class LauncherSettings
     [JsonPropertyName("theme")]
     public string Theme { get; set; } = "yellow";
 
+    /// <summary>Egyedi akcentusszín (#RRGGBB), vagy üres (témaszín).</summary>
+    [JsonPropertyName("customAccent")]
+    public string CustomAccent { get; set; } = "";
+
+    /// <summary>Saját háttérkép fájlneve a DataRoot/backgrounds mappában, vagy üres.</summary>
+    [JsonPropertyName("backgroundImage")]
+    public string BackgroundImage { get; set; } = "";
+
+    /// <summary>Ablak-átlátszóság: 0.4–1.0 (1.0 = átlátszatlan).</summary>
+    [JsonPropertyName("windowOpacity")]
+    public double WindowOpacity { get; set; } = 1.0;
+
+    /// <summary>Felületi animációk (hover-átmenetek) ki/bekapcsolása.</summary>
+    [JsonPropertyName("animationsEnabled")]
+    public bool AnimationsEnabled { get; set; } = true;
+
     [JsonPropertyName("performanceMode")]
     public string PerformanceMode { get; set; } = "full";
 

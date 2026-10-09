@@ -102,8 +102,75 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </Grid>
-                    <TextBlock Text="A téma azonnal váltja az akcentusszínt és a Turul-logót."
-                               FontSize="12" Foreground="{StaticResource TurulTextFaintBrush}"/>
+
+                    <Grid ColumnDefinitions="180,*" ColumnSpacing="14" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Text="Egyedi akcentus" FontSize="13"
+                                   Foreground="{StaticResource TurulTextDimBrush}" VerticalAlignment="Center"/>
+                        <Grid Grid.Column="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <TextBox Grid.Column="0" Text="{Binding CustomAccentText, Mode=TwoWay}"
+                                     Watermark="#D4AF37" MaxLength="7"/>
+                            <Button Grid.Column="1" Content="Alkalmaz" Click="OnApplyAccent"
+                                    Background="{StaticResource TurulSurface2Brush}"
+                                    Foreground="{StaticResource TurulTextBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                            <Button Grid.Column="2" Content="Alaphelyzet" Click="OnResetAccent"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource TurulTextDimBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                        </Grid>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="180,*" ColumnSpacing="14" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Text="Háttérkép" FontSize="13"
+                                   Foreground="{StaticResource TurulTextDimBrush}" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Button Content="Kiválasztás…" Click="OnPickBackground"
+                                    Background="{StaticResource TurulSurface2Brush}"
+                                    Foreground="{StaticResource TurulTextBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                            <Button Content="Törlés" Click="OnClearBackground"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource TurulTextDimBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                            <TextBlock Text="{Binding BackgroundStatus}" FontSize="11"
+                                       VerticalAlignment="Center" TextWrapping="Wrap"
+                                       Foreground="{StaticResource TurulTextFaintBrush}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="180,*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Text="Átlátszóság" FontSize="13"
+                                   Foreground="{StaticResource TurulTextDimBrush}" VerticalAlignment="Center"/>
+                        <Slider Grid.Column="1" Minimum="40" Maximum="100" TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                Value="{Binding WindowOpacityPct, Mode=TwoWay}"
+                                VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding WindowOpacityText}" FontSize="12"
+                                   VerticalAlignment="Center" MinWidth="44"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="180,*,Auto" ColumnSpacing="14" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Text="Betűméret" FontSize="13"
+                                   Foreground="{StaticResource TurulTextDimBrush}" VerticalAlignment="Center"/>
+                        <Slider Grid.Column="1" Minimum="85" Maximum="120" TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                Value="{Binding UiScalePct, Mode=TwoWay}"
+                                VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding UiScaleText}" FontSize="12"
+                                   VerticalAlignment="Center" MinWidth="44"
+                                   Foreground="{StaticResource TurulTextDimBrush}"/>
+                    </Grid>
+
+                    <CheckBox Content="Felületi animációk (hover-átmenetek)"
+                              IsChecked="{Binding AnimationsEnabled, Mode=TwoWay}"
+                              Foreground="{StaticResource TurulTextDimBrush}"/>
+                    <TextBlock Text="A téma azonnal vált; a többi a Mentés gombbal rögzül. A betűméret 85–120% között skáláz."
+                               FontSize="12" Foreground="{StaticResource TurulTextFaintBrush}" TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
 

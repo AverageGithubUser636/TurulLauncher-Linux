@@ -1926,6 +1926,60 @@ internal static class Program
                 file, new string('0', 64)), "rossz hash");
         });
 
+        Check("Frissítés: AppImage önfrissítés (letöltés + SHA + csere)", () =>
+        {
+            var routes = new RoutingHandler();
+            var newBytes = "uj-appimage-tartalom-1234567890"u8.ToArray();
+            routes.MapBytes("turulnetwork.hu/launcher/linux/releases/fake.AppImage",
+                newBytes, "application/octet-stream");
+
+            var root = NewDirectory("appimage-update");
+            var current = Path.Combine(root, "TurulLauncher.AppImage");
+            File.WriteAllBytes(current, "regi-appimage"u8.ToArray());
+
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var good = Convert.ToHexString(sha.ComputeHash(newBytes));
+            var manifest = new TurulMC.Core.Update.LauncherUpdateManifest(
+                "9.9.9", false,
+                "https://turulnetwork.hu/launcher/linux/releases/fake.AppImage",
+                good, "2026-10-09", new List<string>());
+
+            var svc = new TurulMC.Core.Update.UpdateService(new HttpClient(routes));
+            svc.InstallAppImageAsync(manifest, current).GetAwaiter().GetResult();
+
+            AssertEqual("uj-appimage-tartalom-1234567890",
+                File.ReadAllText(current), "fájl kicserélődött");
+            if (!OperatingSystem.IsWindows())
+            {
+                var mode = File.GetUnixFileMode(current);
+                Assert(mode.HasFlag(UnixFileMode.UserExecute), "futtatható bit");
+            }
+
+            // Elutasítások.
+            var badExt = manifest with
+            {
+                Url = "https://turulnetwork.hu/launcher/linux/releases/fake.zip"
+            };
+            AssertThrows<InvalidOperationException>(() => svc.InstallAppImageAsync(
+                badExt, current).GetAwaiter().GetResult(), "nem AppImage URL");
+            var noSha = manifest with { Sha256 = "" };
+            AssertThrows<InvalidOperationException>(() => svc.InstallAppImageAsync(
+                noSha, current).GetAwaiter().GetResult(), "SHA nélkül nem telepít");
+            AssertThrows<InvalidOperationException>(() => svc.InstallAppImageAsync(
+                manifest, Path.Combine(root, "nincs.AppImage")).GetAwaiter().GetResult(),
+                "hiányzó cél");
+        });
+
+        Check("Beállítások: új megjelenés-mezők alapértelmezései", () =>
+        {
+            var s = new TurulMC.Core.Models.LauncherSettings();
+            AssertEqual("", s.BackgroundImage, "háttér üres");
+            AssertEqual(1.0, s.WindowOpacity, "átlátszatlanság 1");
+            AssertEqual("", s.CustomAccent, "egyedi akcentus üres");
+            AssertEqual(100, s.UiScalePercent, "UI-skála 100% (betűméret-alap)");
+            Assert(s.AnimationsEnabled, "animációk bekapcsolva");
+        });
+
         Check("Frissítés: kicsomagolás zip-slip védelemmel + portable-jelölő", () =>
         {
             var root = NewDirectory("update-extract");
