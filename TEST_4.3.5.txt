@@ -1,9 +1,0 @@
-TurulLauncher 4.3.5 quick test
-
-1. publish-all.cmd
-2. Inditsd: publish\GUI\TurulMC.Launcher.exe
-3. Csomagok -> Modpackok -> keress egy packot -> Verzió választás
-4. Ellenorizd, hogy tobb verzio megjelenik MC verzioval / loaderrel / datummal
-5. Telepits egy valasztott Fabric verzioju packot, ellenorizd az uj Instance-t
-6. Csomagok -> Texture packok -> Telepitve
-7. Ellenorizd, hogy a korabban mar ott levo ZIP/mappa resource pack pack.png ikonja megjelenik

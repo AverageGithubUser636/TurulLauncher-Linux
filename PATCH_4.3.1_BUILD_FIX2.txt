@@ -1,4 +1,0 @@
-TurulLauncher 4.3.3 Build Fix 2
-- Fixed MainWindow.xaml.cs CS0201 at updater startup
-- Replaced standalone Process.Start(...) ?? throw expression with explicit null-check
-- Previous WinForms WFO1000 build fixes retained

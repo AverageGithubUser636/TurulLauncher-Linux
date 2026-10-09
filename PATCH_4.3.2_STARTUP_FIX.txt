@@ -1,9 +1,0 @@
-TurulLauncher 4.3.3 startup fix
-
-- MainWindow lifetime fix: App-level reference
-- Window Activate happens before AppWindow/native setup
-- Early startup crash logging + native error dialog
-- Defensive invalid instances.json handling
-- Explicit UseWinUI
-- Installer includes/checks Microsoft VC++ x64 Redistributable
-- VC++ package signature verified during installer build

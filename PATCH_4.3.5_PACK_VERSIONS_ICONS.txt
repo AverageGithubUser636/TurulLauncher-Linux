@@ -1,3 +1,0 @@
-TurulLauncher 4.3.5
-- Modpack version picker
-- Existing resource pack pack.png icon extraction

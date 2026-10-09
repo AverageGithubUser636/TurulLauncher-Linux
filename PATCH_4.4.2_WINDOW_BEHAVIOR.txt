@@ -1,4 +1,0 @@
-TurulLauncher 4.4.2
-- Close behavior: ask/minimize/exit
-- Game launch behavior: minimize/keep/exit
-- Native AppWindow close interception

@@ -1,7 +1,0 @@
-TurulLauncher 4.4.0
-
-- Copy to another Instance: mods, shaderpacks, saves, resourcepacks, screenshots, config, options.txt, servers.dat, map/waypoint, schematics, replay recordings.
-- Preview: total file count, size and conflicts.
-- Conflict modes: ask, skip, overwrite.
-- First-run language selector: 🇭🇺 Magyar / 🇬🇧 English.
-- Language persists in settings and can be changed later.

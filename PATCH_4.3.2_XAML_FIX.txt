@@ -1,8 +1,0 @@
-TurulLauncher 4.3.3 - XAML startup fix
-
-[*] WebView2 removed from MainWindow XAML and created after Window.Activate()
-[*] WebView2/native initialization failure no longer kills the whole window with XamlParseException
-[*] Startup error dialog now shows HRESULT and inner exception chain
-[*] Existing startup crash logs remain enabled
-
-Local test first: publish\GUI\TurulMC.Launcher.exe
