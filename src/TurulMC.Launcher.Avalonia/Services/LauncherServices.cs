@@ -132,9 +132,7 @@ public sealed class LauncherServices
         instance.LastUsed = DateTime.UtcNow;
         LastPreparedInstanceId = instance.Id;
 
-        Settings.MinecraftVersion = version;
-        Settings.Loader = loader;
-        if (instance.RamMb > 0) Settings.DefaultRamMb = instance.RamMb;
+        ApplyInstanceToSettings(Settings, instance, instance.LoaderVersion);
 
         var instanceDir = Instances.GetInstanceDirectory(instance.Id);
         Directory.CreateDirectory(instanceDir);
@@ -155,6 +153,15 @@ public sealed class LauncherServices
             }
             await fabric.InstallFabricLoaderAsync(version, loaderVersion, MakeOverall(progress));
             instance.LoaderVersion = loaderVersion;
+            // A feloldott verziót is vissza kell írni (nem elég az instance
+            // eredetije, ami üres is lehetett) — lásd ApplyInstanceToSettings.
+            ApplyInstanceToSettings(Settings, instance, loaderVersion);
+        }
+        else
+        {
+            // Vanilla úton nem kell loader-verzió; a régit töröljük, hogy egy
+            // későbbi Fabric-indítás se botoljon elavult értékbe.
+            Settings.LoaderVersion = "";
         }
 
         Report("Indítási konfiguráció készítése…", 95);
@@ -225,6 +232,33 @@ public sealed class LauncherServices
     {
         if (string.IsNullOrWhiteSpace(raw)) return Array.Empty<string>();
         return raw.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
+
+    /// <summary>
+    /// Instance → indítási beállítások szinkronizálás. Egyetlen helyen, mert
+    /// a <c>BuildLaunchConfigAsync</c> a settings-ből dolgozik: ha bármelyik
+    /// mező (különösen a <c>LoaderVersion</c>) lemarad, a Fabric-indítás
+    /// „nincs telepítve" hibával hal el a frissen telepített loader ellenére.
+    /// Nyilvános, hogy közvetlenül tesztelhető legyen.
+    /// </summary>
+    /// <param name="resolvedLoaderVersion">A feloldott Fabric-verzió (lehet az
+    /// instance eredetije vagy frissen ajánlott); vanilla úton figyelmen kívül.</param>
+    public static void ApplyInstanceToSettings(
+        LauncherSettings settings,
+        LauncherInstance instance,
+        string? resolvedLoaderVersion)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(instance);
+
+        settings.MinecraftVersion = instance.MinecraftVersion;
+        settings.Loader = instance.Loader?.ToLowerInvariant() ?? "none";
+        if (instance.RamMb > 0) settings.DefaultRamMb = instance.RamMb;
+
+        if (settings.Loader == "fabric")
+            settings.LoaderVersion = resolvedLoaderVersion ?? "";
+        else
+            settings.LoaderVersion = "";
     }
 
     /// <summary>

@@ -8,5 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/TurulMC.Core/TurulMC.Core.csproj" />
+    <!-- A GUI-réteg tiszta (UI-mentes) segédeinek teszteléséhez.
+         Csak az ilyen segédeket hívjuk innen — ablakot/vezérlőt soha. -->
+    <ProjectReference Include="../../src/TurulMC.Launcher.Avalonia/TurulMC.Launcher.Avalonia.csproj" />
   </ItemGroup>
 </Project>

@@ -45,6 +45,7 @@ internal static class Program
             ModpackTests();
             UpdateTests();
             DisplayTextTests();
+            LaunchSyncTests();
             await LinuxPortTestsAsync();
             await DoctorTestsAsync();
             await SupportBundleTestsAsync();
@@ -2048,6 +2049,78 @@ internal static class Program
     {
         using var doc = System.Text.Json.JsonDocument.Parse(text);
         return doc.RootElement.Clone();
+    }
+
+    // ---------------------------------------------------------------- Indítás-szinkron
+
+    /// <summary>
+    /// A Fabric-indítási bug regressziós tesztje: az instance loader-verziója
+    /// (az eredeti vagy a frissen feloldott) MINDIG átkerül a settings-be,
+    /// mert a build-konfiguráció onnan keresi a fabric JSON-t. Ha lemarad,
+    /// minden Fabric-indítás „nincs telepítve" hibával hal el.
+    /// </summary>
+    private static void LaunchSyncTests()
+    {
+        Check("Indítás: Fabric loader-verzió átkerül a settings-be", () =>
+        {
+            var settings = new TurulMC.Core.Models.LauncherSettings();
+            var instance = new TurulMC.Core.Models.LauncherInstance
+            {
+                MinecraftVersion = "1.21.1",
+                Loader = "fabric",
+                LoaderVersion = "",
+                RamMb = 4096
+            };
+
+            // 1) Ismeretlen pin-nel indulunk (ez volt a hibás eset: "" maradt).
+            TurulMC.Launcher.Avalonia.Services.LauncherServices.ApplyInstanceToSettings(
+                settings, instance, instance.LoaderVersion);
+            AssertEqual("fabric", settings.Loader, "loader");
+            AssertEqual("", settings.LoaderVersion, "üres pin továbbadva");
+
+            // 2) Feloldás után a MEGOLDOTT verzió íródik vissza —
+            // ez a sor hiányzott, ettől halt el minden Fabric-indítás.
+            TurulMC.Launcher.Avalonia.Services.LauncherServices.ApplyInstanceToSettings(
+                settings, instance, "0.16.14");
+            AssertEqual("0.16.14", settings.LoaderVersion, "feloldott verzió szinkronizálva");
+            AssertEqual("1.21.1", settings.MinecraftVersion, "MC-verzió");
+            AssertEqual(4096, settings.DefaultRamMb, "RAM");
+        });
+
+        Check("Indítás: vanilla úton a loader-verzió törlődik", () =>
+        {
+            var settings = new TurulMC.Core.Models.LauncherSettings { LoaderVersion = "0.16.14" };
+            var instance = new TurulMC.Core.Models.LauncherInstance
+            {
+                MinecraftVersion = "1.21.1",
+                Loader = "none",
+                LoaderVersion = "0.16.14", // elavult instance-érték
+                RamMb = 2048
+            };
+
+            TurulMC.Launcher.Avalonia.Services.LauncherServices.ApplyInstanceToSettings(
+                settings, instance, instance.LoaderVersion);
+            AssertEqual("", settings.LoaderVersion, "elavult verzió nem szivárog át");
+            AssertEqual("none", settings.Loader, "loader");
+        });
+
+        Check("Indítás: nagybetűs loader normalizálva", () =>
+        {
+            var settings = new TurulMC.Core.Models.LauncherSettings();
+            var instance = new TurulMC.Core.Models.LauncherInstance
+            {
+                MinecraftVersion = "1.21.1",
+                Loader = "Fabric",
+                RamMb = 0 // 0 RAM nem írja felül az alapot
+            };
+            settings.DefaultRamMb = 8192;
+
+            TurulMC.Launcher.Avalonia.Services.LauncherServices.ApplyInstanceToSettings(
+                settings, instance, "0.16.14");
+            AssertEqual("fabric", settings.Loader, "kisbetűsítve");
+            AssertEqual("0.16.14", settings.LoaderVersion, "verzió");
+            AssertEqual(8192, settings.DefaultRamMb, "0 RAM nem ír felül");
+        });
     }
 
     private static void LauncherPathsTests()
