@@ -63,6 +63,12 @@ dotnet run --project src/TurulMC.Launcher.Avalonia   # futtatás
 Tesztek: `dotnet test tests/TurulMC.Core.Tests` plusz a két smoke-projekt
 (összesen 165+ ellenőrzés, hálózat nélkül).
 
+## Dokumentáció
+
+- [CHANGELOG.md](CHANGELOG.md) — verziótörténet (Keep a Changelog)
+- [docs/linux-architecture.md](docs/linux-architecture.md) — fork-felépítés, indítási folyamat, XDG-elrendezés, dizájnrendszer, tesztstratégia
+- [docs/linux-build-release.md](docs/linux-build-release.md) — build, `publishall.sh`, GitHub-release-ek, weboldal-manifestek, updater-mátrix
+
 ## Hibaelhárítás
 
 - **Nem indul a játék?** Doctor lap → Futtatás (Java, mappa, jogok, hálózat).

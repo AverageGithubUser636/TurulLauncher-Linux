@@ -64,6 +64,12 @@ dotnet run --project src/TurulMC.Launcher.Avalonia   # run
 Tests: `dotnet test tests/TurulMC.Core.Tests` plus the two smoke projects
 (165+ checks total, no network needed).
 
+## Docs
+
+- [CHANGELOG.md](CHANGELOG.md) — version history (Keep a Changelog)
+- [docs/linux-architecture.md](docs/linux-architecture.md) — fork structure, launch flow, XDG layout, design system, test strategy
+- [docs/linux-build-release.md](docs/linux-build-release.md) — build, `publishall.sh`, GitHub releases, website manifests, updater matrix
+
 ## Troubleshooting
 
 - **Game won't start?** Doctor tab → Run (Java, folders, permissions, network).
