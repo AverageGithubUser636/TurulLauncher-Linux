@@ -214,26 +214,4 @@ public class ModpackService : IModpackService
         return !await Sha256Service.VerifyFileAsync(filePath, expectedHash);
     }
 
-    private static string SanitizePath(string path) => Security.PathSecurity.SanitizeRelative(path).Replace(Path.DirectorySeparatorChar, '/');
-
-    private List<string> GetAllFiles(string directory)
-    {
-        var files = new List<string>();
-        if (!Directory.Exists(directory)) return files;
-
-        foreach (var file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
-        {
-            files.Add(file);
-        }
-
-        var versionsDir = Path.Combine(directory, "versions");
-        var assetsDir = Path.Combine(directory, "assets");
-        var librariesDir = Path.Combine(directory, "libraries");
-
-        files.RemoveAll(f => f.StartsWith(versionsDir));
-        files.RemoveAll(f => f.StartsWith(assetsDir));
-        files.RemoveAll(f => f.StartsWith(librariesDir));
-
-        return files;
-    }
 }

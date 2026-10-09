@@ -108,31 +108,6 @@ public sealed class ModrinthClient
             Limit: limit);
     }
 
-    public async Task<ModrinthProject?> GetProjectAsync(string projectId, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(projectId)) return null;
-        using var response = await _http.GetAsync(
-            $"project/{Uri.EscapeDataString(projectId)}", cancellationToken).ConfigureAwait(false);
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
-        response.EnsureSuccessStatusCode();
-
-        using var doc = JsonDocument.Parse(
-            await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
-        var root = doc.RootElement;
-        var id = GetString(root, "id");
-        if (string.IsNullOrWhiteSpace(id)) return null;
-
-        return new ModrinthProject(
-            ProjectId: id,
-            Title: GetString(root, "title") ?? id,
-            Description: GetString(root, "description") ?? "",
-            IconUrl: GetOptionalString(root, "icon_url"),
-            ProjectType: GetString(root, "project_type") ?? "",
-            Downloads: GetInt64(root, "downloads"),
-            Loaders: GetStringArray(root, "loaders"),
-            GameVersions: GetStringArray(root, "game_versions"));
-    }
-
     /// <summary>
     /// Egy projekt verziói, opcionálisan loader + MC-verzió szerint szűrve
     /// (szerver oldali szűrés — a visszaadott lista már kompatibilis).
@@ -219,24 +194,6 @@ public sealed class ModrinthClient
                 GameVersions: GetStringArray(root, "game_versions")));
         }
         return result;
-    }
-
-    /// <summary>
-    /// Telepített fájl → Modrinth verzió SHA-512 alapján. Így a kézzel
-    /// bemásolt modokhoz is feloldható a projekt (ikon, frissítés).
-    /// </summary>
-    public async Task<ModrinthVersion?> GetVersionByHashAsync(string sha512Hex, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(sha512Hex)) return null;
-        using var response = await _http.GetAsync(
-            $"version_file/{Uri.EscapeDataString(sha512Hex)}?algorithm=sha512",
-            cancellationToken).ConfigureAwait(false);
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
-        response.EnsureSuccessStatusCode();
-
-        using var doc = JsonDocument.Parse(
-            await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
-        return ParseVersion(doc.RootElement);
     }
 
     // ------------------------------------------------------------------ segédek

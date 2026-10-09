@@ -88,11 +88,6 @@ public sealed class UpdateService
             Error: null);
     }
 
-    public async Task<LauncherUpdateManifest> GetManifestAsync(
-        string channel, CancellationToken cancellationToken = default)
-        => await GetManifestFromUrlAsync(ManifestUrlFor(channel), cancellationToken)
-            .ConfigureAwait(false);
-
     /// <summary>Manifest tetszőleges URL-ről (a Linux-fork saját URL-jeihez).</summary>
     public async Task<LauncherUpdateManifest> GetManifestFromUrlAsync(
         string url, CancellationToken cancellationToken = default)

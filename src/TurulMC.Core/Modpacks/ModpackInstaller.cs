@@ -324,12 +324,6 @@ public sealed class ModpackInstaller
 
     // ------------------------------------------------------------------ segédek
 
-    internal static bool IsSupportedPackVersion(Mods.ModrinthVersion version)
-        // A rendezés a DownloadMrpackAsync-ben történik (.mrpack + release
-        // előnyben); itt csak a null-szűrés számít. Megtartva a tesztek és a
-        // dokumentáció kedvéért.
-        => version is not null;
-
     internal static (string Loader, string LoaderVersion) ParseLoader(JsonElement deps)
     {
         if (deps.TryGetProperty("fabric-loader", out var fabric))

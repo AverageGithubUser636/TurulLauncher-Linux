@@ -193,7 +193,6 @@ public sealed class UpdateViewModel : PropertyChangedBase
         StatusText = manifest.Required
             ? $"KÖTELEZŐ frissítés érhető el (jelenlegi: {CurrentVersionText})."
             : $"Új verzió érhető el (jelenlegi: {CurrentVersionText}).";
-        ClearBadge();
     }
 
     public async Task UpdateActionAsync(Func<string, Task<string?>> openUrl)
@@ -228,7 +227,6 @@ public sealed class UpdateViewModel : PropertyChangedBase
                 manifest, AppContext.BaseDirectory, progress);
 
             StatusText = "Telepítve — újraindítás…";
-            ClearBadge();
             await Task.Delay(800);
             RestartApp();
         }
@@ -244,11 +242,6 @@ public sealed class UpdateViewModel : PropertyChangedBase
             Progress = 0;
             OnPropertyChanged(nameof(CanCheck));
         }
-    }
-
-    private void ClearBadge()
-    {
-        // A nav-pöttyöt a shell veszi le a lap megnyitásakor (ApplySelection).
     }
 
     private static void RestartApp()
