@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TurulMC.Launcher.Avalonia.Views.ConfirmWindow"
+        Title="Megerősítés"
+        Width="420" SizeToContent="Height"
+        MinWidth="380" MaxWidth="520"
+        Background="{StaticResource TurulBgBrush}"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Background="{StaticResource TurulSurfaceBrush}"
+            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+            CornerRadius="12" Margin="16" Padding="22,18">
+        <StackPanel Spacing="14">
+            <TextBlock x:Name="TitleText" Text="Megerősítés" FontSize="16" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulTextBrush}" TextWrapping="Wrap"/>
+            <TextBlock x:Name="MessageText" Text="" FontSize="13" TextWrapping="Wrap"
+                       Foreground="{StaticResource TurulTextDimBrush}"/>
+            <StackPanel x:Name="ButtonPanel" Spacing="8" Margin="0,6,0,0"/>
+        </StackPanel>
+    </Border>
+</Window>

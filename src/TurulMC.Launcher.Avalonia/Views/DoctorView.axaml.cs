@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Markup.Xaml;
 using TurulMC.Core.Diagnostics;
+using TurulMC.Core.Logging;
 using TurulMC.Launcher.Avalonia.Services;
 
 namespace TurulMC.Launcher.Avalonia.Views;
@@ -23,6 +24,9 @@ public partial class DoctorView : UserControl
 
     private async void OnRun(object? sender, RoutedEventArgs e)
         => await _vm.RunAsync();
+
+    private async void OnBundle(object? sender, RoutedEventArgs e)
+        => await _vm.CreateBundleAsync();
 }
 
 public sealed class CheckRow
@@ -106,6 +110,48 @@ public sealed class DoctorViewModel : PropertyChangedBase
         catch (Exception ex)
         {
             SummaryText = "A Doctor futtatása nem sikerült: " + ex.Message;
+        }
+        finally
+        {
+            _running = false;
+        }
+    }
+
+    /// <summary>Support-csomag (logok + crash reportok + Doctor-jelentés).</summary>
+    public async Task CreateBundleAsync()
+    {
+        if (_running) return;
+        _running = true;
+        SummaryText = "Support csomag készítése… (Doctor-jelentéssel)";
+        try
+        {
+            await _services.LoadSettingsAsync();
+            var (activeId, instances) = _services.Instances.Load();
+            var active = instances.FirstOrDefault(x => x.Id == activeId) ?? instances.FirstOrDefault();
+            var instanceDir = active is null
+                ? null
+                : _services.Instances.GetInstanceDirectory(active.Id);
+
+            var options = _services.BuildDoctorOptions(
+                _services.Settings.JavaPathOverride,
+                instanceDir,
+                _services.Settings.TestServerHost,
+                _services.Settings.TestServerPort);
+            var doctor = new LauncherDoctor(
+                options,
+                _services.Java,
+                _services.ServerStatus);
+            var bundle = await new Core.Diagnostics.SupportBundleService(options, doctor)
+                .CreateAsync(includeDoctorReport: true);
+
+            SummaryText = bundle.Success
+                ? $"Support csomag kész: {bundle.FullPath} ({bundle.IncludedFiles.Count} fájl)"
+                : "A csomag nem készült el: " + bundle.Error;
+        }
+        catch (Exception ex)
+        {
+            SummaryText = "Support csomag hiba: " + ex.Message;
+            LauncherLogger.Error("Support csomag hiba: " + ex.Message);
         }
         finally
         {

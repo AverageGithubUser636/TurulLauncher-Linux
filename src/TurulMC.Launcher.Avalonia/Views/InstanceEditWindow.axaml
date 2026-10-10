@@ -22,7 +22,14 @@
                     <StackPanel Grid.Column="0" Spacing="4">
                         <TextBlock Text="Minecraft verzió" FontSize="12"
                                    Foreground="{StaticResource TurulTextDimBrush}"/>
-                        <TextBox Text="{Binding MinecraftVersion, Mode=TwoWay}" MaxLength="32"/>
+                        <ComboBox IsEditable="True"
+                                  Text="{Binding MinecraftVersion, Mode=TwoWay}"
+                                  ItemsSource="{Binding VersionOptions}"
+                                  HorizontalAlignment="Stretch"/>
+                        <CheckBox Content="Pillanatképek is"
+                                  IsChecked="{Binding ShowSnapshots, Mode=TwoWay}"
+                                  FontSize="11"
+                                  Foreground="{StaticResource TurulTextFaintBrush}"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
                         <TextBlock Text="Betöltő (loader)" FontSize="12"

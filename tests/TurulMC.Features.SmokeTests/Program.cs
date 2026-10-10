@@ -47,6 +47,8 @@ internal static class Program
             DisplayTextTests();
             LaunchSyncTests();
             ContentOpsTests();
+            MetaServiceTests();
+            RepairTests();
             await LinuxPortTestsAsync();
             await DoctorTestsAsync();
             await SupportBundleTestsAsync();
@@ -2336,6 +2338,156 @@ internal static class Program
 
             AssertThrows<InvalidOperationException>(() =>
                 store.CopyInstanceAsync("nincs", "X").GetAwaiter().GetResult(), "hiányzó forrás");
+        });
+    }
+
+    // ---------------------------------------------------------------- Meta-szolgáltatások
+
+    /// <summary>
+    /// Játékidő-olvasás és Mojang-verziókatalógus lefedése (stub HTTP-vel).
+    /// </summary>
+    private static void MetaServiceTests()
+    {
+        Check("Playtime: formázás és fájlolvasás", () =>
+        {
+            AssertEqual("0 mp", TurulMC.Core.Minecraft.GamePlaytime.FormatHu(0), "nulla");
+            AssertEqual("45p", TurulMC.Core.Minecraft.GamePlaytime.FormatHu(2700), "percek");
+            AssertEqual("2ó", TurulMC.Core.Minecraft.GamePlaytime.FormatHu(7200), "kerek óra");
+            AssertEqual("2ó 5p", TurulMC.Core.Minecraft.GamePlaytime.FormatHu(7500), "óra+perc");
+            AssertEqual(0, TurulMC.Core.Minecraft.GamePlaytime.TryGetTotalSeconds(""), "üres útvonal");
+            AssertEqual(0, TurulMC.Core.Minecraft.GamePlaytime.TryGetTotalSeconds(
+                Path.Combine(Path.GetTempPath(), "turul-nincs-" + Guid.NewGuid().ToString("N"))),
+                "hiányzó mappa");
+
+            var root = NewDirectory("playtime");
+            File.WriteAllText(Path.Combine(root, ".turul-playtime.json"),
+                """{"TotalPlaytimeSeconds":7500,"LaunchCount":3}""");
+            AssertEqual(7500, TurulMC.Core.Minecraft.GamePlaytime.TryGetTotalSeconds(root), "olvasás");
+            File.WriteAllText(Path.Combine(root, ".turul-playtime.json"), "nem json {{{");
+            AssertEqual(0, TurulMC.Core.Minecraft.GamePlaytime.TryGetTotalSeconds(root), "sérült fájl");
+        });
+
+        Check("Verziókatalógus: release/snapshot szűrés és sapka", () =>
+        {
+            var routes = new RoutingHandler();
+            routes.Map("version_manifest_v2.json", """
+                {"latest":{"release":"1.21.1","snapshot":"26.1-snapshot-1"},
+                 "versions":[
+                  {"id":"1.21.1","type":"release","releaseTime":"2025-01-01T00:00:00+00:00"},
+                  {"id":"26.1-snapshot-1","type":"snapshot","releaseTime":"2026-01-01T00:00:00+00:00"},
+                  {"id":"1.21","type":"release","releaseTime":"2024-01-01T00:00:00+00:00"},
+                  {"id":"","type":"release","releaseTime":"2024-01-01T00:00:00+00:00"}]}
+                """);
+            var client = new HttpClient(routes)
+            {
+                BaseAddress = new Uri("https://piston-meta.mojang.com/mc/game/")
+            };
+            var catalog = new TurulMC.Core.Minecraft.MinecraftVersionCatalog(client);
+
+            var releases = catalog.ListAsync(false).GetAwaiter().GetResult();
+            AssertEqual(2, releases.Count, "csak release-ek");
+            AssertEqual("1.21.1", releases[0].Id, "sorrend (legfrissebb elöl)");
+            Assert(!releases.Any(v => string.IsNullOrWhiteSpace(v.Id)), "üres id kihagyva");
+
+            var all = catalog.ListAsync(true).GetAwaiter().GetResult();
+            AssertEqual(3, all.Count, "snapshotokkal");
+            Assert(all.Any(v => v.Type == "snapshot"), "snapshot típus megmarad");
+        });
+
+        Check("Verziókatalógus: gyorsítótár és offline tartalék", () =>
+        {
+            var root = NewDirectory("mc-versions");
+            var cache = Path.Combine(root, "version_manifest.json");
+
+            // 1) Hálózat → mentés a gyorsítótárba.
+            var routes = new RoutingHandler();
+            routes.Map("version_manifest_v2.json", """
+                {"versions":[{"id":"1.21.1","type":"release","releaseTime":"2025-01-01T00:00:00+00:00"}]}
+                """);
+            var online = new TurulMC.Core.Minecraft.MinecraftVersionCatalog(
+                new HttpClient(routes)
+                {
+                    BaseAddress = new Uri("https://piston-meta.mojang.com/mc/game/")
+                }, cache);
+            AssertEqual(1, online.ListAsync(false).GetAwaiter().GetResult().Count, "online lista");
+            Assert(File.Exists(cache), "gyorsítótár írva");
+
+            // 2) Halott hálózat → a (még friss) gyorsítótárból dolgozik.
+            var dead = new TurulMC.Core.Minecraft.MinecraftVersionCatalog(
+                new HttpClient(new RoutingHandler()), cache);
+            AssertEqual(1, dead.ListAsync(false).GetAwaiter().GetResult().Count, "cache-tartalék");
+
+            // 3) Semmi sincs → üres lista, nem dob.
+            var empty = new TurulMC.Core.Minecraft.MinecraftVersionCatalog(
+                new HttpClient(new RoutingHandler()), Path.Combine(root, "nincs.json"));
+            AssertEqual(0, empty.ListAsync(false).GetAwaiter().GetResult().Count, "üres lista");
+        });
+    }
+
+    // ---------------------------------------------------------------- Smart Repair
+
+    /// <summary>A ModRepairService (mentés + tiltás/karantén) lefedése.</summary>
+    private static void RepairTests()
+    {
+        Check("Repair: mentés + tiltás + karantén leltárral", () =>
+        {
+            var root = NewDirectory("repair");
+            var mods = Path.Combine(root, "mods");
+            Directory.CreateDirectory(mods);
+            File.WriteAllText(Path.Combine(mods, "a.jar"), "PK-a");
+            File.WriteAllText(Path.Combine(mods, "b.jar"), "PK-b");
+            File.WriteAllText(Path.Combine(mods, "c.jar.disabled"), "PK-c");
+
+            var svc = new TurulMC.Core.Mods.ModRepairService();
+
+            var backup = svc.BackupModsAsync(mods).GetAwaiter().GetResult();
+            Assert(Directory.Exists(backup), "backup mappa");
+            AssertEqual(3, Directory.GetFiles(backup).Length, "mindhárom fájl mentve");
+
+            AssertEqual(0, svc.ApplyFixAsync(mods, Array.Empty<string>(), "disable")
+                .GetAwaiter().GetResult(), "üres lista");
+            AssertThrows<ArgumentException>(() => svc.ApplyFixAsync(mods, new[] { "a.jar" }, "x")
+                .GetAwaiter().GetResult(), "ismeretlen mód");
+
+            AssertEqual(1, svc.ApplyFixAsync(mods, new[] { "a.jar" }, "disable")
+                .GetAwaiter().GetResult(), "egy tiltva");
+            Assert(File.Exists(Path.Combine(mods, "a.jar.disabled")), "átnevezve");
+            Assert(!File.Exists(Path.Combine(mods, "a.jar")), "eredeti elment");
+
+            AssertEqual(1, svc.ApplyFixAsync(mods, new[] { "b.jar", "../kint.jar" }, "quarantine")
+                .GetAwaiter().GetResult(), "karantén (traversal kihagyva)");
+            var qdirs = Directory.GetDirectories(Path.Combine(root, "mods-quarantine"));
+            AssertEqual(1, qdirs.Length, "egy karantén-mappa");
+            Assert(File.Exists(Path.Combine(qdirs[0], "b.jar")), "fájl a karanténban");
+            Assert(File.Exists(Path.Combine(qdirs[0], "quarantine.json")), "leltár készül");
+            Assert(!File.Exists(Path.Combine(mods, "b.jar")), "eredeti elment");
+            Assert(!File.Exists(Path.Combine(root, "kint.jar")), "nincs kiírás kívülre");
+
+            AssertThrows<DirectoryNotFoundException>(() => svc.BackupModsAsync(
+                Path.Combine(root, "nincs")).GetAwaiter().GetResult(), "hiányzó mappa");
+        });
+
+        Check("Repair: scanner találja a duplikátumot és a rossz MC-tartományt", () =>
+        {
+            var root = NewDirectory("scan");
+            var mods = Path.Combine(root, "mods");
+            CreateJar(Path.Combine(mods, "sodium-1.0.0.jar"),
+                "{\"id\":\"sodium\",\"name\":\"Sodium\",\"version\":\"1.0.0\"," +
+                "\"depends\":{\"minecraft\":\">=1.21 <1.22\"}}");
+            CreateJar(Path.Combine(mods, "sodium-0.9.0.jar"),
+                "{\"id\":\"sodium\",\"name\":\"Sodium\",\"version\":\"0.9.0\"," +
+                "\"depends\":{\"minecraft\":\">=1.21 <1.22\"}}");
+            CreateJar(Path.Combine(mods, "oreg-2.0.jar"),
+                "{\"id\":\"oreg\",\"name\":\"Oreg\",\"version\":\"2.0\"," +
+                "\"depends\":{\"minecraft\":\">=1.20 <1.21\"}}");
+
+            var report = TurulMC.Core.Mods.ModCompatibilityScanner.Scan(mods, "1.21.1", "fabric");
+            Assert(report.Total >= 3, "mind vizsgálva: " + report.Total);
+            Assert(report.Duplicates >= 1, "duplikátum találva");
+            Assert(report.Problems.Count > 0, "problémák: " + report.Problems.Count);
+            Assert(!string.IsNullOrWhiteSpace(report.SummaryHu), "magyar összegzés");
+            Assert(report.Problems.All(p => !string.IsNullOrWhiteSpace(p.FileName)),
+                "minden problémához fájlnév");
         });
     }
 

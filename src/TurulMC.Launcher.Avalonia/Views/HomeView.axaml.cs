@@ -174,9 +174,27 @@ public sealed class HomeViewModel : PropertyChangedBase
     public bool HasMods => _heroModsCount > 0;
     public string HeroLastPlayed => SelectedInstance is null
         ? ""
-        : SelectedInstance.LastUsed == default
+        : (SelectedInstance.LastUsed == default
             ? "Még sosem indítva"
-            : $"Utoljára játszva: {SelectedInstance.LastUsed.ToLocalTime():yyyy.MM.dd. HH:mm}";
+            : $"Utoljára játszva: {SelectedInstance.LastUsed.ToLocalTime():yyyy.MM.dd. HH:mm}")
+          + PlaytimeSuffix();
+
+    /// <summary>Összesített játékidő az instance mappájából (ha van adat).</summary>
+    private string PlaytimeSuffix()
+    {
+        if (SelectedInstance is null) return "";
+        try
+        {
+            var dir = _services.Instances.GetInstanceDirectory(SelectedInstance.Id);
+            var seconds = Core.Minecraft.GamePlaytime.TryGetTotalSeconds(dir);
+            if (seconds < 60) return "";
+            return $" · {Core.Minecraft.GamePlaytime.FormatHu(seconds)} játék";
+        }
+        catch
+        {
+            return "";
+        }
+    }
 
     private string _heroMods = "";
     private int _heroModsCount;

@@ -45,9 +45,8 @@ public sealed class LauncherDoctor
     private static readonly TimeSpan LogsMaxAge = TimeSpan.FromDays(30);
 
     /// <summary>
-    /// Fallback client: infinite timeout so the per-request CancellationTokenSource
-    /// is the only time limit, and no default User-Agent so the version specific
-    /// header can be attached per request.
+    /// Fallback client: véges timeout biztonsági hálóként, a per-request
+    /// CancellationTokenSource az elsődleges korlát.
     /// </summary>
     private static readonly HttpClient SharedHttpClient = CreateSharedHttpClient();
 
@@ -1206,7 +1205,12 @@ public sealed class LauncherDoctor
 
     private static HttpClient CreateSharedHttpClient()
     {
-        return new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
+        var handler = new SocketsHttpHandler
+        {
+            MaxConnectionsPerServer = 8,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+        };
+        return new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(30) };
     }
 
     private static async Task<long> ReadUpToAsync(

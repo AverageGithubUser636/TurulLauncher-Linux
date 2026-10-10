@@ -30,7 +30,7 @@ public partial class ShellWindow : Window
         // Lapindex → nav-index (fejlécek miatt eltolva).
         Services.LauncherServices.Current.NavigateRequested += page =>
         {
-            var nav = page switch { 0=>0, 1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>8, 7=>9, 8=>10, 9=>11, 10=>12, _=>-1 };
+            var nav = page switch { 0=>0, 1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>9, 7=>10, 8=>11, 9=>12, 10=>13, 11=>7, _=>-1 };
             if (nav >= 0)
                 global::Avalonia.Threading.Dispatcher.UIThread.Post(() => vm.SelectedNavIndex = nav);
         };
@@ -50,6 +50,7 @@ public partial class ShellWindow : Window
             UpdatePage.IsVisible = index == 8;
             DoctorPage.IsVisible = index == 9;
             LogsPage.IsVisible = index == 10;
+            RepairPage.IsVisible = index == 11;
         };
 
         Opened += (_, _) =>
@@ -60,6 +61,41 @@ public partial class ShellWindow : Window
             ApplyAppearance();
         };
         ApplyAppearance();
+
+        Closing += OnShellClosing;
+    }
+
+    private bool _forceClose;
+
+    /// <summary>Bezárás-viselkedés a beállítás alapján (ask/minimize/exit).
+    /// A „tray" Linuxon minimalizálást jelent (nincs tálca-ikon).</summary>
+    private async void OnShellClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (_forceClose) return;
+        var behavior = (Services.LauncherServices.Current.Settings.CloseBehavior ?? "ask")
+            .ToLowerInvariant();
+        if (behavior is "minimize" or "tray")
+        {
+            e.Cancel = true;
+            WindowState = WindowState.Minimized;
+            return;
+        }
+        if (behavior == "exit") return;
+
+        // ask (alapértelmezett): megerősítő dialógus.
+        e.Cancel = true;
+        var choice = await ConfirmWindow.AskAsync(this,
+            "TurulLauncher bezárása", "Mit tegyen a launcher?",
+            "Kilépés", "Minimalizálás", "Mégse");
+        if (choice == 0)
+        {
+            _forceClose = true;
+            Close();
+        }
+        else if (choice == 1)
+        {
+            WindowState = WindowState.Minimized;
+        }
     }
 
     /// <summary>
@@ -180,6 +216,7 @@ public sealed class ShellViewModel : PropertyChangedBase
         new() { Icon = "✨", Label = "Shaderek" },
         new() { Icon = "📦", Label = "Modpackok" },
         new() { Icon = "🌐", Label = "Szerverek" },
+        new() { Icon = "🛠", Label = "Javítás" },
         new() { Icon = "", Label = "Rendszer", IsHeader = true },
         new() { Icon = "☕", Label = "Java" },
         new() { Icon = "⚙", Label = "Beállítások" },
@@ -217,11 +254,12 @@ public sealed class ShellViewModel : PropertyChangedBase
         4 => 3, // Shaderek
         5 => 4, // Modpackok
         6 => 5, // Szerverek
-        8 => 6, // Java
-        9 => 7, // Beállítások
-        10 => 8, // Frissítés
-        11 => 9, // Doctor
-        12 => 10, // Naplók
+        7 => 11, // Javítás
+        9 => 6, // Java
+        10 => 7, // Beállítások
+        11 => 8, // Frissítés
+        12 => 9, // Doctor
+        13 => 10, // Naplók
         _ => -1
     };
 

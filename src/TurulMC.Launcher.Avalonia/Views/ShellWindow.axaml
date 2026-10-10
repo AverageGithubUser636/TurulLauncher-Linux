@@ -114,6 +114,7 @@
             <views:UpdateView x:Name="UpdatePage" IsVisible="False" />
             <views:DoctorView x:Name="DoctorPage" IsVisible="False" />
             <views:LogsView x:Name="LogsPage" IsVisible="False" />
+            <views:RepairView x:Name="RepairPage" IsVisible="False" />
         </Panel>
     </Grid>
 

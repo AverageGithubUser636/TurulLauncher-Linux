@@ -79,8 +79,22 @@ public sealed class InstanceEditViewModel : PropertyChangedBase
     private double _windowHeight;
     private string _notes = "";
     private string _errorText = "";
+    private bool _showSnapshots;
 
     public List<string> LoaderOptions { get; } = new() { "none", "fabric" };
+
+    /// <summary>Mojang-manifestből töltött verziólista (gyorsítótárazva).</summary>
+    public List<string> VersionOptions { get; } = new();
+
+    public bool ShowSnapshots
+    {
+        get => _showSnapshots;
+        set
+        {
+            if (!Raise(ref _showSnapshots, value)) return;
+            _ = LoadVersionsAsync();
+        }
+    }
 
     public string Name { get => _name; set => Raise(ref _name, value); }
     public string MinecraftVersion { get => _minecraftVersion; set => Raise(ref _minecraftVersion, value); }
@@ -110,6 +124,32 @@ public sealed class InstanceEditViewModel : PropertyChangedBase
         _windowWidth = source.WindowWidth;
         _windowHeight = source.WindowHeight;
         _notes = source.Notes;
+        _ = LoadVersionsAsync();
+    }
+
+    /// <summary>Verziólista betöltése (hálózat nélkül csendben üres marad —
+    /// a szabad szöveges beírás akkor is működik).</summary>
+    public async Task LoadVersionsAsync()
+    {
+        try
+        {
+            var cache = Path.Combine(
+                Core.Storage.LauncherPaths.DataRoot, "cache", "version_manifest.json");
+            var catalog = new Core.Minecraft.MinecraftVersionCatalog(null, cache);
+            var versions = await catalog.ListAsync(_showSnapshots);
+            VersionOptions.Clear();
+            foreach (var v in versions)
+                VersionOptions.Add(v.Id);
+            // Az aktuális érték akkor is választható, ha nincs a listában.
+            if (!string.IsNullOrWhiteSpace(MinecraftVersion) &&
+                !VersionOptions.Contains(MinecraftVersion))
+                VersionOptions.Insert(0, MinecraftVersion);
+            OnPropertyChanged(nameof(VersionOptions));
+        }
+        catch (Exception ex)
+        {
+            Core.Logging.LauncherLogger.Debug("Verziólista hiba: " + ex.Message);
+        }
     }
 
     public bool Validate()

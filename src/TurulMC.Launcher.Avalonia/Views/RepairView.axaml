@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TurulMC.Launcher.Avalonia.Views.RepairView">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26,22,26,20">
+
+        <!-- Fejléc -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
+            <TextBlock Text="Javítás" FontSize="24" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulTextBrush}"/>
+            <TextBlock Text="Smart Repair: mod-kompatibilitás vizsgálat és egykattintásos javítás (mentéssel)."
+                       FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
+        </StackPanel>
+
+        <!-- Instance + vizsgálat -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" Margin="0,0,0,12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Instance:" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+                <ComboBox ItemsSource="{Binding Instances}"
+                          SelectedItem="{Binding SelectedInstance, Mode=TwoWay}"
+                          MinWidth="200" MaxWidth="320">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <TextBlock Grid.Column="1" Text="{Binding SummaryText}" FontSize="12"
+                       VerticalAlignment="Center" TextWrapping="Wrap"
+                       Foreground="{StaticResource TurulTextDimBrush}"/>
+            <Button Grid.Column="2" Content="Vizsgálat" Click="OnScan"
+                    Background="{StaticResource TurulSurface2Brush}"
+                    Foreground="{StaticResource TurulTextBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                    Padding="14,8" CornerRadius="8" FontSize="12"
+                    IsEnabled="{Binding CanScan}"/>
+            <Button Grid.Column="3" Content="Javítás" Click="OnFix"
+                    Background="{StaticResource TurulGoldBrush}"
+                    Foreground="{StaticResource TurulBgBrush}"
+                    BorderThickness="0" Padding="14,8" CornerRadius="8"
+                    FontSize="12" FontWeight="SemiBold"
+                    IsEnabled="{Binding CanFix}"/>
+        </Grid>
+
+        <!-- Problémák -->
+        <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
+                BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                CornerRadius="14" Padding="8">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="10,8,10,6">
+                    <TextBlock Text="TALÁLATOK" Classes="overline" VerticalAlignment="Center" Margin="4,0,8,0"/>
+                    <ComboBox ItemsSource="{Binding FixModes}"
+                              SelectedItem="{Binding FixMode, Mode=TwoWay}"
+                              MinWidth="220"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Spacing="8" Margin="20,24" MaxWidth="440">
+                    <Border Width="54" Height="54" CornerRadius="27"
+                            HorizontalAlignment="Center"
+                            Background="{StaticResource TurulSurface2Brush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                        <TextBlock Text="🛠" FontSize="22" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding EmptyTitle}" FontSize="16" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" TextAlignment="Center"
+                               Foreground="{StaticResource TurulTextBrush}"/>
+                    <TextBlock Text="{Binding EmptyText}" FontSize="13" TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource TurulTextDimBrush}"/>
+                </StackPanel>
+
+                <ListBox Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding Problems}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,8" ColumnSpacing="12">
+                                <CheckBox Grid.Column="0" VerticalAlignment="Center"
+                                          IsChecked="{Binding Selected, Mode=TwoWay}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                    <TextBlock Text="{Binding Reason}" FontSize="11"
+                                               Foreground="{StaticResource TurulTextDimBrush}"
+                                               TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding FileName}" FontSize="10"
+                                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                                </StackPanel>
+                                <Border Grid.Column="2" VerticalAlignment="Center"
+                                        CornerRadius="9" Padding="10,4"
+                                        Background="{Binding BadgeBg}"
+                                        HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding BadgeText}" FontSize="10" FontWeight="Bold"
+                                               Foreground="{Binding BadgeFg}"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Alsó sáv -->
+        <StackPanel Grid.Row="3" Spacing="3" Margin="0,12,0,0">
+            <TextBlock Text="{Binding StatusText}" FontSize="12"
+                       Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
+            <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
+                         Height="4" IsVisible="{Binding ProgressVisible}"
+                         Foreground="{StaticResource TurulGoldBrush}"
+                         Background="{StaticResource TurulBorderBrush}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

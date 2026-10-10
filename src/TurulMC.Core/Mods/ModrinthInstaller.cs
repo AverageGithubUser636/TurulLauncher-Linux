@@ -166,25 +166,73 @@ public sealed class ModrinthInstaller
             ?? throw new InvalidOperationException("A kiválasztott verzió már nem elérhető.");
         EnsureCompatible(version, minecraftVersion, loader);
 
+        return await SwapToVersionAsync(version, modsDir, fileName, "mod", progress, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Konkrét verzió telepítése csere útján (pl. verzióválasztóból).
+    /// Kompatibilitást ellenőriz, a tiltott állapotot és a metát rendezi.
+    /// </summary>
+    public async Task<InstalledModFile> InstallSpecificVersionAsync(
+        string versionId,
+        string minecraftVersion,
+        string loader,
+        string modsDir,
+        string? oldFileName,
+        IProgress<DownloadProgress>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(versionId))
+            throw new ArgumentException("Üres Modrinth verzióazonosító.", nameof(versionId));
+        if (string.IsNullOrWhiteSpace(modsDir))
+            throw new ArgumentException("Üres célmappa.", nameof(modsDir));
+
+        var version = await _client.GetVersionAsync(versionId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("A Modrinth verzió nem található.");
+        EnsureCompatible(version, minecraftVersion, loader);
+
         Directory.CreateDirectory(modsDir);
-        var wasDisabled = fileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase);
-        var baseName = wasDisabled ? fileName[..^".disabled".Length] : fileName;
+        return await SwapToVersionAsync(version, modsDir, oldFileName ?? "", "mod", progress, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Verzió letöltése + régi fájl/meta takarítása + tiltott állapot átvitele.
+    /// Az <see cref="UpdateModAsync"/> és az <see cref="InstallSpecificVersionAsync"/>
+    /// közös magja.
+    /// </summary>
+    private async Task<InstalledModFile> SwapToVersionAsync(
+        ModrinthVersion version,
+        string modsDir,
+        string oldFileName,
+        string projectType,
+        IProgress<DownloadProgress>? progress,
+        CancellationToken cancellationToken)
+    {
+        var wasDisabled = oldFileName.EndsWith(".disabled", StringComparison.OrdinalIgnoreCase);
+        var baseName = wasDisabled ? oldFileName[..^".disabled".Length] : oldFileName;
 
         var newFileName = await DownloadVersionFileAsync(
-            version, modsDir, "mod", progress, cancellationToken).ConfigureAwait(false);
+            version, modsDir, projectType, progress, cancellationToken).ConfigureAwait(false);
         WriteMeta(modsDir, newFileName, version);
 
         // Régi fájl + régi meta takarítása (ha eltér az új névtől).
-        if (!baseName.Equals(newFileName, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(baseName) &&
+            !baseName.Equals(newFileName, StringComparison.OrdinalIgnoreCase))
         {
             try
             {
-                var oldPath = PathSecurity.ResolveInsideRoot(modsDir, Path.GetFileName(fileName));
+                var oldPath = PathSecurity.ResolveInsideRoot(modsDir, Path.GetFileName(baseName));
                 PathSecurity.SafeDeleteFile(modsDir, oldPath);
+                var disabledTwin = oldPath + ".disabled";
+                if (File.Exists(disabledTwin) &&
+                    !disabledTwin.Equals(Path.Combine(modsDir, newFileName), StringComparison.OrdinalIgnoreCase))
+                    PathSecurity.SafeDeleteFile(modsDir, disabledTwin);
             }
             catch (Exception ex)
             {
-                LauncherLogger.Warning($"Régi modfájl törlése nem sikerült ({fileName}): {ex.Message}");
+                LauncherLogger.Warning($"Régi modfájl törlése nem sikerült ({oldFileName}): {ex.Message}");
             }
             try
             {
@@ -196,7 +244,7 @@ public sealed class ModrinthInstaller
             }
             catch (Exception ex)
             {
-                LauncherLogger.Warning($"Régi mod-meta törlése nem sikerült ({fileName}): {ex.Message}");
+                LauncherLogger.Warning($"Régi mod-meta törlése nem sikerült ({oldFileName}): {ex.Message}");
             }
         }
 
@@ -212,7 +260,7 @@ public sealed class ModrinthInstaller
             }
         }
 
-        LauncherLogger.Info($"Mod frissítve: {fileName} → {newFileName} ({info.NewVersion})");
+        LauncherLogger.Info($"Mod telepítve: {newFileName} ({version.VersionNumber})");
         return new InstalledModFile(
             ProjectId: version.ProjectId,
             VersionId: version.VersionId,

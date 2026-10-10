@@ -161,46 +161,10 @@ public sealed class ModpackInstaller
 
         try
         {
-            var files = root.TryGetProperty("files", out var filesEl) &&
-                filesEl.ValueKind == JsonValueKind.Array
-                    ? filesEl.EnumerateArray().ToArray()
-                    : Array.Empty<JsonElement>();
-            var downloadable = files.Where(IsClientPackFile).ToArray();
+            var downloadable = ClientPackFiles(root);
 
-            for (var i = 0; i < downloadable.Length; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var packFile = downloadable[i];
-                var relativePath = SanitizePackPath(GetString(packFile, "path"));
-                if (string.IsNullOrWhiteSpace(relativePath)) continue;
-
-                if (!packFile.TryGetProperty("downloads", out var downloads) ||
-                    downloads.ValueKind != JsonValueKind.Array)
-                    throw new InvalidOperationException($"Nincs letöltési URL: {relativePath}");
-                var downloadUrl = downloads.EnumerateArray()
-                    .Where(x => x.ValueKind == JsonValueKind.String)
-                    .Select(x => x.GetString() ?? "")
-                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
-                EnsureSafeDownloadUrl(downloadUrl);
-
-                var destination = PathSecurity.ResolveInsideRoot(instanceRoot, relativePath);
-                var destDir = Path.GetDirectoryName(destination);
-                if (!string.IsNullOrEmpty(destDir)) Directory.CreateDirectory(destDir);
-
-                string? sha512 = null, sha1 = null;
-                if (packFile.TryGetProperty("hashes", out var hashes) &&
-                    hashes.ValueKind == JsonValueKind.Object)
-                {
-                    sha512 = GetString(hashes, "sha512");
-                    sha1 = GetString(hashes, "sha1");
-                }
-
-                progress?.Report(new ModpackProgress(
-                    $"Letöltés ({i + 1}/{downloadable.Length}): {relativePath}",
-                    downloadable.Length == 0 ? 100 : (i * 100.0 / downloadable.Length)));
-                await DownloadToFileAsync(downloadUrl, destination, sha512, sha1,
-                    relativePath, null, cancellationToken).ConfigureAwait(false);
-            }
+            await DownloadPackFilesAsync(downloadable, instanceRoot, progress, cancellationToken)
+                .ConfigureAwait(false);
 
             ExtractOverrides(archive, instanceRoot);
 
@@ -336,6 +300,57 @@ public sealed class ModpackInstaller
                     $"Ez a modpack {unsupported} loadert használ. A TurulLauncher jelenleg Fabric/vanilla modpackot támogat.");
         }
         return ("none", "");
+    }
+
+    internal static JsonElement[] ClientPackFiles(JsonElement root)
+    {
+        var files = root.TryGetProperty("files", out var filesEl) &&
+            filesEl.ValueKind == JsonValueKind.Array
+                ? filesEl.EnumerateArray().ToArray()
+                : Array.Empty<JsonElement>();
+        return files.Where(IsClientPackFile).ToArray();
+    }
+
+    private async Task DownloadPackFilesAsync(
+        JsonElement[] downloadable,
+        string instanceRoot,
+        IProgress<ModpackProgress>? progress,
+        CancellationToken cancellationToken)
+    {
+        for (var i = 0; i < downloadable.Length; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var packFile = downloadable[i];
+            var relativePath = SanitizePackPath(GetString(packFile, "path"));
+            if (string.IsNullOrWhiteSpace(relativePath)) continue;
+
+            if (!packFile.TryGetProperty("downloads", out var downloads) ||
+                downloads.ValueKind != JsonValueKind.Array)
+                throw new InvalidOperationException($"Nincs letöltési URL: {relativePath}");
+            var downloadUrl = downloads.EnumerateArray()
+                .Where(x => x.ValueKind == JsonValueKind.String)
+                .Select(x => x.GetString() ?? "")
+                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
+            EnsureSafeDownloadUrl(downloadUrl);
+
+            var destination = PathSecurity.ResolveInsideRoot(instanceRoot, relativePath);
+            var destDir = Path.GetDirectoryName(destination);
+            if (!string.IsNullOrEmpty(destDir)) Directory.CreateDirectory(destDir);
+
+            string? sha512 = null, sha1 = null;
+            if (packFile.TryGetProperty("hashes", out var hashes) &&
+                hashes.ValueKind == JsonValueKind.Object)
+            {
+                sha512 = GetString(hashes, "sha512");
+                sha1 = GetString(hashes, "sha1");
+            }
+
+            progress?.Report(new ModpackProgress(
+                $"Letöltés ({i + 1}/{downloadable.Length}): {relativePath}",
+                downloadable.Length == 0 ? 100 : (i * 100.0 / downloadable.Length)));
+            await DownloadToFileAsync(downloadUrl, destination, sha512, sha1,
+                relativePath, null, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     internal static bool IsClientPackFile(JsonElement file)

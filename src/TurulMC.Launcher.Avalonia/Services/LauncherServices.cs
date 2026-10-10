@@ -37,8 +37,12 @@ public sealed class LauncherServices
     public Core.Mods.ModrinthClient Modrinth { get; } = new();
     public Core.Mods.ModrinthInstaller ModrinthInstall { get; } = new();
     public Core.Mods.ModIconCache Icons { get; } = new();
+    public Core.Mods.ModRepairService Repairs { get; } = new();
     public Core.Modpacks.ModpackInstaller PackInstaller { get; } = new();
     public Core.Update.UpdateService Updates { get; } = new();
+    public Core.Minecraft.MinecraftVersionCatalog Versions { get; } = new(
+        null,
+        Path.Combine(Core.Storage.LauncherPaths.DataRoot, "cache", "version_manifest.json"));
     public LauncherSettings Settings { get; private set; } = new();
 
     private IMinecraftInstallationService? _install;

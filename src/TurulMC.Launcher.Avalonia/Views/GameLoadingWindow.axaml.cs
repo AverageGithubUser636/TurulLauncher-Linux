@@ -143,9 +143,18 @@ public partial class GameLoadingWindow : Window
             }
             else
             {
-                MarkFailed(string.IsNullOrWhiteSpace(e.OutputTail)
+                // Crash-magyarázat a naplófark + kilépési kód alapján
+                // (Core-szabályok, magyarul + teendőkkel).
+                var explanation = Core.Recovery.CrashExplanationService.Analyze(
+                    string.IsNullOrWhiteSpace(e.OutputTail) ? null : e.OutputTail,
+                    e.ExitCode);
+                var detail = string.IsNullOrWhiteSpace(e.OutputTail)
                     ? $"Kilépési kód: {e.ExitCode}"
-                    : e.OutputTail);
+                    : e.OutputTail;
+                if (explanation.Recognized)
+                    MarkExplained(explanation.Title, explanation.Summary, explanation.Steps, detail);
+                else
+                    MarkFailed(detail);
             }
         });
     }
@@ -170,6 +179,36 @@ public partial class GameLoadingWindow : Window
         LoadingBar.IsIndeterminate = false;
         LoadingBar.Value = 100;
         StatusText.Text = "A játék hibával leállt: " + error;
+        ApplyFailedStyle();
+    }
+
+    /// <summary>Felismert összeomlás: cím + magyarázat + teendők + naplófarok.</summary>
+    public void MarkExplained(string title, string summary, string[] steps, string tail)
+    {
+        if (_finished) return;
+        _finished = true;
+        _timer.Stop();
+        LoadingBar.IsIndeterminate = false;
+        LoadingBar.Value = 100;
+        StatusText.Text = title;
+        ExplainTitle.Text = title;
+        ExplainTitle.IsVisible = true;
+        var lines = new List<string> { summary };
+        if (steps is { Length: > 0 })
+        {
+            lines.Add("");
+            foreach (var step in steps.Take(4))
+                lines.Add("• " + step);
+        }
+        ExplainBody.Text = string.Join(Environment.NewLine, lines);
+        ExplainBody.IsVisible = true;
+        AppendLog("──── naplófarok ────");
+        AppendLog(tail);
+        ApplyFailedStyle();
+    }
+
+    private void ApplyFailedStyle()
+    {
         try
         {
             StatusText.Foreground =

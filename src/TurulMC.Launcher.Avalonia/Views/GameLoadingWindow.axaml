@@ -31,6 +31,12 @@
             <StackPanel Spacing="8">
                 <TextBlock x:Name="StatusText" Text="Indítás…" FontSize="13" FontWeight="SemiBold"
                            Foreground="{StaticResource TurulGoldBrush}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="ExplainTitle" Text="" FontSize="14" FontWeight="Bold"
+                           Foreground="{StaticResource TurulDangerBrush}" TextWrapping="Wrap"
+                           IsVisible="False"/>
+                <TextBlock x:Name="ExplainBody" Text="" FontSize="12" TextWrapping="Wrap"
+                           Foreground="{StaticResource TurulTextBrush}"
+                           IsVisible="False"/>
                 <ProgressBar x:Name="LoadingBar" Minimum="0" Maximum="100" Value="0"
                              Height="4" IsIndeterminate="True"
                              Foreground="{StaticResource TurulGoldBrush}"

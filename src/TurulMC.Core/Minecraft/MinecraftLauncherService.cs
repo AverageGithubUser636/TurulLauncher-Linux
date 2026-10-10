@@ -501,11 +501,11 @@ public class MinecraftLauncherService : IMinecraftLauncherService
 
     private async Task BuildVanillaLaunchConfigAsync(LaunchConfig config, LauncherSettings settings)
     {
-        var detail = await _installationService.GetVersionDetailAsync(settings.MinecraftVersion);
-        ApplyVanillaDetail(config, detail, settings.MinecraftVersion);
+        var detail = await _installationService.GetVersionDetailAsync(settings.MinecraftVersion).ConfigureAwait(false);
+        await ApplyVanillaDetailAsync(config, detail, settings.MinecraftVersion).ConfigureAwait(false);
     }
 
-    private void ApplyVanillaDetail(LaunchConfig config, MinecraftVersionDetail detail, string versionId)
+    private async Task ApplyVanillaDetailAsync(LaunchConfig config, MinecraftVersionDetail detail, string versionId)
     {
         config.MainClass = detail.MainClass ?? "net.minecraft.client.main.Main";
         config.VersionType = detail.Type ?? "release";
@@ -525,15 +525,15 @@ public class MinecraftLauncherService : IMinecraftLauncherService
             if (File.Exists(path)) config.ClassPath.Add(path);
         }
 
-        var clientJar = _installationService.GetClientJarPathAsync(versionId).GetAwaiter().GetResult();
+        var clientJar = await _installationService.GetClientJarPathAsync(versionId).ConfigureAwait(false);
         if (File.Exists(clientJar)) config.ClassPath.Add(clientJar);
     }
 
     private async Task BuildFabricLaunchConfigAsync(LaunchConfig config, LauncherSettings settings)
     {
         // First build a correct vanilla 26.x launch configuration from Mojang metadata.
-        var vanilla = await _installationService.GetVersionDetailAsync(settings.MinecraftVersion);
-        ApplyVanillaDetail(config, vanilla, settings.MinecraftVersion);
+        var vanilla = await _installationService.GetVersionDetailAsync(settings.MinecraftVersion).ConfigureAwait(false);
+        await ApplyVanillaDetailAsync(config, vanilla, settings.MinecraftVersion).ConfigureAwait(false);
 
         var fabricVersionId = $"fabric-loader-{settings.LoaderVersion}-{settings.MinecraftVersion}";
         var fabricJsonPath = Path.Combine(_installationService.GetInstanceDirectory(), "versions", fabricVersionId, $"{fabricVersionId}.json");

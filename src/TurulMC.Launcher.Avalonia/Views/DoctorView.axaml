@@ -12,10 +12,17 @@
         </StackPanel>
 
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,14" ColumnSpacing="14">
-            <Button Grid.Column="0" Content="Futtatás" Click="OnRun"
-                    Background="{StaticResource TurulGoldBrush}"
-                    Foreground="{StaticResource TurulBgBrush}"
-                    BorderThickness="0" CornerRadius="7" Padding="20,9" FontSize="13" FontWeight="SemiBold"/>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Content="Futtatás" Click="OnRun"
+                        Background="{StaticResource TurulGoldBrush}"
+                        Foreground="{StaticResource TurulBgBrush}"
+                        BorderThickness="0" CornerRadius="7" Padding="20,9" FontSize="13" FontWeight="SemiBold"/>
+                <Button Content="Support" Click="OnBundle"
+                        Background="{StaticResource TurulSurface2Brush}"
+                        Foreground="{StaticResource TurulTextBrush}"
+                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                        CornerRadius="7" Padding="14,9" FontSize="12"/>
+            </StackPanel>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="13"
                        Foreground="{StaticResource TurulTextDimBrush}"
                        Text="{Binding SummaryText}" TextWrapping="Wrap"/>

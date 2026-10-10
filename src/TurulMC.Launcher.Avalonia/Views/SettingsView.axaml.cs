@@ -154,6 +154,19 @@ public sealed class ThemeOption
     public global::Avalonia.Media.IBrush Swatch { get; }
 }
 
+/// <summary>Kód + magyar felirat páros legördülőkhöz (viselkedés, csatorna).</summary>
+public sealed class ChoiceOption
+{
+    public ChoiceOption(string name, string label)
+    {
+        Name = name;
+        Label = label;
+    }
+
+    public string Name { get; }
+    public string Label { get; }
+}
+
 public sealed class SettingsViewModel : PropertyChangedBase
 {
     private readonly LauncherServices _services = LauncherServices.Current;
@@ -178,6 +191,70 @@ public sealed class SettingsViewModel : PropertyChangedBase
     public string SaveText { get => _saveText; private set => Raise(ref _saveText, value); }
     public string Subtitle { get => _subtitle; private set => Raise(ref _subtitle, value); }
     public string DataRoot { get; } = Core.Storage.LauncherPaths.DataRoot;
+
+    public List<ChoiceOption> GameStartOptions { get; } = new()
+    {
+        new("tray", "Tálcára (minimalizál)"),
+        new("minimize", "Minimalizál"),
+        new("keep", "Megtart (változatlan)"),
+        new("exit", "Launcher bezárása"),
+    };
+
+    public List<ChoiceOption> CloseOptions { get; } = new()
+    {
+        new("ask", "Rákérdezés"),
+        new("minimize", "Minimalizálás"),
+        new("exit", "Kilépés"),
+    };
+
+    public List<ChoiceOption> ChannelOptions { get; } = new()
+    {
+        new("stable", "Stabil"),
+        new("beta", "Béta (esetleg törött!)"),
+    };
+
+    private ChoiceOption ByName(List<ChoiceOption> options, string? name, string fallback)
+        => options.FirstOrDefault(o => o.Name == name) ?? options.First(o => o.Name == fallback);
+
+    private string _gameStart = "tray";
+    private string _closeBehavior = "ask";
+    private string _updateChannel = "stable";
+
+    public ChoiceOption GameStartBehavior
+    {
+        get => ByName(GameStartOptions, _gameStart, "tray");
+        set
+        {
+            if (value is null || value.Name == _gameStart) return;
+            _gameStart = value.Name;
+            _dirty = true;
+            OnPropertyChanged();
+        }
+    }
+
+    public ChoiceOption CloseBehavior
+    {
+        get => ByName(CloseOptions, _closeBehavior, "ask");
+        set
+        {
+            if (value is null || value.Name == _closeBehavior) return;
+            _closeBehavior = value.Name;
+            _dirty = true;
+            OnPropertyChanged();
+        }
+    }
+
+    public ChoiceOption UpdateChannel
+    {
+        get => ByName(ChannelOptions, _updateChannel, "stable");
+        set
+        {
+            if (value is null || value.Name == _updateChannel) return;
+            _updateChannel = value.Name;
+            _dirty = true;
+            OnPropertyChanged();
+        }
+    }
 
     public string CustomAccentText
     {
@@ -287,6 +364,9 @@ public sealed class SettingsViewModel : PropertyChangedBase
         _javaPath = s.JavaPathOverride ?? "";
         _autoInstallJava = s.AutoInstallJava;
         _theme = string.IsNullOrWhiteSpace(s.Theme) ? "yellow" : s.Theme;
+        _gameStart = string.IsNullOrWhiteSpace(s.GameStartBehavior) ? "tray" : s.GameStartBehavior;
+        _closeBehavior = string.IsNullOrWhiteSpace(s.CloseBehavior) ? "ask" : s.CloseBehavior;
+        _updateChannel = string.IsNullOrWhiteSpace(s.UpdateChannel) ? "stable" : s.UpdateChannel;
         Services.ThemeService.Current.Apply(_theme);
         if (!string.IsNullOrWhiteSpace(s.CustomAccent))
             Services.ThemeService.Current.ApplyCustomAccent(s.CustomAccent);
@@ -303,6 +383,10 @@ public sealed class SettingsViewModel : PropertyChangedBase
         OnPropertyChanged(nameof(JavaPath));
         OnPropertyChanged(nameof(AutoInstallJava));
         OnPropertyChanged(nameof(Theme));
+        OnPropertyChanged(nameof(GameStartBehavior));
+        OnPropertyChanged(nameof(CloseBehavior));
+        OnPropertyChanged(nameof(UpdateChannel));
+        OnPropertyChanged(nameof(CustomAccentText));
         OnPropertyChanged(nameof(CustomAccentText));
         OnPropertyChanged(nameof(BackgroundStatus));
         OnPropertyChanged(nameof(WindowOpacityPct));
@@ -458,6 +542,9 @@ public sealed class SettingsViewModel : PropertyChangedBase
             s.JavaPathOverride = string.IsNullOrWhiteSpace(JavaPath) ? null : JavaPath.Trim();
             s.AutoInstallJava = AutoInstallJava;
             s.Theme = _theme;
+            s.GameStartBehavior = _gameStart;
+            s.CloseBehavior = _closeBehavior;
+            s.UpdateChannel = _updateChannel;
             // A megjelenés-mezők (téma/akcentus/háttér/átlátszóság/skala/animáció)
             // már a _services.Settings-be írnak azonnali hatással —
             // itt csak perzisztáljuk őket.

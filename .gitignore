@@ -48,3 +48,13 @@ TestResults/
 coverage*/
 *.coverage
 *.coveragexml
+
+# Secrets / kulcsok (védekezés)
+.env
+*.pem
+*.key
+*.pfx
+*.p12
+
+# AppImage a gyökérben (a dist/ már ignorált)
+*.AppImage
