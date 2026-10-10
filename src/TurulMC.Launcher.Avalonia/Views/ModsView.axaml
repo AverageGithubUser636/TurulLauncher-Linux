@@ -5,15 +5,24 @@
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26,22,26,20">
 
         <!-- Fejléc -->
-        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Modok" FontSize="24" FontWeight="SemiBold"
-                       Foreground="{StaticResource TurulTextBrush}"/>
-            <TextBlock Text="{Binding Subtitle}" FontSize="12"
-                       Foreground="{StaticResource TurulTextDimBrush}"/>
-        </StackPanel>
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+            <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                <TextBlock Text="Modok" FontSize="26" FontWeight="Bold"
+                           Foreground="{StaticResource TurulTextBrush}"/>
+                <TextBlock Text="{Binding Subtitle}" FontSize="12"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+            </StackPanel>
+            <Border Grid.Column="1" CornerRadius="10" Padding="14,7"
+                    VerticalAlignment="Center"
+                    Background="{StaticResource TurulSurfaceBrush}"
+                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                <TextBlock Text="{Binding CountText}" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{StaticResource TurulTextDimBrush}"/>
+            </Border>
+        </Grid>
 
         <!-- Instance választó + nézetváltó -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,12">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="0,0,0,12">
             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
                 <TextBlock Text="Instance:" FontSize="12" VerticalAlignment="Center"
                            Foreground="{StaticResource TurulTextDimBrush}"/>
@@ -27,10 +36,8 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </StackPanel>
-            <TextBlock Grid.Column="1" Text="{Binding CountText}" FontSize="12"
-                       VerticalAlignment="Center"
-                       Foreground="{StaticResource TurulTextFaintBrush}"/>
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                        HorizontalAlignment="Right">
                 <Button Content="Telepített" Click="OnShowInstalled"
                         IsVisible="{Binding IsBrowserMode}"
                         Background="Transparent"
@@ -129,52 +136,62 @@
                          SelectionMode="Multiple"
                          ItemsSource="{Binding Mods}"
                          SelectedItem="{Binding SelectedMod, Mode=TwoWay}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="8,7" ColumnSpacing="12">
-                                <CheckBox Grid.Column="0" VerticalAlignment="Center"
-                                          IsChecked="{Binding Enabled, Mode=OneWay}"
-                                          Checked="OnModChecked" Unchecked="OnModUnchecked"/>
-                                <Border Grid.Column="1" Width="40" Height="40" CornerRadius="8"
-                                        VerticalAlignment="Center"
-                                        Background="{StaticResource TurulSurface2Brush}"
-                                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
-                                    <Grid>
-                                        <TextBlock Text="🧩" FontSize="14" HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="{StaticResource TurulGoldDimBrush}"/>
-                                        <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
-                                               Width="40" Height="40" Stretch="UniformToFill"/>
-                                    </Grid>
-                                </Border>
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TurulTextBrush}"/>
-                                    <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
-                                        <Run Text="{Binding Version}"/>
-                                        <Run Text=" · "/><Run Text="{Binding Loader}"/>
-                                        <Run Text=" · "/><Run Text="{Binding FileName}"/>
-                                    </TextBlock>
-                                    <TextBlock Text="{Binding Error}" FontSize="11" IsVisible="{Binding HasError}"
-                                               Foreground="{StaticResource TurulDangerBrush}"
-                                               TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding UpdateText}" FontSize="11" FontWeight="SemiBold"
-                                               IsVisible="{Binding HasUpdate}"
-                                               Foreground="{StaticResource TurulGoldBrush}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3" VerticalAlignment="Center" Spacing="4"
-                                            HorizontalAlignment="Right">
-                                    <Border CornerRadius="9" Padding="10,4"
-                                            Background="{Binding StateBg}"
-                                            HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding StateText}" FontSize="10" FontWeight="Bold"
-                                                   Foreground="{Binding StateFg}"/>
+                            <Border Background="{StaticResource TurulSurfaceBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="12" Padding="14,12" Margin="0,0,8,8">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10">
+                                    <CheckBox Grid.Column="0" VerticalAlignment="Top" Margin="0,6,0,0"
+                                              IsChecked="{Binding Enabled, Mode=OneWay}"
+                                              Checked="OnModChecked" Unchecked="OnModUnchecked"/>
+                                    <Border Grid.Column="1" Width="46" Height="46" CornerRadius="10"
+                                            VerticalAlignment="Top"
+                                            Background="{StaticResource TurulSurface2Brush}"
+                                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                                        <Grid>
+                                            <TextBlock Text="🧩" FontSize="16" HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TurulGoldDimBrush}"/>
+                                            <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
+                                                   Width="46" Height="46" Stretch="UniformToFill"/>
+                                        </Grid>
                                     </Border>
-                                    <TextBlock Text="{Binding SizeText}" FontSize="10"
-                                               Foreground="{StaticResource TurulTextFaintBrush}"
-                                               HorizontalAlignment="Right"/>
-                                </StackPanel>
-                            </Grid>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="3">
+                                        <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Bold"
+                                                   Foreground="{StaticResource TurulTextBrush}"
+                                                   TextWrapping="Wrap" MaxLines="1"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
+                                            <Run Text="{Binding SizeText}"/>
+                                            <Run Text=" · "/><Run Text="{Binding StateText}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding FileName}" FontSize="11"
+                                                   Foreground="{StaticResource TurulTextFaintBrush}"
+                                                   TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                                        <TextBlock Text="{Binding Error}" FontSize="11" IsVisible="{Binding HasError}"
+                                                   Foreground="{StaticResource TurulDangerBrush}"
+                                                   TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding UpdateText}" FontSize="11" FontWeight="SemiBold"
+                                                   IsVisible="{Binding HasUpdate}"
+                                                   Foreground="{StaticResource TurulGoldBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Top" Spacing="6"
+                                                HorizontalAlignment="Right">
+                                        <Border CornerRadius="9" Padding="10,4"
+                                                Background="{Binding StateBg}"
+                                                HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding StateText}" FontSize="10" FontWeight="Bold"
+                                                       Foreground="{Binding StateFg}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -200,46 +217,57 @@
 
                 <ListBox Background="Transparent" BorderThickness="0"
                          ItemsSource="{Binding SearchResults}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,7" ColumnSpacing="12">
-                                <Border Grid.Column="0" Width="48" Height="48" CornerRadius="9"
-                                        VerticalAlignment="Center"
-                                        Background="{StaticResource TurulSurface2Brush}"
-                                        BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
-                                    <Grid>
-                                        <TextBlock Text="◈" FontSize="18" HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="{StaticResource TurulGoldDimBrush}"/>
-                                        <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
-                                               Width="48" Height="48" Stretch="UniformToFill"/>
-                                    </Grid>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock FontSize="14" FontWeight="SemiBold"
-                                               Foreground="{StaticResource TurulTextBrush}">
-                                        <Run Text="{Binding Title}"/>
-                                    </TextBlock>
-                                    <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
-                                        <Run Text="{Binding Author}"/>
-                                        <Run Text=" · "/><Run Text="{Binding DownloadsText}"/>
-                                        <Run Text=" · "/><Run Text="{Binding InstalledText}"/>
-                                    </TextBlock>
-                                    <TextBlock Text="{Binding Description}" FontSize="11"
-                                               Foreground="{StaticResource TurulTextDimBrush}"
-                                               TextWrapping="Wrap" MaxLines="2"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </StackPanel>
-                                <Button Grid.Column="2" Content="{Binding ActionText}"
-                                        Click="OnInstallSearch"
-                                        VerticalAlignment="Center"
-                                        IsEnabled="{Binding CanInstall}"
-                                        MinWidth="110" Padding="12,8" CornerRadius="6"
-                                        FontSize="12" FontWeight="SemiBold"
-                                        Background="{StaticResource TurulGoldBrush}"
-                                        Foreground="{StaticResource TurulBgBrush}"
-                                        BorderThickness="0"/>
-                            </Grid>
+                            <Border Background="{StaticResource TurulSurfaceBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    CornerRadius="12" Padding="14,12" Margin="0,0,8,8">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Border Grid.Column="0" Width="52" Height="52" CornerRadius="10"
+                                            VerticalAlignment="Top"
+                                            Background="{StaticResource TurulSurface2Brush}"
+                                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
+                                        <Grid>
+                                            <TextBlock Text="◈" FontSize="20" HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TurulGoldDimBrush}"/>
+                                            <Image Source="{Binding IconPath, Converter={StaticResource IconConverter}}"
+                                                   Width="52" Height="52" Stretch="UniformToFill"/>
+                                        </Grid>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                        <TextBlock FontSize="15" FontWeight="Bold"
+                                                   Foreground="{StaticResource TurulTextBrush}"
+                                                   TextWrapping="Wrap" MaxLines="1"
+                                                   TextTrimming="CharacterEllipsis">
+                                            <Run Text="{Binding Title}"/>
+                                        </TextBlock>
+                                        <TextBlock FontSize="11" Foreground="{StaticResource TurulTextFaintBrush}">
+                                            <Run Text="{Binding Author}"/>
+                                            <Run Text=" · "/><Run Text="{Binding DownloadsText}"/>
+                                            <Run Text=" · "/><Run Text="{Binding InstalledText}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Description}" FontSize="11"
+                                                   Foreground="{StaticResource TurulTextDimBrush}"
+                                                   TextWrapping="Wrap" MaxLines="2"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Content="{Binding ActionText}"
+                                            Click="OnInstallSearch"
+                                            VerticalAlignment="Center"
+                                            IsEnabled="{Binding CanInstall}"
+                                            MinWidth="104" Padding="12,9" CornerRadius="8"
+                                            FontSize="12" FontWeight="SemiBold"
+                                            Background="{StaticResource TurulGoldBrush}"
+                                            Foreground="#0A0B0D"
+                                            BorderThickness="0"/>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

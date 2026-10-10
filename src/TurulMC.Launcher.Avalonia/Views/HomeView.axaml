@@ -27,10 +27,10 @@
         </Border>
 
         <!-- Cím -->
-        <StackPanel Grid.Row="1" Spacing="3" Margin="0,0,0,14">
-            <TextBlock Text="Játék" FontSize="26" FontWeight="SemiBold"
+        <StackPanel Grid.Row="1" Spacing="4" Margin="0,2,0,16">
+            <TextBlock Text="Üdv újra!" FontSize="32" FontWeight="ExtraBold"
                        Foreground="{StaticResource TurulTextBrush}"/>
-            <TextBlock Text="{Binding ProfileLine}" FontSize="12"
+            <TextBlock Text="{Binding ProfileLine}" FontSize="13"
                        Foreground="{StaticResource TurulTextDimBrush}"/>
         </StackPanel>
 
@@ -38,55 +38,49 @@
         <Border Grid.Row="2" Margin="0,0,0,14"
                 Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                CornerRadius="14" Padding="0">
-            <DockPanel>
-                <Border DockPanel.Dock="Top" Height="3" CornerRadius="3,3,0,0"
-                        Background="{DynamicResource TurulGoldBrush}"/>
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20" Margin="24,18,24,20">
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="8">
+                CornerRadius="14" Padding="26,22">
+            <StackPanel Spacing="14">
+                <StackPanel Spacing="8">
                     <TextBlock Text="AKTÍV INSTANCE" Classes="overline"/>
                     <TextBlock Text="{Binding HeroName}" FontSize="22" FontWeight="SemiBold"
                                Foreground="{StaticResource TurulTextBrush}"/>
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Border CornerRadius="9" Padding="10,4"
+                        <Border CornerRadius="10" Padding="12,5"
                                 Background="{StaticResource TurulSurface2Brush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
-                            <TextBlock Text="{Binding HeroVersion}" FontSize="11" FontWeight="SemiBold"
+                            <TextBlock Text="{Binding HeroVersion}" FontSize="12" FontWeight="SemiBold"
                                        Foreground="{StaticResource TurulTextBrush}"/>
                         </Border>
-                        <Border CornerRadius="9" Padding="10,4"
+                        <Border CornerRadius="10" Padding="12,5"
                                 Background="{StaticResource TurulSurface2Brush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1">
-                            <TextBlock Text="{Binding HeroLoader}" FontSize="11" FontWeight="SemiBold"
+                            <TextBlock Text="{Binding HeroLoader}" FontSize="12" FontWeight="SemiBold"
                                        Foreground="{StaticResource TurulTextBrush}"/>
                         </Border>
-                        <Border CornerRadius="9" Padding="10,4"
+                        <Border CornerRadius="10" Padding="12,5"
                                 Background="{StaticResource TurulSurface2Brush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
                                 IsVisible="{Binding HasMods}">
-                            <TextBlock Text="{Binding HeroMods}" FontSize="11" FontWeight="SemiBold"
+                            <TextBlock Text="{Binding HeroMods}" FontSize="12" FontWeight="SemiBold"
                                        Foreground="{StaticResource TurulGoldBrush}"/>
                         </Border>
                     </StackPanel>
                     <TextBlock Text="{Binding HeroLastPlayed}" FontSize="11"
                                Foreground="{StaticResource TurulTextFaintBrush}"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="8">
-                    <Button x:Name="PlayButton" Content="▶  JÁTÉK" Click="OnPlay"
-                            MinWidth="210" Padding="24,15"
-                            FontSize="16" FontWeight="Bold"
-                            HorizontalContentAlignment="Center"
-                            Background="{StaticResource TurulGoldBrush}"
-                            Foreground="{StaticResource TurulBgBrush}"
-                            BorderThickness="0" CornerRadius="10"
-                            IsEnabled="{Binding CanPlay}"/>
-                    <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
-                                 Height="4" IsVisible="{Binding ProgressVisible}"
-                                 Foreground="{StaticResource TurulGoldBrush}"
-                                 Background="{StaticResource TurulBorderBrush}"/>
-                </StackPanel>
-            </Grid>
-            </DockPanel>
+                <Button x:Name="PlayButton" Content="▶  JÁTÉK" Click="OnPlay"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Padding="24,16"
+                        FontSize="18" FontWeight="Bold"
+                        Background="{StaticResource TurulPlayGradient}"
+                        Foreground="#0A0B0D"
+                        BorderThickness="0" CornerRadius="12"
+                        IsEnabled="{Binding CanPlay}"/>
+                <ProgressBar Value="{Binding Progress}" Minimum="0" Maximum="100"
+                             Height="4" IsVisible="{Binding ProgressVisible}"
+                             Foreground="{StaticResource TurulGoldBrush}"
+                             Background="{StaticResource TurulBorderBrush}"/>
+            </StackPanel>
         </Border>
 
         <!-- Instance lista -->

@@ -95,24 +95,30 @@
         </Style>
 
         <Style Selector="ListBox > ListBoxItem:selected /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource TurulSelectBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource TurulGoldBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource TurulNavActiveBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="ListBox > ListBoxItem:selected">
             <Setter Property="Foreground" Value="{DynamicResource TurulGoldBrush}" />
         </Style>
 
-        <!-- A navigáció extra belső ritmusa. -->
+        <!-- A navigáció ritmusa + arany-tintás aktív pill (Windows-minta). -->
         <Style Selector="ListBox.nav">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="ListBox.nav > ListBoxItem">
-            <Setter Property="Padding" Value="10,7" />
-            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource TurulTextDimBrush}" />
+        </Style>
+
+        <Style Selector="ListBox.nav > ListBoxItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TurulGoldBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
 
         <!-- Checkbox: arany jelölő, sötét pipa.
@@ -172,18 +178,23 @@
     </Application.Styles>
 
     <Application.Resources>
-        <!-- TurulLauncher márka-paletta (a Windows-os HTML UI-ból átvéve). -->
-        <Color x:Key="TurulBg">#08090B</Color>
-        <Color x:Key="TurulSurface">#0D0F12</Color>
-        <Color x:Key="TurulSurface2">#14171C</Color>
-        <Color x:Key="TurulBorder">#1E2126</Color>
-        <Color x:Key="TurulGold">#D4AF37</Color>
+        <!-- TurulLauncher márka-paletta (a Windows-verzió sötét-arany UI-ja alapján).
+             Háttér közel fekete, kártyák lépcsőzetesen világosabbak,
+             akcentus meleg arany, játék-gomb élénkzöld. -->
+        <Color x:Key="TurulBg">#0A0B0D</Color>
+        <Color x:Key="TurulSurface">#101215</Color>
+        <Color x:Key="TurulSurface2">#171A1F</Color>
+        <Color x:Key="TurulBorder">#24282E</Color>
+        <Color x:Key="TurulGold">#E3B93F</Color>
         <Color x:Key="TurulGoldDim">#8A7322</Color>
-        <Color x:Key="TurulText">#E8E6E3</Color>
-        <Color x:Key="TurulTextDim">#8A8D93</Color>
-        <Color x:Key="TurulTextFaint">#565A62</Color>
+        <Color x:Key="TurulText">#F2F0EB</Color>
+        <Color x:Key="TurulTextDim">#9C9FA6</Color>
+        <Color x:Key="TurulTextFaint">#5E636B</Color>
         <Color x:Key="TurulDanger">#E5484D</Color>
-        <Color x:Key="TurulOk">#46A758</Color>
+        <Color x:Key="TurulOk">#3DDC84</Color>
+        <Color x:Key="TurulPlay">#33D17F</Color>
+        <Color x:Key="TurulPlayDark">#1FA968</Color>
+        <Color x:Key="TurulNavActive">#2A2310</Color>
 
         <SolidColorBrush x:Key="TurulBgBrush" Color="{StaticResource TurulBg}" />
         <SolidColorBrush x:Key="TurulSurfaceBrush" Color="{StaticResource TurulSurface}" />
@@ -196,6 +207,14 @@
         <SolidColorBrush x:Key="TurulTextFaintBrush" Color="{StaticResource TurulTextFaint}" />
         <SolidColorBrush x:Key="TurulDangerBrush" Color="{StaticResource TurulDanger}" />
         <SolidColorBrush x:Key="TurulOkBrush" Color="{StaticResource TurulOk}" />
+        <SolidColorBrush x:Key="TurulPlayBrush" Color="{StaticResource TurulPlay}" />
+        <SolidColorBrush x:Key="TurulPlayDarkBrush" Color="{StaticResource TurulPlayDark}" />
+        <SolidColorBrush x:Key="TurulNavActiveBrush" Color="{StaticResource TurulNavActive}" />
+        <!-- Játék-gomb: élénkzöld átmenet (mint a Windows-verzióban). -->
+        <LinearGradientBrush x:Key="TurulPlayGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Offset="0" Color="{StaticResource TurulPlay}" />
+            <GradientStop Offset="1" Color="{StaticResource TurulPlayDark}" />
+        </LinearGradientBrush>
         <!-- Kijelölés-háttér: témánként változik (sárga: #241E0B). -->
         <SolidColorBrush x:Key="TurulSelectBrush" Color="#241E0B" />
 

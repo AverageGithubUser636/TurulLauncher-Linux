@@ -25,51 +25,52 @@
 
         <!-- Betűméret-skála: layout-helyes nagyítás (LayoutTransform). -->
         <LayoutTransformControl x:Name="ContentScaler">
-    <Grid ColumnDefinitions="220,*">
+    <Grid ColumnDefinitions="234,*">
 
         <!-- Bal oldali navigáció -->
-        <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
+        <Border Grid.Column="0" Background="#0C0D10"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="0,0,1,0">
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Margin="16,18,16,8" Spacing="6">
-                    <StackPanel Orientation="Horizontal" Spacing="9">
-                        <Image x:Name="LogoImage" Width="26" Height="26"
-                               Stretch="UniformToFill"/>
-                        <TextBlock Text="TURULLAUNCHER" FontSize="11" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TurulTextBrush}"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="16,22,16,10" Spacing="2"
+                            HorizontalAlignment="Center">
+                    <Image x:Name="LogoImage" Width="52" Height="52"
+                           Stretch="Uniform" HorizontalAlignment="Center"/>
+                    <TextBlock Text="TURUL" FontSize="19" FontWeight="ExtraBold"
+                               Foreground="{StaticResource TurulTextBrush}"
+                               HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                    <TextBlock Text="LAUNCHER" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource TurulGoldBrush}"
+                               LetterSpacing="4"
+                               HorizontalAlignment="Center" Margin="4,1,0,0"/>
                     <TextBlock Text="{Binding VersionText}" FontSize="10"
-                               Foreground="{StaticResource TurulTextFaintBrush}"/>
+                               Foreground="{StaticResource TurulTextFaintBrush}"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,12" Spacing="6">
+                <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="8">
                     <!-- Profil-lábléc -->
-                    <Border Background="{StaticResource TurulSurface2Brush}"
+                    <Border Background="{StaticResource TurulSurfaceBrush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                            CornerRadius="9" Padding="8,6">
-                        <StackPanel Orientation="Horizontal" Spacing="9">
-                            <Border Width="26" Height="26" CornerRadius="13"
-                                    Background="{StaticResource TurulSelectBrush}"
+                            CornerRadius="12" Padding="10,9">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Width="32" Height="32" CornerRadius="16"
+                                    Background="{StaticResource TurulNavActiveBrush}"
                                     BorderBrush="{StaticResource TurulGoldBrush}" BorderThickness="1">
-                                <TextBlock Text="{Binding ProfileInitial}" FontSize="12" FontWeight="Bold"
+                                <TextBlock Text="{Binding ProfileInitial}" FontSize="14" FontWeight="Bold"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Foreground="{StaticResource TurulGoldBrush}"/>
                             </Border>
-                            <StackPanel VerticalAlignment="Center" Spacing="0">
-                                <TextBlock Text="{Binding ProfileName}" FontSize="12" FontWeight="SemiBold"
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Text="{Binding ProfileName}" FontSize="13" FontWeight="SemiBold"
                                            Foreground="{StaticResource TurulTextBrush}"/>
                                 <TextBlock Text="offline profil" FontSize="10"
                                            Foreground="{StaticResource TurulTextFaintBrush}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Text="{Binding DataRootText}" FontSize="9"
-                               Foreground="{StaticResource TurulTextFaintBrush}"
-                               TextWrapping="Wrap"/>
                 </StackPanel>
 
-                <ListBox x:Name="NavList" Classes="nav" Margin="8,6"
+                <ListBox x:Name="NavList" Classes="nav" Margin="12,8"
                          Background="Transparent" BorderThickness="0"
                          ItemsSource="{Binding NavItems}"
                          SelectedIndex="{Binding SelectedNavIndex}">
@@ -78,16 +79,16 @@
                             <Panel>
                                 <!-- Szekciófejléc: nem választható. -->
                                 <TextBlock Text="{Binding Label}" Classes="overline"
-                                           Margin="12,10,4,4"
+                                           Margin="12,12,4,5"
                                            IsVisible="{Binding IsHeader}"/>
                                 <!-- Menüpont -->
-                                <StackPanel Orientation="Horizontal" Spacing="12" Margin="4,6"
+                                <StackPanel Orientation="Horizontal" Spacing="13" Margin="6,5"
                                             IsVisible="{Binding IsItem}">
-                                    <TextBlock Text="{Binding Icon}" FontSize="15" Width="22"
+                                    <TextBlock Text="{Binding Icon}" FontSize="16" Width="24"
                                                HorizontalAlignment="Center"
-                                               Foreground="{StaticResource TurulGoldBrush}"/>
-                                    <TextBlock Text="{Binding Label}" FontSize="13"
-                                               Foreground="{StaticResource TurulTextBrush}"/>
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Label}" FontSize="14"
+                                               VerticalAlignment="Center"/>
                                     <!-- Jelvény: arany pötty (pl. elérhető frissítés). -->
                                     <Border Width="8" Height="8" CornerRadius="4"
                                             VerticalAlignment="Center"
