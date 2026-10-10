@@ -5,6 +5,13 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+### Changed
+
+- 🎨 **Windows-mintás átszabás**: közel fekete-arany paletta, nagy logós
+  oldalsáv (TURUL/LAUNCHER + arany aktív pill), Home hero (Üdv újra! +
+  chipek + zöld gradiens JÁTÉK-gomb), Modok kétoszlopos kártyarácson
+  (telepítettek + Modrinth-találatok)
+
 ## [1.2.0] — 2026-10-10
 
 ### Added
