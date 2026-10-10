@@ -63,18 +63,31 @@ public partial class ShellWindow : Window
         ApplyAppearance();
 
         Closing += OnShellClosing;
+        Closed += (_, _) => Services.TrayManager.DisposeTray();
     }
 
     private bool _forceClose;
 
-    /// <summary>Bezárás-viselkedés a beállítás alapján (ask/minimize/exit).
-    /// A „tray" Linuxon minimalizálást jelent (nincs tálca-ikon).</summary>
+    /// <summary>Kényszerített bezárás (pl. tálca-menü „Kilépés").</summary>
+    public void ForceClose()
+    {
+        _forceClose = true;
+        try { Close(); } catch { }
+    }
+
+    /// <summary>Bezárás-viselkedés a beállítás alapján (ask/tray/minimize/exit).</summary>
     private async void OnShellClosing(object? sender, WindowClosingEventArgs e)
     {
         if (_forceClose) return;
         var behavior = (Services.LauncherServices.Current.Settings.CloseBehavior ?? "ask")
             .ToLowerInvariant();
-        if (behavior is "minimize" or "tray")
+        if (behavior == "tray")
+        {
+            e.Cancel = true;
+            Services.TrayManager.HideToTray(this);
+            return;
+        }
+        if (behavior == "minimize")
         {
             e.Cancel = true;
             WindowState = WindowState.Minimized;
@@ -86,13 +99,17 @@ public partial class ShellWindow : Window
         e.Cancel = true;
         var choice = await ConfirmWindow.AskAsync(this,
             "TurulLauncher bezárása", "Mit tegyen a launcher?",
-            "Kilépés", "Minimalizálás", "Mégse");
+            "Kilépés", "Tálcára", "Minimalizálás", "Mégse");
         if (choice == 0)
         {
             _forceClose = true;
             Close();
         }
         else if (choice == 1)
+        {
+            Services.TrayManager.HideToTray(this);
+        }
+        else if (choice == 2)
         {
             WindowState = WindowState.Minimized;
         }

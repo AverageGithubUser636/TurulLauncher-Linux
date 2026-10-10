@@ -232,9 +232,12 @@ public partial class GameLoadingWindow : Window
                     // (lásd ott) — itt csak a minimalizálható esetek vannak.
                     break;
                 case "minimize":
-                case "tray":
-                    // Tálca-nincs Linuxon: a legközelebbi a minimalizálás.
                     if (_owner is not null)
+                        _owner.WindowState = WindowState.Minimized;
+                    break;
+                case "tray":
+                    // Tálcára játék közben; ha nincs tálca, minimalizál.
+                    if (_owner is not null && !Services.TrayManager.HideToTray(_owner))
                         _owner.WindowState = WindowState.Minimized;
                     break;
                 case "keep":
@@ -252,11 +255,8 @@ public partial class GameLoadingWindow : Window
     {
         try
         {
-            if (_owner is not null && _owner.WindowState == WindowState.Minimized)
-            {
-                _owner.WindowState = WindowState.Normal;
-                _owner.Activate();
-            }
+            // Tálcáról és minimalizálásból is visszaállít.
+            Services.TrayManager.Restore(_owner);
         }
         catch { }
     }

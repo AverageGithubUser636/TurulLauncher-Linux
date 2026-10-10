@@ -5,8 +5,18 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-10-10
+
 ### Added
 
+- 🖼️ **Tálca-ikon**: bezáráskor és játék közben tálcára (Ayatana/AppIndicator,
+  KDE, XFCE); menü (Megnyitás/Kilépés), kattintásra visszaállítás, téma-logó
+  ikon. Tálca nélkül csendben minimalizálásra esik vissza
+- ⚠️ **Nouveau-figyelmeztetés**: nyílt NVIDIA driver észlelésekor
+  (`/sys`, `lspci`, `glxinfo`) rákérdez indítás előtt a Játék és a Szerverek
+  lapon — az indítást engedi („Indítás mindenképp")
+- ⚕️ **Doctor `gpu-driver` ellenőrzés**: Nouveau-ra sárga figyelmeztetés
+  zárt-driver tippel (`lspci`/`glxinfo` nélkül is, modul-alapon)
 - 🖼️ **Megjelenés+**: saját háttérkép (`backgrounds/` mappa, sötétítéssel),
   ablak-átlátszóság (40–100%), betűméret-skála (85–120%, layout-helyes),
   egyedi akcentusszín (#RRGGBB, számolt árnyalatokkal), animáció-kapcsoló
@@ -16,8 +26,16 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ### Changed
 
+- Bezárás-dialógus: Kilépés / Tálcára / Minimalizálás / Mégse
+- Játék közbeni „tálcára" viselkedés tényleg tálcára tesz (eddig minimalizált)
 - Hover-átmenetek kódból kapcsolt stílusban (XAML-ből kiköltözve)
 - Csúszkák arany témázása (sablon-lokális értékek kódból felülírva)
+
+### Removed
+
+- Windows-források a Linux-repóból (`src/TurulMC.Launcher`,
+  `src/TurulMC.Updater`, `publish/`, `target/`, `tools/`) — a Windows-build
+  külön mappában él tovább; a `TurulMC.sln` már csak Linux-projekteket sorol
 
 ## [1.1.0] — 2026-10-09 — második kiadás 🚀
 

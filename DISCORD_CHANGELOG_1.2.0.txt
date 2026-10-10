@@ -1,0 +1,11 @@
+```
+TurulLauncher Linux Version: 1.2.0
+
+[+]
+
+[*]
+
+[-]
+
+turulnetwork.hu
+```
