@@ -324,6 +324,13 @@ public sealed class HomeViewModel : PropertyChangedBase
         var instance = SelectedInstance;
         if (instance is null || _busy) return;
 
+        // Nouveau-figyelmeztetés: rákérdez, de az indítást engedi.
+        if (!await NouveauWarning.EnsureAcknowledgedAsync(owner))
+        {
+            StatusText = "Indítás megszakítva a felhasználó kérésére.";
+            return;
+        }
+
         _busy = true;
         OnPropertyChanged(nameof(CanPlay));
         ProgressVisible = true;

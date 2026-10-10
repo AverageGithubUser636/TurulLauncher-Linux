@@ -254,6 +254,14 @@ public sealed class ServersViewModel : PropertyChangedBase
             return;
         }
         if (_busy) return;
+
+        // Nouveau-figyelmeztetés: rákérdez, de a csatlakozást engedi.
+        if (!await NouveauWarning.EnsureAcknowledgedAsync(owner))
+        {
+            StatusText = "Csatlakozás megszakítva a felhasználó kérésére.";
+            return;
+        }
+
         _busy = true;
         ProgressVisible = true;
 

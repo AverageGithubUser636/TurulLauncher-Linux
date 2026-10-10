@@ -92,6 +92,10 @@ public sealed class LauncherDoctor
                 return Task.CompletedTask;
             }, progress, cancellationToken));
 
+        checks.Add(await RunCheckAsync("gpu-driver", "GPU driver", "GPU driver",
+            (check, ct) => CheckGpuDriverAsync(check, ct),
+            progress, cancellationToken));
+
         checks.Add(await RunCheckAsync("settings-json", "Beállításfájl", "Settings file",
             (check, ct) => CheckJsonFileAsync(
                 check, _options.SettingsFilePath, "A beállításfájl", "beállításfájl", false, ct),
@@ -294,6 +298,55 @@ public sealed class LauncherDoctor
             LauncherLogger.Warning($"OS leírás hiba: {ex.Message}");
             return "ismeretlen operációs rendszer";
         }
+    }
+
+    // ---------------------------------------------------------------------
+    // GPU driver (Nouveau-figyelmeztetés Linuxon)
+    // ---------------------------------------------------------------------
+
+    private static async Task CheckGpuDriverAsync(
+        DoctorCheck check, CancellationToken cancellationToken)
+    {
+        if (!OperatingSystem.IsLinux())
+        {
+            check.Status = DoctorStatus.Skipped;
+            check.Detail = "A GPU-driver ellenőrzés csak Linuxon fut.";
+            return;
+        }
+
+        GpuDriverReport report;
+        try
+        {
+            report = await GpuDriverInfo.ProbeAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            check.Status = DoctorStatus.Skipped;
+            check.Detail = $"A GPU-driver nem kérdezhető le – {ex.GetType().Name}: {ex.Message}";
+            return;
+        }
+
+        var renderer = string.IsNullOrWhiteSpace(report.Renderer)
+            ? ""
+            : $" (renderer: {report.Renderer})";
+
+        if (report.NouveauDetected)
+        {
+            check.Status = DoctorStatus.Warning;
+            check.Detail =
+                $"Nouveau nyílt NVIDIA driver aktív{renderer}. " +
+                "A játék ettől még elindul, de fagyás, villogás vagy " +
+                "alacsony FPS előfordulhat.";
+            check.FixHintHu = "Stabilabb működéshez telepítsd az NVIDIA zárt driverét " +
+                "(pl. a disztribúció „további driverek” eszközével).";
+            check.FixHintEn = "For stable gameplay install the proprietary NVIDIA driver.";
+            return;
+        }
+
+        check.Status = DoctorStatus.Ok;
+        check.Detail = string.IsNullOrWhiteSpace(report.Renderer)
+            ? "Nouveau driver nem észlelhető."
+            : $"Nouveau driver nem észlelhető ({report.Renderer}).";
     }
 
     // ---------------------------------------------------------------------
