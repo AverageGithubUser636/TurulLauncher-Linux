@@ -6,7 +6,7 @@
 
         <!-- Fejléc -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Shaderek" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Shaderek" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="{Binding Subtitle}" FontSize="12"
                        Foreground="{StaticResource TurulTextDimBrush}"/>

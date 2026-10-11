@@ -5,9 +5,9 @@
     <Grid RowDefinitions="Auto,Auto,*" Margin="26,22,26,20">
 
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
-            <TextBlock Text="Doctor" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Doctor" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TurulTextBrush}"/>
-            <TextBlock Text="17 ellenőrzés egy helyen — ahol lehet, egy kattintásos javítással."
+            <TextBlock Text="18 ellenőrzés egy helyen — ahol lehet, egy kattintásos javítással."
                        FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
         </StackPanel>
 

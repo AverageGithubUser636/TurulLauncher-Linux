@@ -6,7 +6,7 @@
         <StackPanel Spacing="20" MaxWidth="820" HorizontalAlignment="Center">
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Beállítások" FontSize="24" FontWeight="SemiBold"
+                <TextBlock Text="Beállítások" FontSize="26" FontWeight="Bold"
                            Foreground="{StaticResource TurulTextBrush}"/>
                 <TextBlock Text="{Binding Subtitle}" FontSize="12"
                            Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
@@ -23,11 +23,11 @@
                                  Background="{StaticResource TurulSurface2Brush}"
                                  Foreground="{StaticResource TurulTextBrush}"
                                  CaretBrush="{StaticResource TurulGoldBrush}"
-                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="6"/>
+                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="8"/>
                         <Button Grid.Column="1" Content="Létrehozás" Click="OnCreateProfile"
                                 Background="{StaticResource TurulGoldBrush}"
                                 Foreground="{StaticResource TurulBgBrush}"
-                                BorderThickness="0" CornerRadius="6" Padding="14,8" FontSize="12"/>
+                                BorderThickness="0" CornerRadius="8" Padding="14,8" FontSize="12"/>
                     </Grid>
                     <TextBlock Text="{Binding ProfileText}" FontSize="12"
                                Foreground="{StaticResource TurulTextDimBrush}" TextWrapping="Wrap"/>
@@ -58,7 +58,7 @@
                                  Background="{StaticResource TurulSurface2Brush}"
                                  Foreground="{StaticResource TurulTextBrush}"
                                  CaretBrush="{StaticResource TurulGoldBrush}"
-                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="6"/>
+                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="8"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="180,*" ColumnSpacing="14" VerticalAlignment="Center">
@@ -69,7 +69,7 @@
                                  Background="{StaticResource TurulSurface2Brush}"
                                  Foreground="{StaticResource TurulTextBrush}"
                                  CaretBrush="{StaticResource TurulGoldBrush}"
-                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="6"/>
+                                 BorderBrush="{StaticResource TurulBorderBrush}" CornerRadius="8"/>
                     </Grid>
 
                     <CheckBox Content="Hiányzó Java automatikus telepítése (Eclipse Temurin JRE)"
@@ -113,12 +113,12 @@
                                     Background="{StaticResource TurulSurface2Brush}"
                                     Foreground="{StaticResource TurulTextBrush}"
                                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                                    CornerRadius="8" Padding="12,8" FontSize="12"/>
                             <Button Grid.Column="2" Content="Alaphelyzet" Click="OnResetAccent"
                                     Background="Transparent"
                                     Foreground="{StaticResource TurulTextDimBrush}"
                                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                                    CornerRadius="8" Padding="12,8" FontSize="12"/>
                         </Grid>
                     </Grid>
 
@@ -130,12 +130,12 @@
                                     Background="{StaticResource TurulSurface2Brush}"
                                     Foreground="{StaticResource TurulTextBrush}"
                                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                                    CornerRadius="8" Padding="12,8" FontSize="12"/>
                             <Button Content="Törlés" Click="OnClearBackground"
                                     Background="Transparent"
                                     Foreground="{StaticResource TurulTextDimBrush}"
                                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                    CornerRadius="6" Padding="12,7" FontSize="12"/>
+                                    CornerRadius="8" Padding="12,8" FontSize="12"/>
                             <TextBlock Text="{Binding BackgroundStatus}" FontSize="11"
                                        VerticalAlignment="Center" TextWrapping="Wrap"
                                        Foreground="{StaticResource TurulTextFaintBrush}"/>
@@ -237,11 +237,11 @@
                                 Background="{StaticResource TurulSurface2Brush}"
                                 Foreground="{StaticResource TurulTextBrush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                CornerRadius="6" Padding="12,7" FontSize="12"/>
+                                CornerRadius="8" Padding="12,8" FontSize="12"/>
                         <Button Content="Mentés" Click="OnSave"
                                 Background="{StaticResource TurulGoldBrush}"
                                 Foreground="{StaticResource TurulBgBrush}"
-                                BorderThickness="0" CornerRadius="6" Padding="16,7" FontSize="12"/>
+                                BorderThickness="0" CornerRadius="8" Padding="16,8" FontSize="12"/>
                     </StackPanel>
                     <TextBlock Text="{Binding SaveText}" FontSize="12"
                                Foreground="{StaticResource TurulOkBrush}"/>

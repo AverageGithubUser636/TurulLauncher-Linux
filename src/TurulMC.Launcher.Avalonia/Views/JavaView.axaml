@@ -6,7 +6,7 @@
 
         <!-- Fejléc -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Java" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Java" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="{Binding Subtitle}" FontSize="12"
                        Foreground="{StaticResource TurulTextDimBrush}"/>
@@ -17,19 +17,19 @@
             <!-- Észlelt runtime-ok -->
             <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                    CornerRadius="10" Padding="6">
+                    CornerRadius="12" Padding="8">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="8,6,8,4">
                         <Button Content="Frissítés" Click="OnRefresh"
                                 Background="{StaticResource TurulSurface2Brush}"
                                 Foreground="{StaticResource TurulTextBrush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="6" FontSize="12"/>
+                                Padding="12,8" CornerRadius="8" FontSize="12"/>
                         <Button Content="Telepített törlése" Click="OnRemove"
                                 Background="Transparent"
                                 Foreground="{StaticResource TurulDangerBrush}"
                                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                                Padding="12,7" CornerRadius="6" FontSize="12"/>
+                                Padding="12,8" CornerRadius="8" FontSize="12"/>
                     </StackPanel>
 
                     <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
@@ -112,7 +112,7 @@
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                                 Background="{StaticResource TurulGoldBrush}"
                                 Foreground="{StaticResource TurulBgBrush}"
-                                BorderThickness="0" Padding="12,9" CornerRadius="6"
+                                BorderThickness="0" Padding="12,9" CornerRadius="8"
                                 FontSize="13" FontWeight="SemiBold" Margin="0,6,0,0"
                                 IsEnabled="{Binding CanInstall}"/>
                         <TextBlock Text="A launcher a futó rendszerre való csomagot tölti (Linuxra .tar.gz-t)."

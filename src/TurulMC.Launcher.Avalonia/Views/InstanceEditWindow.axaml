@@ -106,12 +106,12 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right"
                     Spacing="10" Margin="24,12,24,18">
             <Button Content="Mégse" Click="OnCancel" MinWidth="110"
-                    Padding="14,9" CornerRadius="6"
+                    Padding="14,9" CornerRadius="8"
                     Background="{StaticResource TurulSurface2Brush}"
                     Foreground="{StaticResource TurulTextBrush}"
                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"/>
             <Button Content="Mentés" Click="OnSave" MinWidth="110"
-                    Padding="14,9" CornerRadius="6" FontWeight="SemiBold"
+                    Padding="14,9" CornerRadius="8" FontWeight="SemiBold"
                     Background="{StaticResource TurulGoldBrush}"
                     Foreground="{StaticResource TurulBgBrush}"
                     BorderThickness="0"/>

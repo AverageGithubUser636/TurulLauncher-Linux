@@ -43,20 +43,20 @@
                         Background="Transparent"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        Padding="12,8" CornerRadius="8" FontSize="12"/>
                 <Button Content="🧩 Böngészés" Click="OnShowBrowser"
                         IsVisible="{Binding IsInstalledMode}"
                         Background="{StaticResource TurulSurface2Brush}"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        Padding="12,8" CornerRadius="8" FontSize="12"/>
             </StackPanel>
         </Grid>
 
         <!-- Tartalom -->
         <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                CornerRadius="10" Padding="6">
+                CornerRadius="12" Padding="8">
             <Panel>
 
             <!-- Telepített lista -->
@@ -206,7 +206,7 @@
                     <Button Grid.Column="1" Content="Keresés" Click="OnSearch"
                             Background="{StaticResource TurulGoldBrush}"
                             Foreground="{StaticResource TurulBgBrush}"
-                            BorderThickness="0" Padding="16,7" CornerRadius="6"
+                            BorderThickness="0" Padding="16,8" CornerRadius="8"
                             FontSize="12" FontWeight="SemiBold"
                             IsEnabled="{Binding CanSearch}"/>
                 </Grid>

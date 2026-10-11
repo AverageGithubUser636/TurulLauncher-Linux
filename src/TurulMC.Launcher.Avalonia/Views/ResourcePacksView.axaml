@@ -6,7 +6,7 @@
 
         <!-- Fejléc -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Textúrák" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Textúrák" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="{Binding Subtitle}" FontSize="12"
                        Foreground="{StaticResource TurulTextDimBrush}"/>
@@ -36,20 +36,20 @@
                         Background="Transparent"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        Padding="12,8" CornerRadius="8" FontSize="12"/>
                 <Button Content="🗺 Böngészés" Click="OnShowBrowser"
                         IsVisible="{Binding IsInstalledMode}"
                         Background="{StaticResource TurulSurface2Brush}"
                         Foreground="{StaticResource TurulTextBrush}"
                         BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                        Padding="12,7" CornerRadius="6" FontSize="12"/>
+                        Padding="12,8" CornerRadius="8" FontSize="12"/>
             </StackPanel>
         </Grid>
 
         <!-- Tartalom -->
         <Border Grid.Row="2" Background="{StaticResource TurulSurfaceBrush}"
                 BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                CornerRadius="10" Padding="6">
+                CornerRadius="12" Padding="8">
             <Panel>
 
             <!-- Telepített lista -->
@@ -59,17 +59,17 @@
                             Background="{StaticResource TurulSurface2Brush}"
                             Foreground="{StaticResource TurulTextBrush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                            Padding="12,8" CornerRadius="8" FontSize="12"/>
                     <Button Content="Törlés" Click="OnDelete"
                             Background="Transparent"
                             Foreground="{StaticResource TurulDangerBrush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                            Padding="12,8" CornerRadius="8" FontSize="12"/>
                     <Button Content="Frissítés" Click="OnRefresh"
                             Background="Transparent"
                             Foreground="{StaticResource TurulTextDimBrush}"
                             BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                            Padding="12,7" CornerRadius="6" FontSize="12"/>
+                            Padding="12,8" CornerRadius="8" FontSize="12"/>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
@@ -150,7 +150,7 @@
                     <Button Grid.Column="1" Content="Keresés" Click="OnSearch"
                             Background="{StaticResource TurulGoldBrush}"
                             Foreground="{StaticResource TurulBgBrush}"
-                            BorderThickness="0" Padding="16,7" CornerRadius="6"
+                            BorderThickness="0" Padding="16,8" CornerRadius="8"
                             FontSize="12" FontWeight="SemiBold"
                             IsEnabled="{Binding CanSearch}"/>
                 </Grid>
@@ -195,7 +195,7 @@
                                         Click="OnInstallSearch"
                                         VerticalAlignment="Center"
                                         IsEnabled="{Binding CanInstall}"
-                                        MinWidth="110" Padding="12,8" CornerRadius="6"
+                                        MinWidth="110" Padding="12,8" CornerRadius="8"
                                         FontSize="12" FontWeight="SemiBold"
                                         Background="{StaticResource TurulGoldBrush}"
                                         Foreground="{StaticResource TurulBgBrush}"

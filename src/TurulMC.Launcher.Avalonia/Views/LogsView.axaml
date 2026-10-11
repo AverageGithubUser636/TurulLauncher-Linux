@@ -6,7 +6,7 @@
 
         <!-- Fejléc -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock Text="Naplók" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="Naplók" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TurulTextBrush}"/>
             <TextBlock Text="Játék- és launcher-naplók farka — csak olvasható nézet."
                        FontSize="12" Foreground="{StaticResource TurulTextDimBrush}"/>
@@ -56,7 +56,7 @@
         <Grid Grid.Row="2" ColumnDefinitions="280,*" ColumnSpacing="14">
             <Border Grid.Column="0" Background="{StaticResource TurulSurfaceBrush}"
                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
-                    CornerRadius="10" Padding="6">
+                    CornerRadius="12" Padding="8">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" IsVisible="{Binding IsEmpty}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"

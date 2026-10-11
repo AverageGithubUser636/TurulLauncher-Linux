@@ -5,12 +5,16 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-10-11 — Windows-look 🎨
+
 ### Changed
 
 - 🎨 **Windows-mintás átszabás**: közel fekete-arany paletta, nagy logós
   oldalsáv (TURUL/LAUNCHER + arany aktív pill), Home hero (Üdv újra! +
   chipek + zöld gradiens JÁTÉK-gomb), Modok kétoszlopos kártyarácson
   (telepítettek + Modrinth-találatok)
+- Egységes címek (26 Bold), kártya-sarkok (12), gomb-sarkok (8),
+  Szerver-sorok kártyásítva ping-chippel
 
 ## [1.2.0] — 2026-10-10
 

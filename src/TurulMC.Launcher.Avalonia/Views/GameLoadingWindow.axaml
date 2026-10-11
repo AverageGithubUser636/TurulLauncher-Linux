@@ -63,13 +63,13 @@
         <!-- Gombok -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
             <Button x:Name="HideButton" Content="Elrejtés" Click="OnHide"
-                    MinWidth="110" Padding="14,9" CornerRadius="6"
+                    MinWidth="110" Padding="14,9" CornerRadius="8"
                     Background="{StaticResource TurulSurface2Brush}"
                     Foreground="{StaticResource TurulTextBrush}"
                     BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"/>
             <Button x:Name="CloseButton" Content="Bezárás" Click="OnClose"
                     IsVisible="False"
-                    MinWidth="110" Padding="14,9" CornerRadius="6" FontWeight="SemiBold"
+                    MinWidth="110" Padding="14,9" CornerRadius="8" FontWeight="SemiBold"
                     Background="{StaticResource TurulGoldBrush}"
                     Foreground="{StaticResource TurulBgBrush}"
                     BorderThickness="0"/>
