@@ -44,6 +44,12 @@ public partial class UpdateView : UserControl
     private async void OnAction(object? sender, RoutedEventArgs e)
         => await _vm.UpdateActionAsync(OpenUrl);
 
+    private void OnCancel(object? sender, RoutedEventArgs e)
+        => _vm.Cancel();
+
+    private void OnToggleLog(object? sender, RoutedEventArgs e)
+        => _vm.LogVisible = !_vm.LogVisible;
+
     private static async Task<string?> OpenUrl(string url)
     {
         try
@@ -78,12 +84,17 @@ public sealed class UpdateViewModel : PropertyChangedBase
     private bool _upToDate;
     private bool _required;
     private bool _busy;
+    private bool _installing;
     private double _progress;
     private bool _progressVisible;
+    private bool _logVisible;
     private string _modeText = "";
+    private string _phaseText = "";
+    private System.Threading.CancellationTokenSource? _installCts;
     private Core.Update.LauncherUpdateManifest? _pendingManifest;
 
     public ObservableCollection<string> Changelog { get; } = new();
+    public ObservableCollection<string> LogLines { get; } = new();
 
     public string Subtitle { get => _subtitle; private set => Raise(ref _subtitle, value); }
     public string CurrentVersionText { get; } = "v" + AppInfo.Version;
@@ -95,14 +106,35 @@ public sealed class UpdateViewModel : PropertyChangedBase
     public bool IsUpToDate { get => _upToDate; private set => Raise(ref _upToDate, value); }
     public bool IsRequired { get => _required; private set => Raise(ref _required, value); }
     public bool CanCheck => !_busy;
+    public bool CanCancel => _busy && _installing;
     public double Progress { get => _progress; private set => Raise(ref _progress, value); }
     public bool ProgressVisible { get => _progressVisible; private set => Raise(ref _progressVisible, value); }
+    public bool LogVisible { get => _logVisible; set => Raise(ref _logVisible, value); }
+    public string LogToggleText => LogVisible ? "Napló elrejtése" : $"Napló ({LogLines.Count} sor)";
+    public string PhaseText { get => _phaseText; private set => Raise(ref _phaseText, value); }
     public string ModeText { get => _modeText; private set => Raise(ref _modeText, value); }
     public bool HasChangelog => Changelog.Count > 0;
 
     public UpdateViewModel()
     {
         Changelog.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasChangelog));
+        LogLines.CollectionChanged += (_, _) => OnPropertyChanged(nameof(LogToggleText));
+    }
+
+    /// <summary>Folyamatban lévő telepítés megszakítása (Mégse gomb).</summary>
+    public void Cancel()
+    {
+        try { _installCts?.Cancel(); }
+        catch { }
+    }
+
+    private void AddLog(string line)
+    {
+        global::Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            LogLines.Add($"{DateTime.Now:HH:mm:ss} {line}");
+            while (LogLines.Count > 200) LogLines.RemoveAt(0);
+        });
     }
 
     public async Task InitializeAsync()
@@ -207,37 +239,10 @@ public sealed class UpdateViewModel : PropertyChangedBase
         var appImage = Environment.GetEnvironmentVariable("APPIMAGE");
         if (!string.IsNullOrWhiteSpace(appImage) && File.Exists(appImage))
         {
-            _busy = true;
-            OnPropertyChanged(nameof(CanCheck));
-            ProgressVisible = true;
-            try
-            {
-                var progress = new Progress<Core.Models.DownloadProgress>(p =>
-                    global::Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        StatusText = $"Letöltés: {p.FileName}";
-                        Progress = p.TotalBytes > 0 ? Math.Clamp(p.Percentage, 0, 100) : 0;
-                    }));
-
-                StatusText = $"AppImage csere: v{manifest.Version}…";
-                await _services.Updates.InstallAppImageAsync(manifest, appImage, progress);
-
-                StatusText = "Telepítve — újraindítás…";
-                await Task.Delay(800);
-                RestartApp();
-            }
-            catch (Exception ex)
-            {
-                StatusText = "Telepítési hiba: " + ex.Message;
-                LauncherLogger.Error("AppImage frissítés hiba: " + ex.Message);
-            }
-            finally
-            {
-                _busy = false;
-                ProgressVisible = false;
-                Progress = 0;
-                OnPropertyChanged(nameof(CanCheck));
-            }
+            await RunInstallAsync(
+                $"AppImage csere: v{manifest.Version}",
+                (progress, ct) => _services.Updates.InstallAppImageAsync(
+                    manifest, appImage, progress, ct));
             return;
         }
 
@@ -251,37 +256,78 @@ public sealed class UpdateViewModel : PropertyChangedBase
             return;
         }
 
+        await RunInstallAsync(
+            $"Telepítés: v{manifest.Version}",
+            (progress, ct) => _services.Updates.InstallPortableAsync(
+                manifest, AppContext.BaseDirectory, progress, ct));
+    }
+
+    /// <summary>
+    /// Telepítés fázisokkal (Letöltés → Ellenőrzés → Telepítés → Kész),
+    /// megszakíthatóan, naplózva — a Windows-updater mintájára.
+    /// </summary>
+    private async Task RunInstallAsync(
+        string title,
+        Func<IProgress<Core.Models.DownloadProgress>,
+            System.Threading.CancellationToken,
+            Task> install)
+    {
         _busy = true;
+        _installing = true;
         OnPropertyChanged(nameof(CanCheck));
+        OnPropertyChanged(nameof(CanCancel));
         ProgressVisible = true;
+        Progress = 0;
+        _installCts = new System.Threading.CancellationTokenSource();
+        AddLog(title);
+
         try
         {
+            PhaseText = "1/3 · Letöltés…";
+            StatusText = title + "…";
+            AddLog("Letöltés indul.");
             var progress = new Progress<Core.Models.DownloadProgress>(p =>
                 global::Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    StatusText = $"Letöltés: {p.FileName}";
                     Progress = p.TotalBytes > 0 ? Math.Clamp(p.Percentage, 0, 100) : 0;
+                    if (p.TotalBytes > 0 && p.BytesReceived >= p.TotalBytes)
+                        PhaseText = "2/3 · Ellenőrzés, telepítés…";
+                    StatusText = Core.Update.UpdateProgressText.FormatDownload(
+                        p.BytesReceived, p.TotalBytes, p.BytesPerSecond);
                 }));
 
-            StatusText = $"Telepítés: v{manifest.Version}…";
-            await _services.Updates.InstallPortableAsync(
-                manifest, AppContext.BaseDirectory, progress);
+            await install(progress, _installCts.Token);
 
+            PhaseText = "3/3 · Telepítve ✓";
             StatusText = "Telepítve — újraindítás…";
+            AddLog("Telepítve, újraindítás.");
             await Task.Delay(800);
             RestartApp();
         }
+        catch (OperationCanceledException)
+        {
+            PhaseText = "";
+            StatusText = "Telepítés megszakítva — a launcher változatlan.";
+            AddLog("Megszakítva a felhasználó kérésére.");
+            LauncherLogger.Info("Frissítés megszakítva.");
+        }
         catch (Exception ex)
         {
+            PhaseText = "";
             StatusText = "Telepítési hiba: " + ex.Message;
-            LauncherLogger.Error("Hordozható frissítés hiba: " + ex.Message);
+            AddLog("Hiba: " + ex.Message);
+            LauncherLogger.Error("Frissítés hiba: " + ex.Message);
         }
         finally
         {
+            try { _installCts?.Dispose(); } catch { }
+            _installCts = null;
             _busy = false;
+            _installing = false;
             ProgressVisible = false;
             Progress = 0;
             OnPropertyChanged(nameof(CanCheck));
+            OnPropertyChanged(nameof(CanCancel));
         }
     }
 

@@ -11,12 +11,15 @@ namespace TurulMC.Launcher.Avalonia.Services;
 /// <item><c>xdotool search --pid</c> — tartalék.</item>
 /// </list>
 /// Ha egyik eszköz sincs telepítve (vagy tiszta Wayland van X-eszközök
-/// nélkül), mindig <c>false</c>-t ad — ilyenkor a betöltőablak a játék
-/// kilépéséig vagy kézi elrejtésig marad.
+/// nélkül), mindig <c>false</c>-t ad — a betöltőablak ilyenkor időkorlát
+/// után magától záródik (lásd a GameLoadingWindow fallbackjét).
 /// </summary>
 public static class GameWindowDetector
 {
     private static int _toolState; // 0 = ismeretlen, 1 = wmctrl, 2 = xdotool, -1 = nincs
+
+    /// <summary>Van-e működő ablak-érzékelő eszköz (wmctrl/xdotool).</summary>
+    public static bool DetectionAvailable => DetectTool() > 0;
 
     public static bool HasVisibleWindow(int pid)
     {

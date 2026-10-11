@@ -110,12 +110,29 @@ public partial class GameLoadingWindow : Window
         // Ablak-érzékelés háttérben (eszközhívás blokkolhat).
         if (!_readySeen && status.ProcessId.HasValue)
         {
-            var pid = status.ProcessId.Value;
-            _ = Task.Run(() =>
+            if (Services.GameWindowDetector.DetectionAvailable)
             {
-                if (Services.GameWindowDetector.HasVisibleWindow(pid))
-                    Dispatcher.UIThread.Post(MarkLoaded);
-            });
+                var pid = status.ProcessId.Value;
+                _ = Task.Run(() =>
+                {
+                    if (Services.GameWindowDetector.HasVisibleWindow(pid))
+                        Dispatcher.UIThread.Post(() => MarkLoaded(detected: true));
+                });
+            }
+
+            // Fallback: ha az ablak sosem érzékelhető (pl. Wayland,
+            // hiányzó wmctrl/xdotool), a betöltőablak nem maradhat örökké —
+            // a játék ettől még fut tovább.
+            var elapsed = DateTime.UtcNow - _startedUtc;
+            var limit = Services.GameWindowDetector.DetectionAvailable
+                ? TimeSpan.FromMinutes(3)
+                : TimeSpan.FromSeconds(45);
+            if (elapsed >= limit)
+            {
+                LauncherLogger.Info(
+                    "Játékablak nem érzékelhető — betöltőablak bezárása időkorláttal.");
+                MarkLoaded(detected: false);
+            }
         }
     }
 
@@ -160,11 +177,13 @@ public partial class GameLoadingWindow : Window
     }
 
     /// <summary>A játékablak megjelent — kész, hamarosan zárunk.</summary>
-    public void MarkLoaded()
+    public void MarkLoaded(bool detected = true)
     {
         if (_finished || _readySeen) return;
         _readySeen = true;
-        StatusText.Text = "A játék elindult — jó játékot!";
+        StatusText.Text = detected
+            ? "A játék elindult — jó játékot!"
+            : "A játék fut (az ablakot nem sikerült érzékelni) — jó játékot!";
         LoadingBar.IsIndeterminate = false;
         LoadingBar.Value = 100;
         CloseAfter(TimeSpan.FromSeconds(3));

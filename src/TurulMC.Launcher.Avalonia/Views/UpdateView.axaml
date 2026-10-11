@@ -74,6 +74,13 @@
                                     Foreground="{StaticResource TurulBgBrush}"
                                     BorderThickness="0" FontSize="13" FontWeight="Bold"
                                     IsEnabled="{Binding CanCheck}"/>
+                            <Button Content="Mégse" Click="OnCancel"
+                                    IsVisible="{Binding CanCancel}"
+                                    MinWidth="150" Padding="14,10" CornerRadius="8"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource TurulDangerBrush}"
+                                    BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                                    FontSize="13"/>
                         </StackPanel>
                     </Grid>
                 </DockPanel>
@@ -83,6 +90,34 @@
                          Height="5" IsVisible="{Binding ProgressVisible}"
                          Foreground="{StaticResource TurulGoldBrush}"
                          Background="{StaticResource TurulBorderBrush}"/>
+
+            <TextBlock Text="{Binding PhaseText}" FontSize="12" FontWeight="SemiBold"
+                       Foreground="{StaticResource TurulGoldBrush}"
+                       IsVisible="{Binding ProgressVisible}"/>
+
+            <!-- Napló (lenyitható, mint a Windows-updaterben) -->
+            <Border Classes="card">
+                <StackPanel Spacing="8">
+                    <Button Content="{Binding LogToggleText}" Click="OnToggleLog"
+                            HorizontalAlignment="Left"
+                            Background="Transparent"
+                            Foreground="{StaticResource TurulTextDimBrush}"
+                            BorderBrush="{StaticResource TurulBorderBrush}" BorderThickness="1"
+                            Padding="12,7" CornerRadius="8" FontSize="12"/>
+                    <ListBox Background="Transparent" BorderThickness="0"
+                             MaxHeight="160"
+                             IsVisible="{Binding LogVisible}"
+                             ItemsSource="{Binding LogLines}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="11"
+                                           Foreground="{StaticResource TurulTextFaintBrush}"
+                                           TextWrapping="Wrap" Margin="2,2"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
 
             <!-- Változásnapló -->
             <Border Classes="card" IsVisible="{Binding HasChangelog}">

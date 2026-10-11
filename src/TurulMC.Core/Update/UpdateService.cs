@@ -302,6 +302,10 @@ public sealed class UpdateService
             var buffer = new byte[128 * 1024];
             long total = 0;
             int read;
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            long lastReportBytes = 0;
+            long lastReportMs = 0;
+            double speed = 0;
             while ((read = await input.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken)
                        .ConfigureAwait(false)) > 0)
             {
@@ -310,11 +314,22 @@ public sealed class UpdateService
                     throw new InvalidOperationException("A frissítési csomag túl nagy.");
                 await output.WriteAsync(buffer.AsMemory(0, read), cancellationToken)
                     .ConfigureAwait(false);
+                // Sebesség: csúszó ablak az utolsó jelentés óta (zajszűrt).
+                var elapsedMs = clock.ElapsedMilliseconds;
+                if (elapsedMs - lastReportMs >= 500)
+                {
+                    var dt = Math.Max(1, elapsedMs - lastReportMs) / 1000.0;
+                    var instant = (total - lastReportBytes) / dt;
+                    speed = speed <= 0 ? instant : speed * 0.6 + instant * 0.4;
+                    lastReportBytes = total;
+                    lastReportMs = elapsedMs;
+                }
                 progress?.Report(new DownloadProgress
                 {
                     FileName = "frissítés",
                     BytesReceived = total,
                     TotalBytes = declared ?? total,
+                    BytesPerSecond = speed,
                     Status = "downloading"
                 });
             }

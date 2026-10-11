@@ -5,6 +5,15 @@ verziózás: szemantikus, `1.0.0`-tól induló **önálló** számozás (nem kö
 
 ## [Unreleased]
 
+### Added
+
+- ⬆️ **Windows-mintás updater**: fázisok (1/3 Letöltés → 2/3 Ellenőrzés,
+  telepítés → 3/3 Kész), sebesség + ETA (`812 MB / 1,20 GB • 24,6 MB/s •
+  16 mp`), Mégse gomb, lenyitható telepítési napló
+- ⏱️ **Betöltőablak-fallback**: ha a játékablak nem érzékelhető (Wayland,
+  hiányzó wmctrl/xdotool), a betöltőablak időkorlát után magától bezárul
+  (érzékeléssel 3 perc, anélkül 45 mp) — a játék fut tovább
+
 ## [1.3.0] — 2026-10-11 — Windows-look 🎨
 
 ### Changed
